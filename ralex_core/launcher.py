@@ -135,9 +135,9 @@ def run_interactive_mode(settings, model_tiers, intent_routes, client, semantic_
             # --- Budget Check (Task 5.2.3 & 5.2.4) ---
             budget_status = budget_optimizer.check_budget_status()
             if budget_status["status"] == "warning":
-                print(f"\n⚠️  Budget Warning: You have spent ${budget_status["spent_today"]:.2f} today out of your ${budget_status["daily_limit"]:.2f} daily limit ({budget_status["percentage_used"]:.2f}% used).")
-            elif budget_status["status"] == "exceeded":                print(f"
-🚨 Budget Exceeded: You have spent ${budget_status["spent_today"]:.2f} today out of your ${budget_status["daily_limit"]:.2f} daily limit ({budget_status["percentage_used"]:.2f}% used)."))
+                print("\n⚠️  Budget Warning: You have spent ${:.2f} today out of your ${:.2f} daily limit ({:.2f}% used).".format(budget_status['spent_today'], budget_status['daily_limit'], budget_status['percentage_used']))
+            elif budget_status["status"] == "exceeded":
+                print("\n🚨 Budget Exceeded: You have spent ${:.2f} today out of your ${:.2f} daily limit ({:.2f}% used).".format(budget_status['spent_today'], budget_status['daily_limit'], budget_status['percentage_used']))
                 confirm = input("You have exceeded your daily budget. Proceed anyway? [y/N] ").lower()
                 if confirm != 'y':
                     print("Action cancelled due to budget.")
@@ -160,7 +160,7 @@ def run_interactive_mode(settings, model_tiers, intent_routes, client, semantic_
             if code_blocks:
                 print("The assistant proposed the following code to execute:")
                 for i, block in enumerate(code_blocks):
-                    print(f"\n--- Code Block {i+1} ({block["language"]}) ---")
+                    print("\n--- Code Block {} ({}) ---".format(i+1, block["language"]))
                     print(block["code"])
                     print("---------------------------")
                 
@@ -183,7 +183,7 @@ def run_interactive_mode(settings, model_tiers, intent_routes, client, semantic_
                                 if exec_result["stderr"]:
                                     print("Stderr:\n" + exec_result["stderr"])
                         else:
-                            print(f"Execution of {block["language"]} code is not yet supported.")
+                            print("Execution of {} code is not yet supported.".format(block["language"]))
 
             # Update conversation history (Task 3.2.1)
             conversation_history.append({"role": "user", "content": user_input})
@@ -241,172 +241,13 @@ def run_interactive_mode(settings, model_tiers, intent_routes, client, semantic_
                     # Update the in-memory context as well
                     file_context.update(modifications)
 
-        except (KeyboardInterrupt, EOFError):
-            break
-
-    print("\nGoodbye!")
-
-def run_non_interactive_mode(args, settings, model_tiers, intent_routes, client, semantic_classifier, budget_optimizer):
-    """Runs the non-interactive CLI mode."""
-    file_context = {}
-    code_executor = CodeExecutor()
-
-    # Load files into context if provided
-    if args.files:
-        for file_path_str in args.files:
-            try:
-                with open(file_path_str, "r", encoding="utf-8") as f:
-                    file_context[file_path_str] = f.read()
-                print(f"Added '{file_path_str}' to context.")
-            except FileNotFoundError:
-                print(f"Error: File not found at '{file_path_str}'", file=sys.stderr)
-                sys.exit(1)
-            except Exception as e:
-                print(f"Error reading file: {e}", file=sys.stderr)
-                sys.exit(1)
-
-    if not file_context and not args.intent == "generate": # For generate, file context might not be needed initially
-        print("Error: Please add at least one file to the context with --files or use the 'generate' intent.", file=sys.stderr)
-        sys.exit(1)
-
-    # Prepare the messages for the LLM
-    messages = []
-    context_str = "\n".join([f"--- {path} ---\n{content}" for path, content in file_context.items()])
-    system_prompt = (
-        f"You are an expert programmer. The user has provided the following file(s) as context:\n\n{context_str}\n\n"
-        "When you provide code to modify a file, you MUST use the following format, including the file path:\n"
-        "```path/to/your/file.py\n"
-        "# Your code here\n"
-        "```\n"
-        "You can provide multiple blocks for multiple files."
-    )
-    messages.append({"role": "system", "content": system_prompt})
-    messages.append({"role": "user", "content": args.prompt})
-
-    # --- Intent Classification and Model Selection ---
-    semantic_intent, confidence = semantic_classifier.classify(args.prompt)
-    if confidence > 0.7:
-        intent = semantic_intent
-    else:
-        intent = classify_intent(args.prompt)
-
-    tier = intent_routes.get(intent, "default")
-    selected_model = None
-    if tier in model_tiers["tiers"] and model_tiers["tiers"][tier]:
-        selected_model = model_tiers["tiers"][tier][0]["name"]
-
-    if not selected_model:
-        print(f"Error: No model found for tier '{tier}'. Please check your model_tiers.json and intent_routes.json.", file=sys.stderr)
-        sys.exit(1)
-
-    print(f"\nProposed Action: Intent '{intent}' using model '{selected_model}' (tier: {tier})")
-    
-    # --- Budget Check ---
-    budget_status = budget_optimizer.check_budget_status()
-    if budget_status["status"] == "warning":
-        print(f"\n⚠️  Budget Warning: You have spent ${budget_status["spent_today"]:.2f} today out of your ${budget_status["daily_limit"]:.2f} daily limit ({budget_status["percentage_used"]:.2f}% used).")
-    elif budget_status["status"] == "exceeded":
-        print(f"\n🚨 Budget Exceeded: You have spent ${budget_status["spent_today"]:.2f} today out of your ${budget_status["daily_limit"]:.2f} daily limit ({budget_status["percentage_used"]:.2f}% used).")
-        # In non-interactive mode, we don't prompt, just warn and exit if not forced
-        if not args.force_budget:
-            print("Action cancelled due to budget. Use --force-budget to override.", file=sys.stderr)
-            sys.exit(1)
-
-    print(f"\nAssistant (using {selected_model}, intent: {intent}, tier: {tier}):", end="", flush=True)
-    full_response = ""
-    for chunk in client.send_request(selected_model, messages):
-        print(chunk, end="", flush=True)
-        full_response += chunk
-    print("\n")
-
-    # --- Code Execution ---
-    code_blocks = parse_code_blocks(full_response)
-    if code_blocks:
-        print("The assistant proposed the following code to execute:")
-        for i, block in enumerate(code_blocks):
-            print(f"\n--- Code Block {i+1} ({block["language"]}) ---")
-            print(block["code"])
-            print("---------------------------")
-        
-        confirm_exec = input("Execute this code? [y/N] ").lower()
-        if confirm_exec in ["y", "yes"]:
-            for block in code_blocks:
-                if block["language"] == "python":
-                    print(f"\nExecuting Python code...")
-                    exec_result = code_executor.execute_python_code(block["code"])
-                    if exec_result["success"]:
-                        print("Execution successful.")
-                        if exec_result["stdout"]:
-                            print("Stdout:\n" + exec_result["stdout"])
-                        if exec_result["stderr"]:
-                            print("Stderr:\n" + exec_result["stderr"])
-                    else:
-                        print("Execution failed.")
-                        if exec_result["stdout"]:
-                            print("Stdout:\n" + exec_result["stdout"])
-                        if exec_result["stderr"]:
-                            print("Stderr:\n" + exec_result["stderr"])
-                else:
-                    print(f"Execution of {block["language"]} code is not yet supported.")
-
-    # Record usage
-    estimated_tokens_sent = len(str(messages).split()) # Very rough estimate
-    estimated_tokens_received = len(full_response.split()) # Very rough estimate
-    cost_per_token = 0.0 # Placeholder, will get from model_tiers later
-    for t in model_tiers["tiers"][tier]:
-        if t["name"] == selected_model:
-            cost_per_token = t["cost_per_token"]
-            break
-    estimated_cost = (estimated_tokens_sent + estimated_tokens_received) * cost_per_token
-    budget_optimizer.record_usage(selected_model, estimated_tokens_sent, estimated_tokens_received, estimated_cost)
-
-    # --- File Writing with Diff Preview ---
-    modifications = parse_file_modifications(full_response)
-    if modifications:
-        print("The assistant proposed the following changes:")
-        for file_path, new_content in modifications.items():
-            original_content = ""
-            if os.path.exists(file_path):
-                with open(file_path, "r", encoding="utf-8") as f:
-                    original_content = f.read()
-
-            diff = difflib.unified_diff(
-                original_content.splitlines(keepends=True),
-                new_content.splitlines(keepends=True),
-                fromfile=file_path + " (original)",
-                tofile=file_path + " (proposed)"
-            )
-            print(f"\n--- Diff for {file_path} ---")
-            for line in diff:
-                if line.startswith('+'):
-                    print(f"\033[92m{line}\033[0m", end="") # Green
-                elif line.startswith('-'):
-                    print(f"\033[91m{line}\033[0m", end="") # Red
-                elif line.startswith('@'):
-                    print(f"\033[94m{line}\033[0m", end="") # Blue
-                else:
-                    print(line, end="")
-            print("---------------------------")
-        
-        confirm = input("Apply these changes? [y/N] ").lower()
-        if confirm in ["y", "yes"]:
-            for file_path, content in modifications.items():
-                try:
-                    with open(file_path, "w", encoding="utf-8") as f:
-                        f.write(content)
-                    print(f"Applied changes to {file_path}")
-                except Exception as e:
-                    print(f"Error writing to file {file_path}: {e}", file=sys.stderr)
-            # Update the in-memory context as well
-            file_context.update(modifications)
-
 def main():
-    """The main entry point for the Atlas Code V5 agent."""
-    parser = argparse.ArgumentParser(description="Atlas Code V5 - Your AI Coding Assistant")
+    """The main entry point for the Ralex agent."""
+    parser = argparse.ArgumentParser(description="Ralex - Your AI Coding Assistant")
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
 
     # Run command (interactive mode)
-    run_parser = subparsers.add_parser("run", help="Run Atlas Code in interactive mode")
+    run_parser = subparsers.add_parser("run", help="Run Ralex in interactive mode")
 
     # Execute command (non-interactive mode)
     execute_parser = subparsers.add_parser("execute", help="Execute a single task non-interactively")
@@ -414,6 +255,9 @@ def main():
     execute_parser.add_argument("--prompt", required=True, help="The user prompt/description for the task")
     execute_parser.add_argument("--files", nargs='*', help="Space-separated list of files to include in context")
     execute_parser.add_argument("--force-budget", action="store_true", help="Proceed even if budget is exceeded")
+
+    # Analytics command
+    analytics_parser = subparsers.add_parser("analytics", help="Display spending analytics")
 
     # Version argument
     parser.add_argument("--version", action="version", version="%(prog)s 0.1.0", help="Show program's version number and exit")
@@ -433,12 +277,21 @@ def main():
 
     client = OpenRouterClient(api_key, model_tiers)
     semantic_classifier = SemanticClassifier()
-    budget_optimizer = BudgetOptimizer(daily_limit=settings.get("daily_limit"))
+    budget_optimizer = BudgetOptimizer(daily_limit=settings.get("daily_limit"), model_tiers=model_tiers)
 
     if args.command == "run":
         run_interactive_mode(settings, model_tiers, intent_routes, client, semantic_classifier, budget_optimizer)
     elif args.command == "execute":
         run_non_interactive_mode(args, settings, model_tiers, intent_routes, client, semantic_classifier, budget_optimizer)
+    elif args.command == "analytics":
+        print("\n--- Ralex Spending Analytics ---")
+        print("Daily Spending:")
+        for date, amount in budget_optimizer.get_daily_spending().items():
+            print(f"  {date}: ${amount:.2f}")
+        print("\nSpending by Model:")
+        for model, amount in budget_optimizer.get_model_spending().items():
+            print(f"  {model}: ${amount:.2f}")
+        print("------------------------------")
     else:
         parser.print_help()
 
