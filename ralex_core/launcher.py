@@ -136,8 +136,8 @@ def run_interactive_mode(settings, model_tiers, intent_routes, client, semantic_
             budget_status = budget_optimizer.check_budget_status()
             if budget_status["status"] == "warning":
                 print(f"\n⚠️  Budget Warning: You have spent ${budget_status["spent_today"]:.2f} today out of your ${budget_status["daily_limit"]:.2f} daily limit ({budget_status["percentage_used"]:.2f}% used).")
-            elif budget_status["status"] == "exceeded":
-                print(f"\n🚨 Budget Exceeded: You have spent ${budget_status["spent_today"]:.2f} today out of your ${budget_status["daily_limit"]:.2f} daily limit ({budget_status["percentage_used"]:.2f}% used).")
+            elif budget_status["status"] == "exceeded":                print(f"
+🚨 Budget Exceeded: You have spent ${budget_status["spent_today"]:.2f} today out of your ${budget_status["daily_limit"]:.2f} daily limit ({budget_status["percentage_used"]:.2f}% used)."))
                 confirm = input("You have exceeded your daily budget. Proceed anyway? [y/N] ").lower()
                 if confirm != 'y':
                     print("Action cancelled due to budget.")
