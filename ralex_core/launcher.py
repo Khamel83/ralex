@@ -121,9 +121,7 @@ def run_interactive_mode(settings, model_tiers, intent_routes, client, semantic_
 
             tier = intent_routes.get(intent, "default")
             
-            selected_model = None
-            if tier in model_tiers["tiers"] and model_tiers["tiers"][tier]:
-                selected_model = model_tiers["tiers"][tier][0]["name"]
+            selected_model = budget_optimizer.get_cheapest_model_in_tier(tier)
             
             if not selected_model:
                 print(f"Error: No model found for tier '{tier}'. Please check your model_tiers.json and intent_routes.json.", file=sys.stderr)
