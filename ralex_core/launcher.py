@@ -113,15 +113,35 @@ def run_interactive_mode(settings, model_tiers, intent_routes, client, semantic_
             # --- Intent Classification and Model Selection (Task 1.2.1, 1.2.2, 1.2.3, 1.2.4) ---
             # First, try semantic classification
             semantic_intent, confidence = semantic_classifier.classify(user_input)
-            if confidence > 0.7: # Use semantic if confident enough
-                intent = semantic_intent
-            else:
-                # Fallback to keyword-based classification
-                intent = classify_intent(user_input)
-
-            tier = intent_routes.get(intent, "default")
             
-            selected_model = budget_optimizer.get_cheapest_model_in_tier(tier)
+            # Dynamic Tier Downgrade based on Confidence (Task 10.2.1 & 10.2.2)
+            if confidence < 0.6: # If semantic confidence is low
+                # Try to find a cheaper tier that still matches the intent
+                tier_hierarchy = ["diamond", "platinum", "premium", "gold", "standard", "silver", "cheap"]
+                current_tier = intent_routes.get(semantic_intent, "default")
+                current_tier_index = tier_hierarchy.index(current_tier) if current_tier in tier_hierarchy else -1
+
+                for i in range(current_tier_index + 1, len(tier_hierarchy)):
+                    lower_tier = tier_hierarchy[i]
+                    cheapest_in_lower_tier = budget_optimizer.get_cheapest_model_in_tier(lower_tier)
+                    if cheapest_in_lower_tier:
+                        # Check if the lower tier model is significantly cheaper and still reasonable
+                        # For simplicity, we'll just pick the first cheaper one for now
+                        intent = semantic_intent # Keep the semantic intent
+                        tier = lower_tier
+                        selected_model = cheapest_in_lower_tier
+                        print(f"\n💡 Downgrading to {lower_tier} tier ({selected_model}) due to low semantic confidence.")
+                        break
+                else:
+                    # If no suitable lower tier found, stick with original semantic intent
+                    intent = semantic_intent
+                    tier = intent_routes.get(intent, "default")
+                    selected_model = budget_optimizer.get_cheapest_model_in_tier(tier)
+            else:
+                # Use semantic if confident enough
+                intent = semantic_intent
+                tier = intent_routes.get(intent, "default")
+                selected_model = budget_optimizer.get_cheapest_model_in_tier(tier)
             
             if not selected_model:
                 print(f"Error: No model found for tier '{tier}'. Please check your model_tiers.json and intent_routes.json.", file=sys.stderr)
