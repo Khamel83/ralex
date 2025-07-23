@@ -1,0 +1,10 @@
+{
+    "generate": "standard",
+    "edit": "standard",
+    "debug": "premium",
+    "review": "premium",
+    "optimize": "premium",
+    "format": "cheap",
+    "explain": "standard",
+    "default": "standard"
+}

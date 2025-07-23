@@ -1,0 +1,32 @@
+.DS_Store
+.vscode/
+aider.code-workspace
+*.pyc
+.aider*
+aider_chat.egg-info/
+build
+dist/
+Gemfile.lock
+_site
+.jekyll-cache/
+.jekyll-metadata
+aider/__version__.py
+aider/_version.py
+.venv/
+.#*
+.gitattributes
+tmp.benchmarks/
+.docker_bash_history
+
+# Atlas Code V2 specific
+atlas-env/
+atlas-env-v2/
+.env
+.atlas-code/
+*.jsonl
+budget_config.json
+
+# Additional Python
+__pycache__/
+*.py[cod]
+*$py.class
