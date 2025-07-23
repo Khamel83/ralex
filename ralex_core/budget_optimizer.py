@@ -3,9 +3,10 @@ import json
 from datetime import datetime, timedelta
 
 class BudgetOptimizer:
-    def __init__(self, usage_log_path="data/ralex_usage_log.jsonl", daily_limit=None):
+    def __init__(self, usage_log_path="data/ralex_usage_log.jsonl", daily_limit=None, model_tiers=None):
         self.usage_log_path = usage_log_path
         self.daily_limit = daily_limit
+        self.model_tiers = model_tiers if model_tiers is not None else {}
         os.makedirs(os.path.dirname(self.usage_log_path), exist_ok=True)
 
     def record_usage(self, model, tokens_sent, tokens_received, cost):
@@ -71,5 +72,45 @@ class BudgetOptimizer:
             "status": status,
             "spent_today": spent_today,
             "daily_limit": self.daily_limit,
-            "percentage_used": percentage_used
+            "percentage_used": percentage_used,
+            "remaining": self.daily_limit - spent_today if self.daily_limit is not None else float('inf')
         }
+
+    def get_model_cost(self, model_name):
+        """Retrieves the cost per token for a given model."""
+        for tier_name, models in self.model_tiers.get("tiers", {}).items():
+            for model_info in models:
+                if model_info["name"] == model_name:
+                    return model_info["cost_per_token"]
+        return 0.0 # Default to 0 if model not found
+
+    def select_affordable_model(self, preferred_model, preferred_tier, budget_remaining):
+        """Selects the most affordable model within budget, potentially downgrading tiers."""
+        # Try the preferred model first
+        cost_of_preferred = self.get_model_cost(preferred_model)
+        if budget_remaining >= cost_of_preferred:
+            return preferred_model, preferred_tier
+
+        # If preferred model is too expensive, try to downgrade
+        tier_hierarchy = ["diamond", "platinum", "premium", "gold", "standard", "silver", "cheap"]
+        current_tier_index = tier_hierarchy.index(preferred_tier) if preferred_tier in tier_hierarchy else -1
+
+        for i in range(current_tier_index + 1, len(tier_hierarchy)):
+            downgrade_tier = tier_hierarchy[i]
+            if downgrade_tier in self.model_tiers.get("tiers", {}):
+                for model_info in self.model_tiers["tiers"][downgrade_tier]:
+                    model_name = model_info["name"]
+                    model_cost = self.get_model_cost(model_name)
+                    if budget_remaining >= model_cost:
+                        return model_name, downgrade_tier
+        
+        # If no affordable model found, return the cheapest available (even if over budget)
+        cheapest_model = None
+        min_cost = float('inf')
+        for tier_name, models in self.model_tiers.get("tiers", {}).items():
+            for model_info in models:
+                if model_info["cost_per_token"] < min_cost:
+                    min_cost = model_info["cost_per_token"]
+                    cheapest_model = model_info["name"]
+        
+        return cheapest_model, "cheap" # Return cheapest and its tier (default to cheap)
