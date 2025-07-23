@@ -4,7 +4,18 @@ import tempfile
 import os
 import time
 
-class CodeExecutor:
+from ralex_core.executors.base import CodeExecutor as BaseCodeExecutor
+
+class CodeExecutor(BaseCodeExecutor):
+    def execute(self, code: str, language: str = "python") -> dict:
+        if language == "python":
+            return self.execute_python_code(code)
+        else:
+            return {"success": False, "stdout": "", "stderr": f"Language {language} not supported by local executor."}
+
+    def is_available(self) -> bool:
+        return True # Local executor is always available
+
     def execute_python_code(self, code: str, timeout: int = 10) -> dict:
         """Executes Python code in a temporary directory with a timeout and captures stdout/stderr."""
         with tempfile.TemporaryDirectory() as tmpdir:
