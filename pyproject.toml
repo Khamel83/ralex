@@ -1,7 +1,7 @@
 
 [project]
-name = "aider-chat"
-description = "Aider is AI pair programming in your terminal"
+name = "ralex"
+description = "Ralex: Terminal-native AI coding assistant with intelligent routing"
 readme = "README.md"
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -16,35 +16,29 @@ classifiers = [
     "Topic :: Software Development",
 ]
 requires-python = ">=3.10,<3.13"
-dynamic = ["dependencies", "optional-dependencies", "version"]
+dynamic = ["dependencies", "version"]
 
 [project.urls]
-Homepage = "https://github.com/Aider-AI/aider"
+Homepage = "https://github.com/Khamel83/ralex"
 
 [project.scripts]
-aider = "aider.main:main"
+ralex = "ralex_core.launcher:main"
 
 [tool.setuptools.dynamic]
 dependencies = { file = "requirements.txt" }
-
-[tool.setuptools.dynamic.optional-dependencies]
-dev = { file = "requirements/requirements-dev.txt" }
-help = { file = "requirements/requirements-help.txt" }
-browser = { file = "requirements/requirements-browser.txt" }
-playwright = { file = "requirements/requirements-playwright.txt" }
 
 [tool.setuptools]
 include-package-data = true
 
 [tool.setuptools.packages.find]
-include = ["aider"]
+include = ["ralex_core"]
 
 [build-system]
 requires = ["setuptools>=68", "setuptools_scm[toml]>=8"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools_scm]
-write_to = "aider/_version.py"
+write_to = "ralex_core/_version.py"
 
 [tool.codespell]
 skip = "*.svg,Gemfile.lock,tests/fixtures/*,ralex/website/assets/*"

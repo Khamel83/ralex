@@ -1,2 +1,7 @@
 requests
 sentence-transformers
+openai
+ruff
+black
+isort
+pytest
