@@ -6,6 +6,7 @@ import re
 import json
 import difflib
 import argparse
+from collections import defaultdict
 
 from ralex_core.openrouter_client import OpenRouterClient
 from ralex_core.semantic_classifier import SemanticClassifier
@@ -398,3 +399,50 @@ def run_non_interactive_mode(args, settings, model_tiers, intent_routes, client,
                     print(f"Error writing to file {file_path}: {e}", file=sys.stderr)
             # Update the in-memory context as well
             file_context.update(modifications)
+
+def main():
+    """The main entry point for the Atlas Code V5 agent."""
+    parser = argparse.ArgumentParser(description="Atlas Code V5 - Your AI Coding Assistant")
+    subparsers = parser.add_subparsers(dest="command", help="Available commands")
+
+    # Run command (interactive mode)
+    run_parser = subparsers.add_parser("run", help="Run Atlas Code in interactive mode")
+
+    # Execute command (non-interactive mode)
+    execute_parser = subparsers.add_parser("execute", help="Execute a single task non-interactively")
+    execute_parser.add_argument("--intent", required=True, help="The intent of the task (e.g., generate, edit, debug)")
+    execute_parser.add_argument("--prompt", required=True, help="The user prompt/description for the task")
+    execute_parser.add_argument("--files", nargs='*', help="Space-separated list of files to include in context")
+    execute_parser.add_argument("--force-budget", action="store_true", help="Proceed even if budget is exceeded")
+
+    # Version argument
+    parser.add_argument("--version", action="version", version="%(prog)s 0.1.0", help="Show program's version number and exit")
+
+    args = parser.parse_args()
+
+    api_key = os.getenv("OPENROUTER_API_KEY")
+    if not api_key:
+        print("Error: The OPENROUTER_API_KEY environment variable is not set.", file=sys.stderr)
+        print("Please get a key from https://openrouter.ai/ and set the environment variable.", file=sys.stderr)
+        sys.exit(1)
+
+    config_dir = os.path.join(os.path.dirname(__file__), "..", "config")
+    settings = load_config(os.path.join(config_dir, "settings.json"))
+    model_tiers = load_config(os.path.join(config_dir, "model_tiers.json"))
+    intent_routes = load_config(os.path.join(config_dir, "intent_routes.json"))
+
+    client = OpenRouterClient(api_key, model_tiers)
+    semantic_classifier = SemanticClassifier()
+    budget_optimizer = BudgetOptimizer(daily_limit=settings.get("daily_limit"))
+
+    if args.command == "run":
+        run_interactive_mode(settings, model_tiers, intent_routes, client, semantic_classifier, budget_optimizer)
+    elif args.command == "execute":
+        run_non_interactive_mode(args, settings, model_tiers, intent_routes, client, semantic_classifier, budget_optimizer)
+    else:
+        parser.print_help()
+
+    print("\nGoodbye!")
+
+if __name__ == "__main__":
+    main()
