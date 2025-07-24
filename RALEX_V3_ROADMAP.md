@@ -150,44 +150,35 @@ socket.on('budget_update', (data) => {
 
 ---
 
-## 📋 **Phase 3: Deployment Setup (1 day)**
+## 📋 **Phase 3: Deployment Setup (30 minutes!)**
 
-### 3.1 **Squarespace DNS Configuration**
-Since you already own domains through Squarespace, here's how to point one to your RPI:
+### 🚀 **Tailscale Deployment (MUCH EASIER)**
+Since your RPI already runs Tailscale, this is incredibly simple:
 
-**Step 1: Get your RPI's public IP**
+### 3.1 **Enable Tailscale HTTPS (2 minutes)**
 ```bash
-curl ipinfo.io/ip  # Note this IP address
+# On your RPI, get Tailscale certificates
+sudo tailscale cert $(tailscale status --json | jq -r '.Self.DNSName')
+
+# Note your Tailscale hostname (something like: rpi3.your-tailnet.ts.net)
+tailscale status --json | jq -r '.Self.DNSName'
 ```
 
-**Step 2: Configure Squarespace DNS**
-1. Log into your Squarespace account
-2. Go to Settings → Domains → [Your Domain] → DNS Settings
-3. Add these DNS records:
-
-```
-Type: A Record
-Host: ralex (creates ralex.yourdomain.com)
-Points to: [Your RPI's Public IP from Step 1]
-TTL: 300
-
-Type: A Record  
-Host: @ (creates yourdomain.com - optional)
-Points to: [Your RPI's Public IP]
-TTL: 300
-```
-
-**Step 3: Router Port Forwarding**
-On your home router, forward port 80 and 443 to your RPI:
-- External Port: 80 → Internal IP: [RPI Local IP] → Internal Port: 80
-- External Port: 443 → Internal IP: [RPI Local IP] → Internal Port: 443
-
-### 3.2 **RPI + Nginx Configuration**
+### 3.2 **Nginx Configuration (5 minutes)**
 ```nginx
 # /etc/nginx/sites-available/ralex
 server {
-    listen 80;
-    server_name ralex.yourdomain.com;  # Use your actual domain
+    listen 443 ssl http2;
+    server_name $(your-rpi-name).$(your-tailnet).ts.net;  # From step 3.1
+    
+    # Tailscale auto-managed certificates
+    ssl_certificate /var/lib/tailscale/certs/$(your-hostname).crt;
+    ssl_certificate_key /var/lib/tailscale/certs/$(your-hostname).key;
+    
+    # Security headers
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+    add_header X-Frame-Options DENY always;
+    add_header X-Content-Type-Options nosniff always;
     
     location / {
         proxy_pass http://localhost:5000;
@@ -195,27 +186,73 @@ server {
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';
         proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
         proxy_cache_bypass $http_upgrade;
     }
+    
+    # WebSocket support for real-time features
+    location /socket.io/ {
+        proxy_pass http://localhost:5000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+
+# Redirect HTTP to HTTPS
+server {
+    listen 80;
+    server_name $(your-rpi-name).$(your-tailnet).ts.net;
+    return 301 https://$server_name$request_uri;
 }
 ```
 
-### 3.3 **SSL Certificate (Let's Encrypt)**
+### 3.3 **Enable Site (3 minutes)**
 ```bash
-# Install certbot
-sudo apt install certbot python3-certbot-nginx
-
-# Enable nginx site
+# Enable the site
 sudo ln -s /etc/nginx/sites-available/ralex /etc/nginx/sites-enabled/
+
+# Test configuration
 sudo nginx -t
-sudo systemctl reload nginx
 
-# Get SSL certificate (replace with your actual domain)
-sudo certbot --nginx -d ralex.yourdomain.com
+# Restart nginx
+sudo systemctl restart nginx
 
-# Verify auto-renewal
-sudo certbot renew --dry-run
+# Enable nginx to start on boot
+sudo systemctl enable nginx
 ```
+
+### 🎯 **Tailscale Advantages**
+- ✅ **No DNS setup needed** (no Squarespace config)
+- ✅ **No router port forwarding** (no security exposure)
+- ✅ **Automatic HTTPS** (Tailscale manages certificates)
+- ✅ **Works from anywhere** (any device with Tailscale)
+- ✅ **Zero ongoing maintenance** (certificates auto-renew)
+- ✅ **Built-in security** (only your devices can access)
+
+### 📱 **Phone Access Setup**
+1. **Install Tailscale** on your phone (if not already)
+2. **Connect to your tailnet**
+3. **Visit**: `https://your-rpi-name.your-tailnet.ts.net`
+4. **Start voice coding!** 🎤
+
+### 🌐 **Alternative: Public Access (Optional)**
+If you want public access (not just your devices), you can still use your Squarespace domains:
+
+**Option A: Tailscale Serve (Beta)**
+```bash
+# Expose to public internet via Tailscale
+tailscale serve https:443 http://localhost:5000
+```
+
+**Option B: Traditional Public Setup**
+Use the original Squarespace DNS + Let's Encrypt method from the appendix below.
 
 ### 3.3 **Systemd Service**
 ```ini
@@ -364,37 +401,87 @@ def start_budget_challenge(amount: float, task: str):
    - Voice button and visual feedback
    - Handle voice input errors gracefully
 
-4. **Deployment Setup** (2-3 hours)
+4. **Tailscale Deployment** (30 minutes!)
+   - Enable Tailscale HTTPS certificates
    - Configure nginx reverse proxy
-   - Set up Squarespace DNS records
-   - Install SSL certificates
    - Create systemd service
 
-**Total Development Time: 11-16 hours (2-3 weekends)**
+**Total Development Time: 9-13 hours (2 weekends!)**
 
 ### **Non-Programming Work**
-- **DNS Configuration**: 15 minutes (Squarespace settings)
-- **Router Port Forwarding**: 10 minutes (one-time setup)
-- **Domain Decision**: Which of your 2 domains to use for ralex
+- **Install Tailscale on phone**: 2 minutes (if not already installed)
+- **Connect to tailnet**: 30 seconds
 
 ### **Technical Complexity Level**
 - **Backend**: Medium (extending existing Flask patterns)
-- **Frontend**: Easy-Medium (mostly HTML/JS, proven patterns)
-- **Deployment**: Easy (well-documented nginx + certbot process)
+- **Frontend**: Easy-Medium (mostly HTML/JS, proven patterns)  
+- **Deployment**: Super Easy (Tailscale handles everything)
 - **Voice API**: Easy (browser built-in Web Speech API)
 
 ### **What You Get**
-After 2-3 weekends of work:
-- ✅ **Voice-to-text coding** from your phone anywhere
+After 2 weekends of work:
+- ✅ **Voice-to-text coding** from your phone anywhere with Tailscale
 - ✅ **Real-time budget conversations** ("here's $1, see what you can do")
-- ✅ **Web access** from any device via your domain
+- ✅ **Secure HTTPS access** from any of your Tailscale devices
 - ✅ **Perfect mobile experience** for "vibe coding"
 - ✅ **All existing V2 functionality** preserved
-- ✅ **Professional HTTPS setup** with auto-renewing certificates
+- ✅ **Zero-config HTTPS** with auto-renewing Tailscale certificates
+- ✅ **Enterprise-grade security** (no public internet exposure)
 
 ### **Ongoing Maintenance**
-- **Almost zero** - certbot auto-renews SSL certificates
+- **Literally zero** - Tailscale manages everything
 - **Your RPI** handles everything locally
-- **No monthly fees** beyond your existing domain registration
+- **No monthly fees** (free Tailscale tier covers this)
+- **No certificate renewals** (Tailscale handles automatically)
+- **No DNS management** (Tailscale provides stable hostnames)
 
 **Ready to build your dream voice-driven coding interface! 🚀**
+
+---
+
+## 📎 **Appendix: Public Access via Squarespace (Optional)**
+
+If you want public internet access (not just your Tailscale devices), here's the original method:
+
+### **Squarespace DNS Configuration**
+**Step 1: Get your RPI's public IP**
+```bash
+curl ipinfo.io/ip  # Note this IP address
+```
+
+**Step 2: Configure Squarespace DNS**
+1. Log into your Squarespace account
+2. Go to Settings → Domains → [Your Domain] → DNS Settings
+3. Add these DNS records:
+
+```
+Type: A Record
+Host: ralex (creates ralex.yourdomain.com)
+Points to: [Your RPI's Public IP from Step 1]
+TTL: 300
+```
+
+**Step 3: Router Port Forwarding**
+On your home router, forward ports to your RPI:
+- External Port: 80 → Internal IP: [RPI Local IP] → Internal Port: 80
+- External Port: 443 → Internal IP: [RPI Local IP] → Internal Port: 443
+
+**Step 4: Let's Encrypt SSL**
+```bash
+# Install certbot
+sudo apt install certbot python3-certbot-nginx
+
+# Get SSL certificate (replace with your actual domain)
+sudo certbot --nginx -d ralex.yourdomain.com
+
+# Verify auto-renewal
+sudo certbot renew --dry-run
+```
+
+### **Why Tailscale is Better**
+- **Security**: No public internet exposure
+- **Simplicity**: No DNS, port forwarding, or certificate management
+- **Reliability**: No dependency on home internet static IP
+- **Cost**: Free vs potential static IP fees
+
+**Recommendation**: Start with Tailscale method, add public access later if needed.
