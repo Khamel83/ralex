@@ -12,6 +12,7 @@ from ralex_core.openrouter_client import OpenRouterClient
 from ralex_core.semantic_classifier import SemanticClassifier
 from ralex_core.budget_optimizer import BudgetOptimizer
 from ralex_core.code_executor import CodeExecutor
+from ralex_core.agentos_integration import AgentOSIntegration
 
 def parse_file_modifications(response_text):
     """Parses the LLM response to find file modification blocks."""
@@ -66,15 +67,36 @@ def run_interactive_mode(settings, model_tiers, intent_routes, client, semantic_
     file_context = {}
     conversation_history = []
     code_executor = CodeExecutor()
-
-    print("Welcome to Ralex!")
+    agentos = AgentOSIntegration()
+    
+    # Track breakdown state for multi-step execution
+    current_breakdown = None
+    current_analysis = ""
+    
+    print("Welcome to Ralex with AgentOS Integration!")
     print("Type /add <file_path> to add a file to context, or /exit to quit.")
+    print("AgentOS slash commands:", ", ".join(agentos.get_slash_commands().keys()))
 
     while True:
         try:
             user_input = input("> ")
             if user_input.lower() in ["/exit", "/quit"]:
                 break
+
+            # --- AgentOS Slash Commands ---
+            if user_input.startswith("/") and not user_input.startswith("/add"):
+                parts = user_input.split(" ", 1)
+                command = parts[0]
+                args = parts[1] if len(parts) > 1 else ""
+                
+                if command in agentos.get_slash_commands():
+                    result = agentos.handle_slash_command(command, args)
+                    print(result)
+                    continue
+                else:
+                    print(f"Unknown command: {command}")
+                    print("Available commands:", ", ".join(agentos.get_slash_commands().keys()))
+                    continue
 
             # --- File Context Management (Task 2.3.1, 2.3.2, 2.3.3) ---
             if user_input.startswith("/add "):
@@ -90,28 +112,53 @@ def run_interactive_mode(settings, model_tiers, intent_routes, client, semantic_
                         print(f"Error reading file: {e}", file=sys.stderr)
                 continue
 
-            # --- LLM Integration (Task 2.4.1, 2.4.2, 2.4.3) ---
+            # --- AgentOS Smart Prompt Structuring ---
             if not file_context:
                 print("Please add at least one file to the context with /add <file_path>", file=sys.stderr)
                 continue
 
-            # Prepare the messages for the LLM
-            messages = []
-            context_str = "\n".join([f"--- {path} ---\n{content}" for path, content in file_context.items()])
-            system_prompt = (
-                f"You are an expert programmer. The user has provided the following file(s) as context:\n\n{context_str}\n\n"
-                "When you provide code to modify a file, you MUST use the following format, including the file path:\n"
-                "```path/to/your/file.py\n"
-                "# Your code here\n"
-                "```\n"
-                "You can provide multiple blocks for multiple files."
-            )
-            messages.append({"role": "system", "content": system_prompt})
-            messages.extend(conversation_history) # Add previous conversation
-            messages.append({"role": "user", "content": user_input})
+            # Use AgentOS to structure the prompt for cost optimization
+            breakdown = agentos.structure_smart_prompt(user_input, file_context)
+            
+            print(f"\n🧠 AgentOS Analysis:")
+            print(f"   Complexity: {breakdown.complexity}")
+            print(f"   Estimated cost: ${breakdown.estimated_cost:.4f}")
+            
+            if breakdown.complexity == "low":
+                # Simple task - go straight to cheap execution
+                print("   Strategy: Direct execution (cheap model)")
+                
+                execution_prompt = agentos.create_execution_prompt(
+                    breakdown.execution_tasks[0], 
+                    file_context
+                )
+                
+                messages = [{"role": "user", "content": execution_prompt}]
+                selected_model = budget_optimizer.get_cheapest_model_in_tier("cheap")
+                tier = "cheap"
+                intent = "simple"
+                
+            else:
+                # Complex task - needs expensive analysis first
+                print("   Strategy: Analysis first (smart model), then execution (cheap models)")
+                
+                if current_breakdown is None:
+                    # Step 1: Expensive analysis
+                    print("   Phase: ANALYSIS (using smart model)")
+                    
+                    messages = [{"role": "user", "content": breakdown.analysis_prompt}]
+                    selected_model = budget_optimizer.get_cheapest_model_in_tier("premium")
+                    tier = "premium"
+                    intent = "analysis"
+                    
+                else:
+                    # Step 2+: Cheap execution of specific tasks
+                    print(f"   Phase: EXECUTION task {len(current_breakdown.execution_tasks) + 1}")
+                    
+                    # This will be handled after we get the analysis response
+                    pass
 
-            # --- Intent Classification and Model Selection (Task 1.2.1, 1.2.2, 1.2.3, 1.2.4) ---
-            # First, try semantic classification
+            # --- Intent Classification for fallback ---
             semantic_intent, confidence = semantic_classifier.classify(user_input)
             
             # Dynamic Tier Downgrade based on Confidence (Task 10.2.1 & 10.2.2)
@@ -172,6 +219,57 @@ def run_interactive_mode(settings, model_tiers, intent_routes, client, semantic_
                 print(chunk, end="", flush=True)
                 full_response += chunk
             print("\n")
+
+            # --- AgentOS Breakdown Processing ---
+            if breakdown.complexity != "low" and intent == "analysis":
+                # We just completed the expensive analysis - extract tasks for cheap execution
+                print("\n🔍 AgentOS Processing Analysis...")
+                execution_tasks = agentos.parse_task_breakdown(full_response)
+                
+                if execution_tasks:
+                    print(f"✅ Extracted {len(execution_tasks)} execution tasks:")
+                    for i, task in enumerate(execution_tasks, 1):
+                        print(f"   {i}. {task[:80]}...")
+                    
+                    breakdown.execution_tasks = execution_tasks
+                    current_breakdown = breakdown
+                    current_analysis = full_response
+                    
+                    print("\n💡 Next: Use cheap models to execute these tasks.")
+                    print("   Type 'execute next' to run the first task, or continue with other requests.")
+                else:
+                    print("⚠️  Could not extract clear tasks from analysis. Proceeding with normal execution.")
+
+            # Handle execution task requests
+            if user_input.lower() in ["execute next", "next", "continue"] and current_breakdown and current_breakdown.execution_tasks:
+                # Execute the next task with a cheap model
+                next_task = current_breakdown.execution_tasks.pop(0)
+                print(f"\n🚀 Executing task: {next_task}")
+                
+                execution_prompt = agentos.create_execution_prompt(next_task, file_context, current_analysis)
+                execution_messages = [{"role": "user", "content": execution_prompt}]
+                
+                # Override to use cheap model
+                selected_model = budget_optimizer.get_cheapest_model_in_tier("cheap")
+                tier = "cheap"
+                intent = "execution"
+                
+                print(f"Assistant (executing with {selected_model}):", end="", flush=True)
+                execution_response = ""
+                for chunk in client.send_request(selected_model, execution_messages):
+                    print(chunk, end="", flush=True)
+                    execution_response += chunk
+                print("\n")
+                
+                # Replace full_response for downstream processing
+                full_response = execution_response
+                
+                if not current_breakdown.execution_tasks:
+                    print("✅ All execution tasks completed!")
+                    current_breakdown = None
+                    current_analysis = ""
+                else:
+                    print(f"📝 {len(current_breakdown.execution_tasks)} tasks remaining. Type 'next' to continue.")
 
             # --- Code Execution (Task 6.1.3 & 6.1.4) ---
             code_blocks = parse_code_blocks(full_response)
