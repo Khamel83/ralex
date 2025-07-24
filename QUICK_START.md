@@ -13,11 +13,13 @@
 
 ### 1. Get OpenRouter API Key
 1. Go to [https://openrouter.ai/](https://openrouter.ai/)
-2. Sign up (free)
-3. Get your API key
-4. Set it in your terminal:
+2. Sign up (free - just need email)
+3. Go to Keys tab → Create new key
+4. Copy your API key
+5. Set it in your terminal:
 ```bash
 export OPENROUTER_API_KEY="your-key-here"
+echo "export OPENROUTER_API_KEY='your-key-here'" >> ~/.bashrc
 ```
 
 ### 2. Have Python 3.10+ and Git
