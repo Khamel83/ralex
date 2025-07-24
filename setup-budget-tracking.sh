@@ -16,12 +16,18 @@ fi
 
 echo "✅ OpenRouter API key found: ${OPENROUTER_API_KEY:0:8}..."
 
-# Install LiteLLM with proxy support
+# Create clean virtual environment
+if [ -d ".ralex-env" ]; then
+    echo "🧹 Cleaning existing environment..."
+    rm -rf .ralex-env
+fi
+
+echo "🐍 Creating virtual environment..."
+python3 -m venv .ralex-env
+
 echo "📦 Installing LiteLLM..."
-pip install 'litellm[proxy]' || {
-    echo "⚠️ pip install failed, trying with --user flag"
-    pip install --user 'litellm[proxy]'
-}
+.ralex-env/bin/pip install --upgrade pip
+.ralex-env/bin/pip install 'litellm[proxy]'
 
 # Set budget environment variables (LiteLLM built-in)
 echo "💰 Configuring budget tracking..."
@@ -30,7 +36,7 @@ export LITELLM_BUDGET_DURATION="1d"
 
 # Test LiteLLM installation
 echo "🧪 Testing LiteLLM installation..."
-python3 -c "import litellm; print(f'LiteLLM version: {litellm.__version__}')" || {
+.ralex-env/bin/python -c "import litellm; print(f'LiteLLM version: {litellm.__version__}')" || {
     echo "❌ LiteLLM import failed"
     exit 1
 }
@@ -65,7 +71,7 @@ if [ -z "$OPENROUTER_API_KEY" ]; then
 fi
 
 # Start LiteLLM proxy with budget config
-litellm --config litellm_budget_config.yaml --port 4000 --num_workers 1 &
+.ralex-env/bin/litellm --config litellm_budget_config.yaml --port 4000 --num_workers 1 &
 PROXY_PID=$!
 
 # Wait for startup
