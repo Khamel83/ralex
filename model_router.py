@@ -1,5 +1,5 @@
 """
-Intelligent Model Router for Atlas Code V2
+Intelligent Model Router for Ralex V2
 
 Provides AI-powered task classification and cost-aware model selection
 using OpenRouter's API for dynamic routing decisions.
@@ -95,7 +95,7 @@ class IntelligentModelRouter:
         headers = {
             "Authorization": f"Bearer {api_key}",
             "Content-Type": "application/json",
-            "HTTP-Referer": "https://github.com/Khamel83/atlas-code",
+            "HTTP-Referer": "https://github.com/Khamel83/ralex",
             "X-Title": "Ralex V2"
         }
         

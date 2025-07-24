@@ -1,5 +1,5 @@
 """
-Code Formatter for Atlas Code V5
+Code Formatter for Ralex V2
 
 Multi-language code formatting with support for popular formatters
 and consistent style enforcement.

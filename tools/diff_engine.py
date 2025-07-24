@@ -1,5 +1,5 @@
 """
-Diff Engine for Atlas Code V5
+Diff Engine for Ralex V2
 
 Unified diff generation, patching, and intelligent code comparison
 with support for multiple diff formats and visualization.

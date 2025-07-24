@@ -1,5 +1,5 @@
 """
-Security Sandbox for Atlas Code V5
+Security Sandbox for Ralex V2
 
 Provides safe code execution with comprehensive sandboxing,
 import restrictions, and resource limits.

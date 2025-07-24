@@ -1,6 +1,6 @@
-# Contributing to Atlas Code V5
+# Contributing to Ralex V2
 
-Thank you for your interest in contributing to Atlas Code V5! To ensure a smooth and consistent development process, please adhere to the following guidelines.
+Thank you for your interest in contributing to Ralex V2! To ensure a smooth and consistent development process, please adhere to the following guidelines.
 
 ## Development Philosophy
 

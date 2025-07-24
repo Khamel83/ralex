@@ -1,5 +1,5 @@
 """
-Hybrid Intelligence Router for Atlas Code V5
+Hybrid Intelligence Router for Ralex V2
 
 Combines AI classification, semantic routing, and pattern matching
 for maximum accuracy and 100% uptime.

@@ -357,6 +357,12 @@ def run_interactive_mode(settings, model_tiers, intent_routes, client, semantic_
                     # Update the in-memory context as well
                     file_context.update(modifications)
 
+        except KeyboardInterrupt:
+            print("\nExiting Ralex...")
+            break
+        except Exception as e:
+            print(f"Error: {e}", file=sys.stderr)
+
 def main():
     """The main entry point for the Ralex agent."""
     parser = argparse.ArgumentParser(description="Ralex - Your AI Coding Assistant")

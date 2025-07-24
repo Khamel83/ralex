@@ -1,5 +1,5 @@
 """
-Test Runner for Atlas Code V5
+Test Runner for Ralex V2
 
 Multi-framework test execution with support for popular testing frameworks
 and intelligent test discovery.

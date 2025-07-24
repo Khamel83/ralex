@@ -1,5 +1,5 @@
 """
-Simple Budget Manager for Atlas Code V2
+Simple Budget Manager for Ralex V2
 
 Provides basic budget tracking and cost estimation without
 the complexity of the V1 system.
@@ -28,7 +28,7 @@ class UsageRecord:
 
 class BudgetManager:
     """
-    Simple budget tracking that works as a wrapper around Aider.
+    Simple budget tracking that works as a wrapper around OpenRouter.
     Tracks spending and provides warnings without blocking functionality.
     """
     
@@ -39,13 +39,13 @@ class BudgetManager:
         
         Args:
             daily_limit: Daily spending limit in USD (None for no limit)
-            data_dir: Directory to store usage data (defaults to ~/.atlas-code)
+            data_dir: Directory to store usage data (defaults to ~/.ralex)
         """
         self.daily_limit = daily_limit
         if isinstance(data_dir, str):
             self.data_dir = Path(data_dir)
         else:
-            self.data_dir = data_dir or Path.home() / ".atlas-code"
+            self.data_dir = data_dir or Path.home() / ".ralex"
         self.data_dir.mkdir(exist_ok=True)
         
         self.usage_file = self.data_dir / "usage.jsonl"

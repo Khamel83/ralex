@@ -1,5 +1,5 @@
 """
-File Context Manager for Atlas Code V5
+File Context Manager for Ralex V2
 
 Intelligent file loading, context management, and code analysis
 with support for multiple programming languages and project structures.

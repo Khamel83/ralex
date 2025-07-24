@@ -1,5 +1,5 @@
 """
-Code Linter for Atlas Code V5
+Code Linter for Ralex V2
 
 Multi-language syntax validation and error detection with support
 for popular linting tools and built-in basic validation.

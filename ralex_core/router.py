@@ -1,5 +1,5 @@
 """
-Smart Model Router for Atlas Code V2
+Smart Model Router for Ralex V2
 
 Implements the 4-tier model system with intelligent routing based on:
 - Task complexity and type
@@ -225,7 +225,7 @@ class ModelRouter:
             prefer_free: Whether to prefer free models when available
             
         Returns:
-            Model name string for use with Aider
+            Model name string for use with OpenRouter
         """
         tier_models = self.get_models_for_tier(tier)
         

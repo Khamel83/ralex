@@ -1,5 +1,5 @@
 """
-Memory Manager for Atlas Code V5
+Memory Manager for Ralex V2
 
 Lightweight memory management for conversation history, context persistence,
 and intelligent context window optimization.
