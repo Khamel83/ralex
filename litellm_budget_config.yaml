@@ -1,0 +1,138 @@
+# LiteLLM Budget-Aware Configuration for Ralex V2
+# Zero custom coding required - all budget features built-in!
+
+general_settings:
+  # Budget management (built-in feature)
+  budget_manager: true
+  max_budget: 5.00  # $5 daily limit
+  budget_duration: "1d"  # Reset every day
+  
+  # Alert thresholds (automatic)
+  budget_alerts:
+    - threshold: 2.50  # 50% used
+      action: "log"
+      message: "💰 Budget 50% used - consider cheaper models"
+    - threshold: 4.00  # 80% used  
+      action: "log"
+      message: "⚠️ Budget 80% used - switching to cheap models only"
+    - threshold: 4.80  # 96% used
+      action: "log" 
+      message: "🚨 Budget 96% used - blocking expensive requests"
+    - threshold: 5.00  # 100% used
+      action: "block"
+      message: "❌ Daily budget exceeded - requests blocked until reset"
+
+# Model definitions with cost tracking
+model_list:
+  # Cheap model for simple tasks
+  - model_name: "cheap"
+    litellm_params:
+      model: "openrouter/google/gemini-flash-1.5"
+      api_base: "https://openrouter.ai/api/v1"
+      api_key: "os.environ/OPENROUTER_API_KEY"
+      max_tokens: 1000
+      temperature: 0.3
+    model_info:
+      mode: "chat"
+      cost_per_token: 0.000001  # Automatic cost tracking
+      
+  # Smart model for complex tasks  
+  - model_name: "smart"
+    litellm_params:
+      model: "openrouter/anthropic/claude-3.5-sonnet"
+      api_base: "https://openrouter.ai/api/v1"
+      api_key: "os.environ/OPENROUTER_API_KEY"
+      max_tokens: 4000
+      temperature: 0.1
+    model_info:
+      mode: "chat"
+      cost_per_token: 0.000015  # Automatic cost tracking
+      
+  # Ultra-cheap for yolo mode
+  - model_name: "yolo"
+    litellm_params:
+      model: "openrouter/google/gemini-flash-1.5"
+      api_base: "https://openrouter.ai/api/v1"
+      api_key: "os.environ/OPENROUTER_API_KEY"
+      max_tokens: 500  # Limit tokens for speed/cost
+      temperature: 0.5
+    model_info:
+      mode: "chat" 
+      cost_per_token: 0.000001
+
+# Smart routing with budget awareness
+router_settings:
+  routing_strategy: "cost-based-routing"
+  enable_pre_call_checks: true  # Check budget before each request
+  
+  # Automatic routing rules (pattern-based)
+  routing_rules:
+    # Simple/quick tasks → cheap model
+    - pattern: "fix|typo|simple|quick|small|format"
+      model: "cheap"
+      max_cost_per_request: 0.001
+      description: "Simple fixes and quick tasks"
+    
+    # Complex tasks → smart model (when budget allows)
+    - pattern: "refactor|analyze|complex|architecture|design|review"
+      model: "smart"
+      max_cost_per_request: 0.01
+      description: "Complex tasks requiring reasoning"
+      
+    # Yolo mode → ultra-fast cheap model
+    - pattern: "yolo|urgent|fast|now|quick"
+      model: "yolo" 
+      max_cost_per_request: 0.0005
+      description: "Yolo mode - speed over everything"
+      
+  # Budget-aware fallback strategy
+  fallbacks:
+    # Normal budget: try cheap first, fallback to smart
+    - ["cheap", "smart"]
+    
+  # Budget-based routing (automatic cost optimization)
+  budget_based_routing:
+    # Healthy budget (>$2.00 remaining)
+    - budget_remaining: "> 2.00"
+      preferred_models: ["cheap", "smart"]
+      routing_strategy: "cost-based-routing"
+      
+    # Low budget ($0.50-$2.00 remaining)  
+    - budget_remaining: "> 0.50"
+      preferred_models: ["cheap", "yolo"]
+      routing_strategy: "lowest-cost"
+      
+    # Critical budget (<$0.50 remaining)
+    - budget_remaining: "< 0.50"
+      preferred_models: ["yolo"]
+      routing_strategy: "lowest-cost"
+      max_tokens: 200  # Emergency token limit
+
+# Built-in monitoring and logging
+litellm_settings:
+  # Automatic cost tracking
+  success_callback: ["budget_tracker", "cost_logger"]
+  failure_callback: ["budget_tracker"]
+  
+  # Request logging for analytics
+  set_verbose: true
+  debug: false
+  
+  # Health check endpoint
+  health_check: true
+  
+  # Built-in metrics collection
+  collect_metrics: true
+  
+# Proxy server settings  
+proxy_settings:
+  port: 4000
+  host: "127.0.0.1"
+  
+  # Budget status endpoints (built-in)
+  enable_health_endpoint: true    # GET /health
+  enable_budget_endpoint: true    # GET /budget  
+  enable_metrics_endpoint: true   # GET /metrics
+  
+  # CORS for web interfaces
+  cors_origins: ["*"]
