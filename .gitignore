@@ -18,11 +18,13 @@ aider/_version.py
 tmp.benchmarks/
 .docker_bash_history
 
-# Atlas Code V2 specific
+# Ralex V2 specific
 atlas-env/
 atlas-env-v2/
+.ralex-env/
 .env
 .atlas-code/
+.ralex/
 *.jsonl
 budget_config.json
 
