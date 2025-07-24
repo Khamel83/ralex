@@ -2,6 +2,8 @@
 
 **An intelligent, cost-effective, and privacy-focused agent that lives in your terminal.**
 
+> **📋 For LLMs & Developers**: Please read [CLAUDE.md](CLAUDE.md) for complete project documentation, architecture insights, and strategic recommendations.
+
 Ralex is a standalone coding assistant that runs entirely in your terminal. It uses a sophisticated semantic routing system to understand your requests and dispatch them to the most appropriate large language model via OpenRouter. The agent's logic is designed to be modular and extensible, inspired by the AgentOS framework.
 
 ## Why Use Ralex?
