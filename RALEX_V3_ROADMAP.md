@@ -152,12 +152,42 @@ socket.on('budget_update', (data) => {
 
 ## 📋 **Phase 3: Deployment Setup (1 day)**
 
-### 3.1 **RPI + Nginx Configuration**
+### 3.1 **Squarespace DNS Configuration**
+Since you already own domains through Squarespace, here's how to point one to your RPI:
+
+**Step 1: Get your RPI's public IP**
+```bash
+curl ipinfo.io/ip  # Note this IP address
+```
+
+**Step 2: Configure Squarespace DNS**
+1. Log into your Squarespace account
+2. Go to Settings → Domains → [Your Domain] → DNS Settings
+3. Add these DNS records:
+
+```
+Type: A Record
+Host: ralex (creates ralex.yourdomain.com)
+Points to: [Your RPI's Public IP from Step 1]
+TTL: 300
+
+Type: A Record  
+Host: @ (creates yourdomain.com - optional)
+Points to: [Your RPI's Public IP]
+TTL: 300
+```
+
+**Step 3: Router Port Forwarding**
+On your home router, forward port 80 and 443 to your RPI:
+- External Port: 80 → Internal IP: [RPI Local IP] → Internal Port: 80
+- External Port: 443 → Internal IP: [RPI Local IP] → Internal Port: 443
+
+### 3.2 **RPI + Nginx Configuration**
 ```nginx
 # /etc/nginx/sites-available/ralex
 server {
     listen 80;
-    server_name yourdomain.com;
+    server_name ralex.yourdomain.com;  # Use your actual domain
     
     location / {
         proxy_pass http://localhost:5000;
@@ -170,11 +200,21 @@ server {
 }
 ```
 
-### 3.2 **SSL Certificate (Let's Encrypt)**
+### 3.3 **SSL Certificate (Let's Encrypt)**
 ```bash
-# Auto HTTPS setup
+# Install certbot
 sudo apt install certbot python3-certbot-nginx
-sudo certbot --nginx -d yourdomain.com
+
+# Enable nginx site
+sudo ln -s /etc/nginx/sites-available/ralex /etc/nginx/sites-enabled/
+sudo nginx -t
+sudo systemctl reload nginx
+
+# Get SSL certificate (replace with your actual domain)
+sudo certbot --nginx -d ralex.yourdomain.com
+
+# Verify auto-renewal
+sudo certbot renew --dry-run
 ```
 
 ### 3.3 **Systemd Service**
@@ -305,13 +345,56 @@ def start_budget_challenge(amount: float, task: str):
 
 ---
 
-## 🎯 **Success Metrics**
+## 🎯 **What V3 Development Actually Involves**
 
-After V3 completion, you'll have:
-- ✅ Voice-to-text coding from your phone
-- ✅ Real-time budget conversations ("here's $1...")
-- ✅ Web access from anywhere
-- ✅ Perfect mobile "vibe coding" experience
-- ✅ All existing V2 functionality preserved
+### **Programming Work Required**
+1. **Flask Web Server** (4-6 hours)
+   - Create REST API endpoints for chat, budget, sessions
+   - Add WebSocket support for real-time updates
+   - Integrate with existing V2 ralex_core modules
 
-**Ready to build your dream coding interface! 🚀**
+2. **Web Frontend** (3-4 hours)
+   - Fork Open WebUI or build simple chat interface
+   - Add voice input using Web Speech API
+   - Create budget display and conversation UI
+   - Make mobile-responsive
+
+3. **Voice Integration** (2-3 hours)
+   - Web Speech API for speech-to-text
+   - Voice button and visual feedback
+   - Handle voice input errors gracefully
+
+4. **Deployment Setup** (2-3 hours)
+   - Configure nginx reverse proxy
+   - Set up Squarespace DNS records
+   - Install SSL certificates
+   - Create systemd service
+
+**Total Development Time: 11-16 hours (2-3 weekends)**
+
+### **Non-Programming Work**
+- **DNS Configuration**: 15 minutes (Squarespace settings)
+- **Router Port Forwarding**: 10 minutes (one-time setup)
+- **Domain Decision**: Which of your 2 domains to use for ralex
+
+### **Technical Complexity Level**
+- **Backend**: Medium (extending existing Flask patterns)
+- **Frontend**: Easy-Medium (mostly HTML/JS, proven patterns)
+- **Deployment**: Easy (well-documented nginx + certbot process)
+- **Voice API**: Easy (browser built-in Web Speech API)
+
+### **What You Get**
+After 2-3 weekends of work:
+- ✅ **Voice-to-text coding** from your phone anywhere
+- ✅ **Real-time budget conversations** ("here's $1, see what you can do")
+- ✅ **Web access** from any device via your domain
+- ✅ **Perfect mobile experience** for "vibe coding"
+- ✅ **All existing V2 functionality** preserved
+- ✅ **Professional HTTPS setup** with auto-renewing certificates
+
+### **Ongoing Maintenance**
+- **Almost zero** - certbot auto-renews SSL certificates
+- **Your RPI** handles everything locally
+- **No monthly fees** beyond your existing domain registration
+
+**Ready to build your dream voice-driven coding interface! 🚀**
