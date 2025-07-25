@@ -1,303 +1,337 @@
-# Ralex V2 Daily Usage Guide
+# Ralex V3 Usage Guide
 
-**Practical examples for cost-optimized AI coding with AgentOS.**
+**🎙️ Master voice-driven AI coding with examples, tips, and best practices.**
 
-## 🚀 **Basic Usage**
+## 🚀 **Quick Start: Your First Voice Coding Session**
 
-### **Command Line (Quick Tasks)**
+### **1. Launch Ralex V3**
 ```bash
-# Simple fixes (cheap models ~$0.001)
-./ralex-agentos-v2.sh "fix this typo in the function name"
-./ralex-agentos-v2.sh "add error handling to this function"
-./ralex-agentos-v2.sh "format this code to PEP 8 standards"
-
-# Complex tasks (smart analysis + cheap execution ~$0.015 + $0.003)
-./ralex-agentos-v2.sh "refactor the user authentication system"
-./ralex-agentos-v2.sh "implement a REST API for user management"
-./ralex-agentos-v2.sh "optimize database queries for performance"
+./ralex-v3-launch.sh
+# Wait for: ✅ Backend API started, ✅ Frontend started
 ```
 
-### **Interactive Mode (Recommended for Development)**
-```bash
-# Start interactive mode
-./ralex-agentos-v2.sh
+### **2. Open Web Interface**
+- Visit **http://localhost:3000** in your browser
+- Allow microphone access when prompted
+- You'll see the Ralex V3 interface with budget tracking
 
-# Add files to context
-> /add myfile.py
-> /add tests/test_myfile.py
+### **3. Try Your First Voice Command**
+1. Click the **🎙️ Voice** button
+2. Say: **"Create a Python function to calculate fibonacci numbers"**
+3. Watch your voice become working code instantly!
 
-# Use AgentOS commands
-> /help                           # Show all available commands
-> /breakdown "refactor auth"      # Preview task breakdown and cost
-> /review myfile.py               # Code review with AgentOS standards
-> /standards                      # Show current coding standards
+---
 
-# Natural language requests (with AgentOS optimization)
-> refactor the authentication system to use JWT tokens
-> create comprehensive unit tests for the user model
-> optimize the database connection handling
+## 🎙️ **Voice Command Patterns**
+
+### **Auto-Submit Commands**
+These phrases automatically submit after voice recognition:
+
+```
+🎙️ "Fix this authentication bug, execute"
+🎙️ "Refactor the user model, send it"  
+🎙️ "Add error handling, go ahead"
+🎙️ "Create unit tests, run it"
+🎙️ "Optimize database queries, do it"
+```
+
+### **Manual Submit Commands**
+These require clicking Send after voice input:
+
+```
+🎙️ "How does JWT authentication work?"
+🎙️ "Review this code for security issues"
+🎙️ "Explain the MVC pattern"
+🎙️ "What are the best practices for error handling?"
+```
+
+### **File-Specific Commands**
+Reference files naturally in your voice commands:
+
+```
+🎙️ "Fix the bug in user_auth.py, execute"
+🎙️ "Add tests to the payment module, send it"
+🎙️ "Refactor models.py for better performance, go ahead"
+🎙️ "Update the API endpoints in routes.py, do it"
 ```
 
 ---
 
-## 💡 **Smart Cost Optimization Examples**
+## 💰 **Budget Management**
 
-### **How AgentOS Optimizes Your Costs**
+### **Real-Time Tracking**
+- **Green bar**: Plenty of budget remaining (>50%)
+- **Yellow bar**: Moderate usage (20-50%)
+- **Red bar**: Low budget (<20%)
+- **Live updates**: See costs in real-time via WebSocket
 
-#### **Simple Task Example:**
+### **Adding Budget**
+Click the budget widget buttons:
+- **$0.25**: Perfect for quick tests and experiments
+- **$1.00**: Good for short coding sessions
+- **$5.00**: Full day of development work
+
+### **Budget Tips**
 ```bash
-./ralex-agentos-v2.sh "fix the typo in line 23"
+# Check current budget status
+curl http://localhost:8000/api/sessions/stats
 
-# AgentOS Output:
-# 🧠 Analysis: Complexity: low, Cost: $0.001
-# Strategy: Direct execution (cheap model)
-# ✅ Fixed immediately with Gemini Flash
-```
+# Monitor spending in real-time
+# Watch the budget widget for live updates
 
-#### **Complex Task Example:**
-```bash
-./ralex-agentos-v2.sh "refactor authentication system for JWT tokens"
-
-# AgentOS Output:
-# 🧠 Analysis: Complexity: high, Cost: $0.015 + $0.006
-# Strategy: Analysis first (smart model), then execution (cheap models)
-# 
-# Phase 1: Analysis (Claude Sonnet - $0.015)
-# ✅ Identified 4 specific tasks:
-#    1. Create JWT token service
-#    2. Update user model for token storage
-#    3. Modify login endpoint
-#    4. Add token validation middleware
-#
-# Phase 2: Execution (Gemini Flash - $0.001-0.002 each)
-# Type 'next' to execute each task with cheap models
+# Cost examples:
+# Simple fixes: ~$0.001 each
+# Complex features: ~$0.015 each  
+# Full implementations: ~$0.025 each
 ```
 
 ---
 
-## 🎯 **Daily Workflow Patterns**
+## 📱 **Mobile Coding Workflow**
 
-### **Morning Development Session**
-```bash
-# 1. Start interactive mode
-./ralex-agentos-v2.sh
+### **Voice Coding on Your Phone**
+1. **Open browser** to http://localhost:3000 (or your Tailscale URL)
+2. **Tap the 🎙️ button** - it's optimized for touch
+3. **Speak your request** clearly
+4. **Tap Send** or use auto-submit phrases
 
-# 2. Add today's work files
-> /add src/user_model.py
-> /add src/auth_service.py
-> /add tests/test_auth.py
-
-# 3. Review yesterday's work
-> /review src/auth_service.py
-
-# 4. Plan today's features  
-> /breakdown "implement password reset functionality"
-
-# 5. Execute planned work
-> implement secure password reset with email verification
-> next  # Execute first task
-> next  # Execute second task (continue until done)
+### **Mobile-Optimized Commands**
+```
+🎙️ "Quick fix for login error, execute"
+🎙️ "Add validation to form, send it"
+🎙️ "Check database connection, go ahead"
+🎙️ "Create simple API endpoint, do it"
 ```
 
-### **Bug Fixing Workflow**
-```bash
-# Quick fixes (use cheap models)
-./ralex-agentos-v2.sh "fix the NoneType error in user login"
-./ralex-agentos-v2.sh "handle edge case when email is empty"
+### **Mobile Pro Tips**
+- **Use landscape mode** for better code viewing
+- **Speak clearly** - mobile mics vary in quality
+- **Use shorter commands** for better recognition
+- **Auto-submit phrases** work great on mobile
 
-# Complex debugging (smart analysis)
-./ralex-agentos-v2.sh "analyze and fix performance issues in user search"
-# → AgentOS: Analysis finds 3 optimization areas
-# → Execute each optimization with cheap models
+---
+
+## 🧠 **Advanced Voice Patterns**
+
+### **Multi-Step Workflows**
+```
+🎙️ "Create user authentication system with JWT tokens, database models, and comprehensive tests, execute"
+
+# Ralex V3 will:
+# 1. Analyze complexity (high)
+# 2. Use smart model for planning
+# 3. Break down into specific tasks
+# 4. Execute each part efficiently
 ```
 
-### **Feature Development Workflow**
-```bash
-# Complex feature (smart breakdown)
-./ralex-agentos-v2.sh "build complete user profile management system"
+### **Context-Aware Commands**
+```
+🎙️ "Based on the payment.py file, add refund functionality, go ahead"
+🎙️ "Following our project patterns, create order management, send it"
+🎙️ "Using the existing auth system, add role-based permissions, execute"
+```
 
-# AgentOS breaks it down:
-# 1. Design database schema for profiles
-# 2. Create profile model and API endpoints  
-# 3. Implement profile update forms
-# 4. Add profile image upload
-# 5. Create profile permissions system
-# 6. Write comprehensive tests
-
-# Execute each task for $0.001-0.002 each instead of $0.15 for everything
+### **Performance-Focused Commands**
+```
+🎙️ "Optimize this database query for better performance, execute"
+🎙️ "Refactor this code to reduce memory usage, send it"
+🎙️ "Add caching to the API endpoints, go ahead"
+🎙️ "Profile and improve the slow functions, do it"
 ```
 
 ---
 
-## 🔧 **AgentOS Slash Commands Reference**
+## 🔄 **Real-Time Collaboration**
 
-### **Essential Commands**
-| Command | Usage | Purpose |
-|---------|-------|---------|
-| `/help` | `/help` | Show all available commands |
-| `/add` | `/add file.py` | Add file to context |
-| `/review` | `/review file.py` | Code review with standards |
-| `/breakdown` | `/breakdown "task"` | Preview cost optimization |
-| `/standards` | `/standards` | Show AgentOS coding standards |
+### **WebSocket Features**
+- **Live budget updates** across all connected devices
+- **Typing indicators** when AI is processing
+- **Model selection** notifications in real-time
+- **System notifications** for important events
 
-### **Advanced Commands**
-| Command | Usage | Purpose |
-|---------|-------|---------|
-| `/instructions` | `/instructions` | Show project instructions |
-| `/reload` | `/reload` | Reload AgentOS data from disk |
-| `/exit` | `/exit` | Exit interactive mode |
-
-### **Command Examples**
+### **Multi-Device Workflow**
 ```bash
-# Interactive mode commands
-> /breakdown "implement user authentication"
-## Task Breakdown Preview
-**Task**: implement user authentication
-**Complexity**: high (confidence: 0.95)
-**Strategy**: Analysis first (smart model), then execution (cheap models)
-**Process**:
-1. 💰 Analysis Phase (smart model): Break down requirements
-2. 💸 Execution Phase (cheap models): Execute each specific task
-**Expected Tasks**: 3-7 specific implementation tasks
+# Desktop for heavy development
+🎙️ "Implement complete user management system, execute"
 
-> /review src/auth.py  
-## Code Review Results
-**Standards Compliance**: ✅ PEP 8, ❌ Missing type hints
-**Issues Found**: 2 functions need docstrings
-**Recommendations**: Add type hints, improve error handling
+# Phone for quick fixes  
+🎙️ "Fix the typo in login form, send it"
+
+# Tablet for code review
+🎙️ "Review security in authentication module"
+
+# All devices see budget updates instantly via WebSocket
 ```
 
 ---
 
-## 📊 **Cost Management**
+## 🎯 **Coding Workflow Examples**
 
-### **Daily Budget Tracking**
-```bash
-# Check remaining budget anytime
-python3 health_check.py
+### **Bug Fixing Session**
+```
+# Start with voice input
+🎙️ "Analyze the login error in auth.py, execute"
 
-# Sample output:
-# 💰 Budget Status: $3.24 remaining of $5.00 daily limit
-# 📊 Today's usage: 15 requests, avg $0.12 per request
-# 🕐 Budget resets at: midnight UTC
+# Follow up based on analysis
+🎙️ "Fix the JWT token validation issue, send it"
+
+# Add prevention
+🎙️ "Add comprehensive error handling, go ahead"
+
+# Verify solution
+🎙️ "Create tests for the auth fix, do it"
 ```
 
-### **Cost-Conscious Usage Tips**
+### **Feature Development**
+```
+# High-level planning
+🎙️ "Design user profile management system with CRUD operations, execute"
 
-#### **Maximize Savings:**
-1. **Use descriptive language** - helps AgentOS route correctly
-   ```bash
-   # Good: "fix authentication bug" → cheap model
-   # Good: "refactor entire auth system" → smart analysis
-   ```
+# Implementation
+🎙️ "Create the database models for user profiles, send it"
+🎙️ "Add API endpoints for profile operations, go ahead"  
+🎙️ "Create frontend forms for profile editing, do it"
 
-2. **Batch simple tasks** together
-   ```bash
-   ./ralex-agentos-v2.sh "fix typos in auth.py and add missing comments"
-   ```
-
-3. **Use /breakdown** before expensive tasks
-   ```bash
-   > /breakdown "redesign user interface"
-   # See cost estimate before committing
-   ```
-
-#### **When to Use Each Mode:**
-- **Direct command**: Quick, single-file changes
-- **Interactive mode**: Multi-file development sessions  
-- **/breakdown**: Preview costs for expensive features
-
----
-
-## 🎯 **Best Practices**
-
-### **File Context Management**
-```bash
-# Interactive mode - add relevant files only
-> /add src/main.py          # Core file being modified
-> /add tests/test_main.py    # Related tests
-> /add requirements.txt     # If adding dependencies
-
-# Avoid adding too many files (increases cost)
-# Remove files when done: restart interactive mode
+# Quality assurance
+🎙️ "Add validation and security checks, execute"
+🎙️ "Create comprehensive tests with 90% coverage, send it"
 ```
 
-### **Effective Prompting**
-```bash
-# ✅ Good prompts (clear intent)
-"refactor authentication to use JWT tokens with proper error handling"
-"fix the database connection timeout issue in user service"
-"implement user registration with email verification"
-
-# ❌ Avoid vague prompts
-"make this better"
-"fix everything"
-"improve performance"
+### **Code Review Session**
 ```
+# Analysis commands (no auto-submit)
+🎙️ "Review the security of this authentication system"
+🎙️ "Analyze performance bottlenecks in the database layer"
+🎙️ "Check code quality and suggest improvements"
 
-### **Standards Integration**
-Your AgentOS standards are automatically applied:
-- **Python standards**: Type hints, PEP 8, docstrings, f-strings
-- **Git workflow**: Atomic commits, descriptive messages
-- **Testing**: pytest, >80% coverage, descriptive test names
-
-Customize standards by editing:
-- `agent_os/standards/python.md`
-- `agent_os/standards/git-workflow.md`
-- `agent_os/instructions/testing.md`
-
----
-
-## 🚨 **Troubleshooting Common Issues**
-
-### **High Costs**
-```bash
-# Check if using complex prompts unnecessarily
-> /breakdown "your expensive task"
-
-# Use simpler language for simple tasks
-# "fix typo" vs "comprehensively analyze and rectify typographical errors"
-```
-
-### **Wrong Model Selection**
-```bash
-# Check complexity analysis
-> /breakdown "your task"
-
-# Be more specific about task complexity
-# "simple fix" vs "complex refactoring"
-```
-
-### **Budget Exceeded**
-```bash
-# Check daily usage
-python3 health_check.py
-
-# Budget resets daily at midnight UTC
-# Or increase limit in config/settings.json
+# Implementation of suggestions
+🎙️ "Implement the suggested security improvements, execute"
+🎙️ "Optimize the slow database queries, send it"
 ```
 
 ---
 
-## ⚡ **Quick Reference**
+## 🌟 **Pro Tips & Best Practices**
 
-### **Daily Commands**
+### **Voice Recognition Optimization**
+- **Speak clearly** and at moderate pace
+- **Use technical terms** - Ralex understands programming vocabulary
+- **Include context** - mention file names and function names
+- **End with action words** for auto-submit ("execute", "send it", "go ahead")
+
+### **Budget Optimization**
+- **Start small** - use $0.25 for testing voice commands
+- **Monitor spending** - watch the real-time budget widget
+- **Use simple commands** for quick fixes to save costs
+- **Complex requests** are worth the smart model cost for quality
+
+### **Mobile Best Practices**
+- **Test voice recognition** in your environment first
+- **Use shorter commands** on mobile for better accuracy
+- **Portrait mode** for chat, **landscape** for code viewing
+- **Touch the voice button** firmly - mobile browsers vary
+
+### **Session Management**
+- **Related files** are automatically tracked in context
+- **File references** in voice commands add files to session
+- **Session state** persists across browser refreshes
+- **Multiple devices** can share the same session via URL
+
+---
+
+## 🔧 **Keyboard Shortcuts & UI Tips**
+
+### **Web Interface Shortcuts**
+- **Ctrl+Enter**: Send message (when text input focused)
+- **Space**: Start/stop voice input (when voice button focused)
+- **Tab**: Navigate between UI elements
+- **Escape**: Cancel voice input
+
+### **UI Features**  
+- **Dark theme**: Optimized for coding environments
+- **Responsive design**: Works on any screen size
+- **Visual feedback**: Recording animations and status indicators
+- **Real-time updates**: Budget, typing indicators, model selection
+
+---
+
+## 🚨 **Troubleshooting Voice Commands**
+
+### **"Voice Recognition Not Working"**
 ```bash
-# Most common usage patterns
-./ralex-agentos-v2.sh "fix this bug"                    # Simple
-./ralex-agentos-v2.sh "refactor user authentication"    # Complex
-./ralex-agentos-v2.sh                                   # Interactive
+# Check microphone permissions in browser
+# Chrome: chrome://settings/content/microphone
+# Allow access for localhost:3000
 
-# In interactive mode
-> /add file.py && your request
-> /breakdown "task" && confirm
-> /review file.py && implement fixes
+# Test Web Speech API in console:
+# new webkitSpeechRecognition()
 ```
 
-### **Cost Estimates**
-- **Simple fixes**: $0.001-0.002
-- **Medium features**: $0.015 analysis + $0.003-0.006 execution  
-- **Complex features**: $0.015 analysis + $0.008-0.015 execution
-- **Daily budget**: $5.00 (typically use $0.50-1.50/day)
+### **"Commands Not Auto-Submitting"** 
+Make sure you end with trigger phrases:
+- ✅ "execute", "send it", "go ahead", "do it", "run it"
+- ❌ Missing trigger phrases require manual Send
 
-**Ready to optimize your AI coding workflow! 🚀**
+### **"Poor Recognition Accuracy"**
+- **Speak clearly** and avoid background noise
+- **Use Chrome/Safari** - best Web Speech API support  
+- **Check microphone** quality and positioning
+- **Avoid Firefox** - limited speech recognition support
+
+### **"Budget Not Updating"**
+```bash
+# Check WebSocket connection in browser console
+# Should see: "WebSocket connected" messages
+
+# Verify backend is running
+curl http://localhost:8000/health
+```
+
+---
+
+## 📊 **Usage Analytics**
+
+### **Understanding Your Costs**
+- **Voice session**: $0.25-0.75/hour typically
+- **Simple fixes**: ~$0.001 each (very cheap)
+- **Complex features**: ~$0.015 each (smart model planning)
+- **Full implementations**: ~$0.025 each (comprehensive)
+
+### **Optimizing Your Workflow**
+- **Batch related requests** in single voice commands
+- **Use context effectively** - mention related files
+- **Start with analysis** for complex tasks
+- **Follow up with implementation** commands
+
+### **Session Stats**
+```bash
+# Check your usage patterns
+curl http://localhost:8000/api/sessions/stats
+
+# Monitor real-time spending
+# Watch budget widget during development
+
+# Export session data for analysis
+curl http://localhost:8000/api/sessions/{session_id}/info
+```
+
+---
+
+## 🎉 **Ready to Voice Code Like a Pro!**
+
+**Ralex V3** transforms how you interact with AI for coding:
+- **Natural voice commands** replace typing
+- **Real-time budget tracking** keeps costs transparent  
+- **Mobile coding** makes development possible anywhere
+- **Professional quality** through AgentOS standards
+
+**Start your voice coding journey today! 🚀🎙️**
+
+---
+
+## 📚 **Additional Resources**
+
+- **[README.md](README.md)**: Project overview and features
+- **[SETUP.md](SETUP.md)**: Installation and configuration
+- **[ARCHITECTURE.md](ARCHITECTURE.md)**: Technical implementation
+- **[RALEX_V3_DETAILED_PLAN.md](RALEX_V3_DETAILED_PLAN.md)**: Complete development roadmap

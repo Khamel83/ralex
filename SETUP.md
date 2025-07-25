@@ -1,12 +1,13 @@
-# Ralex V2 Setup Guide
+# Ralex V3 Setup Guide
 
-**Get from zero to productive AI coding in 5 minutes.**
+**🎙️ Get from zero to voice-driven AI coding in 5 minutes.**
 
 ## 🚀 **Quick Setup (Recommended)**
 
 ### **1. Prerequisites**
-- **Python 3.10+** and **Git** installed
+- **Python 3.10+** and **Node.js 18+** installed
 - **OpenRouter API key** (free from [openrouter.ai](https://openrouter.ai/))
+- **Modern web browser** with microphone access
 
 ### **2. Get API Key**
 ```bash
@@ -20,82 +21,97 @@ echo 'export OPENROUTER_API_KEY="sk-or-v1-your-key-here"' >> ~/.bashrc
 source ~/.bashrc
 ```
 
-### **3. Install Ralex**
+### **3. Install Ralex V3**
 ```bash
 # Clone repository
 git clone https://github.com/Khamel83/ralex.git
 cd ralex
 
-# Install dependencies
-python3 -m venv .ralex-env
-source .ralex-env/bin/activate
-pip install -r requirements.txt
+# Install Python dependencies
+python3 -m pip install -r requirements.txt
 
-# Make scripts executable
-chmod +x ralex-agentos-v2.sh
+# Install frontend dependencies
+npm install --prefix ralex-frontend
+
+# Make launch script executable
+chmod +x ralex-v3-launch.sh
 ```
 
-### **4. Test Installation**
+### **4. Launch & Test**
 ```bash
-# Test with simple task
-./ralex-agentos-v2.sh "fix this simple bug"
+# Start both backend and web interface
+./ralex-v3-launch.sh
 
 # Should show:
-# 🧠 AgentOS Analysis:
-#    Complexity: low
-#    Strategy: Direct execution (cheap model)
+# 🚀 Starting Ralex V3 - AI Coding Assistant
+# ✅ Backend API started (PID: xxxx)
+# ✅ Frontend started (PID: xxxx)
+# 📱 Web Interface: http://localhost:3000
 ```
 
-## ✅ **You're Ready!**
+### **5. Test Voice Input**
+1. Open **http://localhost:3000** in your browser
+2. Click **🎙️ Voice** button and allow microphone access
+3. Say: **"Create a Python function to calculate fibonacci numbers"**
+4. Watch as your voice becomes working code!
 
-Start coding with:
-```bash
-./ralex-agentos-v2.sh "your coding request"
+## ✅ **You're Ready for Voice Coding!**
+
+Your Ralex V3 setup includes:
+- 🎙️ **Voice input** from any modern browser
+- 💰 **Real-time budget tracking** with $5.00 daily limit
+- 📱 **Mobile-responsive** interface for coding anywhere
+- 🧠 **AgentOS standards** automatically applied
+- 🔄 **WebSocket updates** for real-time collaboration
+
+---
+
+## 🌐 **Web Interface Features**
+
+### **Voice Commands**
 ```
+🎙️ "Fix this bug, execute"          → Auto-submits after recognition
+🎙️ "Refactor this code, send it"    → Smart auto-submit phrases  
+🎙️ "Add tests, go ahead"            → Natural language workflow
+🎙️ "Create user authentication"     → Complex feature development
+```
+
+### **Budget Management**
+- **Real-time tracking** with visual progress bars
+- **Add budget** buttons ($0.25, $1.00, $5.00)
+- **Transaction history** showing model usage and costs
+- **Low budget warnings** when approaching limits
+
+### **Mobile Coding**
+- **Touch-optimized** voice button for phones/tablets
+- **Responsive design** adapts to any screen size
+- **Landscape/portrait** mode support
+- **iOS/Android** compatible via browser
 
 ---
 
 ## 🔧 **Advanced Setup Options**
 
-### **Manual Environment Setup**
-If you prefer manual control:
-
-```bash
-# Create virtual environment
-python3 -m venv .ralex-env
-source .ralex-env/bin/activate
-
-# Install core dependencies
-pip install litellm==1.74.8
-pip install openai==1.97.1
-pip install httpx==0.28.1
-pip install pydantic==2.11.7
-
-# Install development tools (optional)
-pip install pytest>=7.0.0
-pip install ruff>=0.1.0
-pip install black>=22.0.0
-```
-
 ### **Custom Configuration**
 
 #### **Budget Limits**
-Default daily budget is $5.00. To change:
+```bash
+# Edit default budget in web session manager
+vim ralex_core/web_session.py
 
-```python
-# Edit ralex_core/budget_optimizer.py
-DEFAULT_DAILY_LIMIT = 10.00  # Change to your preferred amount
+# Change initial_budget default value:
+def create_session(self, initial_budget: float = 10.0):  # Changed from 5.0
 ```
 
 #### **Model Preferences**
 ```json
-// Edit config/model_tiers.json to customize model selection
+// Edit config/model_tiers.json
 {
   "tiers": {
-    "cheap": [
+    "fast": [
       {"name": "openrouter/google/gemini-flash-1.5", "cost_per_token": 0.000001}
     ],
-    "premium": [
+    "smart": [
       {"name": "openrouter/anthropic/claude-3-sonnet", "cost_per_token": 0.000015}
     ]
   }
@@ -103,129 +119,171 @@ DEFAULT_DAILY_LIMIT = 10.00  # Change to your preferred amount
 ```
 
 #### **AgentOS Standards**
-Customize coding standards by editing:
-- `agent_os/standards/python.md` - Python coding rules
-- `agent_os/standards/git-workflow.md` - Git workflow preferences
-- `agent_os/instructions/testing.md` - Testing requirements
-
-### **Docker Setup** (Optional)
+Customize coding standards for your project:
 ```bash
-# Build Docker image
-docker build -t ralex-v2 .
+# Python coding standards
+vim agent_os/standards/python.md
 
-# Run with API key
-docker run -e OPENROUTER_API_KEY="your-key" -it ralex-v2
+# Git workflow preferences  
+vim agent_os/standards/git-workflow.md
+
+# Testing requirements
+vim agent_os/instructions/testing.md
+```
+
+### **Production Deployment**
+
+#### **Docker Setup**
+```bash
+# Build multi-service stack
+docker-compose up -d
+
+# Access via:
+# Frontend: http://localhost:3000
+# Backend API: http://localhost:8000
+```
+
+#### **Tailscale HTTPS**
+```bash
+# Enable Tailscale certificates
+sudo tailscale cert $(tailscale status --json | jq -r '.Self.DNSName')
+
+# Configure nginx reverse proxy
+sudo cp nginx/ralex.conf /etc/nginx/sites-enabled/
+sudo systemctl reload nginx
+
+# Access securely via: https://your-device.tailnet.ts.net
 ```
 
 ### **Development Setup**
-For contributing to Ralex:
-
 ```bash
-# Install development dependencies
-pip install -r requirements.txt
-pip install -e .
+# Install development tools
+pip install pytest ruff black isort
 
 # Run tests
-python test_agentos_integration.py
-python health_check.py
+python test-ralex-v3.py
 
-# Run linting
-ruff check .
-black .
+# Run frontend in dev mode
+cd ralex-frontend && npm run dev
+
+# Backend with auto-reload
+python -m ralex_core.openai_api --reload
 ```
 
 ---
 
 ## 🚨 **Troubleshooting**
 
-### **"Command not found" Error**
+### **"Microphone Access Denied"**
 ```bash
-# Make scripts executable
-chmod +x *.sh
+# Chrome: chrome://settings/content/microphone
+# Firefox: about:preferences#privacy → Permissions → Microphone
+# Safari: Safari → Preferences → Websites → Microphone
 
-# Check Python path
-which python3  # Should show Python 3.10+
+# Allow access for localhost:3000
 ```
 
-### **"API key not set" Error**
+### **"Backend Connection Failed"** 
 ```bash
-# Check if key is set
+# Check if backend is running
+curl http://localhost:8000/health
+
+# Should return: {"status": "healthy", "version": "3.0.0"}
+
+# Check logs
+tail -f logs/backend.log
+```
+
+### **"Voice Recognition Not Working"**
+```bash
+# Supported browsers:
+# ✅ Chrome/Chromium (best support)
+# ✅ Safari (iOS/macOS)
+# ✅ Edge
+# ❌ Firefox (limited support)
+
+# Test Web Speech API:
+# Open browser console → new webkitSpeechRecognition()
+```
+
+### **"Frontend Won't Start"**
+```bash
+# Check Node.js version
+node --version  # Should be 18.x or higher
+
+# Reinstall dependencies
+cd ralex-frontend
+rm -rf node_modules package-lock.json
+npm install
+
+# Check for port conflicts
+lsof -i :3000  # Kill any conflicting processes
+```
+
+### **"API Key Issues"**
+```bash
+# Verify key is set
 echo $OPENROUTER_API_KEY  # Should show your key
 
-# Set temporarily
-export OPENROUTER_API_KEY="your-key-here"
-
-# Set permanently
-echo 'export OPENROUTER_API_KEY="your-key-here"' >> ~/.bashrc
-source ~/.bashrc
-```
-
-### **"Network Connection" Error**
-```bash
-# Test OpenRouter connectivity
+# Test API connectivity
 curl https://openrouter.ai/api/v1/models \
   -H "Authorization: Bearer $OPENROUTER_API_KEY"
 
-# Should return JSON list of models
+# Should return model list JSON
 ```
 
-### **"Dependencies Missing" Error**
+### **"Budget Tracking Not Working"**
 ```bash
-# Reinstall virtual environment
-rm -rf .ralex-env
-python3 -m venv .ralex-env
-source .ralex-env/bin/activate
-pip install -r requirements.txt
-```
+# Check WebSocket connection in browser console
+# Should see: "WebSocket connected" messages
 
-### **"Budget Exceeded" Error**
-Budget resets daily at midnight UTC. Or check:
-```bash
-# Check current budget status
-python3 health_check.py
-
-# Budget file location
-cat /tmp/ralex_litellm_budget.json
+# Verify WebSocket endpoint
+curl -i -N -H "Connection: Upgrade" \
+  -H "Upgrade: websocket" \
+  http://localhost:8000/ws/test-session
 ```
 
 ---
 
-## ⚡ **Performance Tips**
+## ⚡ **Performance Optimization**
 
-### **Faster Setup**
+### **Faster Development**
 ```bash
-# Use UV for faster installs (optional)
-pip install uv
-uv pip install -r requirements.txt
+# Use concurrent backend/frontend development
+npm run dev --prefix ralex-frontend & python -m ralex_core.openai_api
+
+# Enable hot reload for both services
+export RALEX_DEV_MODE=true
 ```
 
 ### **Shell Aliases**
 Add to your `~/.bashrc`:
 ```bash
-alias ralex="cd /path/to/ralex && ./ralex-agentos-v2.sh"
-alias ralex-check="cd /path/to/ralex && python3 health_check.py"
+alias ralex3="cd /path/to/ralex && ./ralex-v3-launch.sh"
+alias ralex-logs="cd /path/to/ralex && tail -f logs/*.log"
+alias ralex-health="curl -s http://localhost:8000/health | jq"
 ```
 
-### **IDE Integration**
-For VS Code, add this to your terminal profile:
-```json
-{
-  "terminal.integrated.profiles.linux": {
-    "Ralex": {
-      "path": "/bin/bash",
-      "args": ["-c", "cd /path/to/ralex && source .ralex-env/bin/activate && bash"]
-    }
-  }
-}
-```
+### **Browser Bookmarks**
+- **Ralex Web**: http://localhost:3000
+- **API Docs**: http://localhost:8000/docs  
+- **Health Check**: http://localhost:8000/health
+- **Budget Status**: http://localhost:8000/api/sessions/stats
 
 ---
 
 ## 🎯 **Next Steps**
 
-1. **Read**: [USAGE.md](USAGE.md) for daily workflow examples
-2. **Learn**: [ARCHITECTURE.md](ARCHITECTURE.md) for technical details  
-3. **Customize**: Edit `agent_os/` files for your coding standards
-4. **Contribute**: See [CONTRIBUTING.md](CONTRIBUTING.md) for development
+1. **Try Voice Coding**: Use microphone for hands-free development
+2. **Explore Budget Tracking**: Monitor real-time costs and usage
+3. **Mobile Testing**: Code from your phone using the responsive interface
+4. **Customize Standards**: Edit `agent_os/` files for your coding style
+5. **Deploy Production**: Use Tailscale for secure remote access
 
-**Happy coding with cost-optimized AI! 🚀**
+### **Pro Tips**
+- **Voice Commands**: End with "execute", "send it", or "go ahead" for auto-submit
+- **Budget Management**: Add small amounts ($0.25) for testing, larger ($5) for sessions
+- **Mobile Workflow**: Voice input works excellently on phones for quick fixes
+- **Team Collaboration**: Share your Tailscale URL for real-time coding sessions
+
+**Happy voice coding with Ralex V3! 🚀🎙️**
