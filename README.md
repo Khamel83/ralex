@@ -1,37 +1,39 @@
-# Ralex V3: Voice-Driven AI Coding Assistant
+# Ralex V4: Voice-Driven AI Orchestration Platform
 
-**🎙️ The world's first voice-first, terminal-native AI coding assistant with smart cost optimization and AgentOS integration.**
+**🎙️ The world's most advanced voice-driven development environment - orchestrating OpenCode + LiteLLM + AgentOS + Context7 through natural speech.**
 
-> **🚀 New to Ralex V3?** → Read [SETUP.md](SETUP.md) for 5-minute setup  
-> **📱 Web Interface** → See [USAGE.md](USAGE.md) for voice commands  
-> **🔧 Technical Details** → Check [ARCHITECTURE.md](ARCHITECTURE.md)
+> **🚀 New to Ralex V4?** → Read [SETUP.md](SETUP.md) for 5-minute setup  
+> **📱 Voice Interface** → See [USAGE.md](USAGE.md) for voice command patterns  
+> **🏗️ Architecture** → Check [docs/V4_ARCHITECTURE.md](docs/V4_ARCHITECTURE.md)  
+> **🗺️ Implementation Plan** → See [RALEX_V4_ROADMAP.md](RALEX_V4_ROADMAP.md)
 
-## ✨ What Makes Ralex V3 Revolutionary
+## ✨ What Makes Ralex V4 Revolutionary
 
-### 🎙️ **Voice-First Coding**
-- **Hands-free coding** from your phone or computer
-- **Natural language** to production code instantly  
-- **Smart voice recognition** with auto-send commands
-- **Mobile optimized** for coding on the go
+### 🎙️ **Complete Voice-Driven Development**
+- **File operations** via OpenCode.ai integration - read, write, refactor any file
+- **Shell commands** - git, testing, deployment through voice commands
+- **Project-wide search** - intelligent code discovery and analysis
+- **Automated workflows** - "Deploy this feature" executes entire pipelines
 
-### 💰 **Intelligent Cost Optimization**
-| Request Type | Model Route | Cost | Voice Example |
-|-------------|-------------|------|---------------|
-| Simple fixes | Fast model | ~$0.001 | "Fix this typo" |
-| Complex features | Smart analysis + fast execution | ~$0.015 | "Refactor authentication system" |
-| Full projects | Breakdown + parallel execution | ~$0.025 | "Build user management with tests" |
+### 🔧 **Seamless Tool Orchestration**
+| Component | Purpose | Integration |
+|-----------|---------|-------------|
+| **OpenCode.ai** | File operations, shell commands | CLI integration with safety controls |
+| **LiteLLM** | Smart model routing, cost optimization | Multi-provider with budget management |
+| **AgentOS** | Code standards, prompt enhancement | Context-aware standards application |
+| **Context7** | Dynamic documentation, examples | MCP server for real-time docs |
 
-### 🧠 **AgentOS Integration 2.0**
-- **Web-optimized standards** automatically applied
-- **Session-aware context** tracking across conversations
-- **File reference extraction** from voice commands
-- **Real-time collaboration** with WebSocket updates
+### 🧠 **Persistent Context Intelligence**
+- **Cross-session memory** stored in MD files, synced via GitHub
+- **Project understanding** that grows with each interaction
+- **Pattern learning** from your coding style and preferences  
+- **Context compression** using AI to summarize old conversations
 
-### 🌐 **Professional Web Interface**
-- **Real-time budget tracking** with visual indicators
-- **WebSocket updates** for live collaboration
-- **Mobile-responsive design** for coding anywhere
-- **Dark theme optimized** for developer workflows
+### 🌐 **Advanced Web Interface**
+- **Voice-driven workflows** with automated multi-step processes
+- **Mobile coding excellence** - full development from phone/tablet
+- **Real-time collaboration** with shared context across devices
+- **Intelligent automation** - predict and execute likely next steps
 
 ## 🚀 Quick Start
 
@@ -56,28 +58,30 @@ npm install --prefix ralex-frontend
 # API available at: http://localhost:8000
 ```
 
-### 3. **Voice Coding Examples**
+### 3. **Voice Orchestration Examples**
 ```
-🎙️ "Create a Python function to calculate fibonacci numbers"
-🎙️ "Add error handling to the user authentication, execute"  
-🎙️ "Refactor this code for better performance, send it"
-🎙️ "Add comprehensive tests with 90% coverage, go ahead"
+🎙️ "Fix the authentication bug in user_auth.py, execute"
+🎙️ "Refactor the entire payment system, send it"
+🎙️ "Deploy this feature to staging, go ahead"
+🎙️ "Create user management with tests and documentation, do it"
 ```
 
-## 💡 **How Ralex V3 Works**
+## 💡 **How Ralex V4 Works**
 
-### **Voice-to-Code Workflow**
-1. **🎙️ Voice Input** → Web Speech API captures your request
-2. **🧠 AgentOS Analysis** → Enhances with project standards and context  
-3. **🎯 Smart Routing** → Selects optimal model based on complexity
-4. **💰 Budget Tracking** → Real-time cost monitoring with WebSocket updates
-5. **📱 Live Updates** → Instant feedback on all connected devices
+### **Voice-to-Execution Orchestration**
+1. **🎙️ Voice Input** → Open WebUI captures natural speech commands
+2. **🧠 Context Loading** → Intelligent context from MD files + GitHub sync
+3. **📋 AgentOS Enhancement** → Standards + documentation via Context7
+4. **🎯 LiteLLM Routing** → Optimal model selection based on complexity  
+5. **🔧 OpenCode Execution** → Actual file operations and shell commands
+6. **📊 Context Update** → Learning and persistent memory storage
+7. **🔄 Real-time Sync** → Cross-device updates via WebSocket + GitHub
 
-### **Architecture Overview**
+### **V4 Orchestration Architecture**
 ```
-Voice Input → Web Interface → Ralex V3 API → AgentOS → OpenRouter
-     ↓              ↓              ↓            ↓           ↓
-Web Speech API → WebSocket → Session Mgmt → Standards → Model Selection
+🎙️ Voice → 📱 WebUI → 🧠 Orchestrator → 📝 Context → 📋 AgentOS → 🎯 LiteLLM → 🔧 OpenCode
+     ↓         ↓          ↓              ↓          ↓           ↓           ↓
+Speech API → WebSocket → Command Parser → MD Files → Context7 → Models → File Ops
 ```
 
 ## 📊 **Real Usage Costs**
@@ -118,21 +122,25 @@ Web Speech API → WebSocket → Session Mgmt → Standards → Model Selection
 - 📝 **Comprehensive logging** for debugging
 - 🎯 **Production ready** with Tailscale deployment
 
-## 📚 **Documentation**
+## 📚 **V4 Documentation**
 
-- **[SETUP.md](SETUP.md)** - Complete V3 installation guide
-- **[USAGE.md](USAGE.md)** - Voice commands and web interface  
-- **[ARCHITECTURE.md](ARCHITECTURE.md)** - Technical implementation
-- **[RALEX_V3_DETAILED_PLAN.md](RALEX_V3_DETAILED_PLAN.md)** - Full development plan
+- **[RALEX_V4_SPECIFICATION.md](RALEX_V4_SPECIFICATION.md)** - Complete V4 specification
+- **[RALEX_V4_ROADMAP.md](RALEX_V4_ROADMAP.md)** - Phase-by-phase implementation plan
+- **[docs/V4_ARCHITECTURE.md](docs/V4_ARCHITECTURE.md)** - Technical architecture details
+- **[SETUP.md](SETUP.md)** - Installation and configuration guide
+- **[USAGE.md](USAGE.md)** - Voice command patterns and workflows
+- **[archive/](archive/)** - Historical V1-V3 files and documentation
 
-## 🏆 **V3 Status: Production Ready**
+## 🏆 **V4 Status: Specification Complete, Ready for Implementation**
 
-- ✅ **Voice input** working across all modern browsers
-- ✅ **Real-time budget** tracking with WebSocket updates
-- ✅ **Mobile optimized** interface for coding on the go
-- ✅ **AgentOS integration** with web-aware standards
-- ✅ **Cost optimization** achieving 60%+ savings
-- ✅ **Production deployment** ready with launch script
+- 📋 **Complete specification** with detailed architecture
+- 🗺️ **Implementation roadmap** with 32-40 hour timeline
+- 🧪 **Comprehensive testing strategy** for all components
+- 🏗️ **Modular architecture** enabling incremental development
+- 🔧 **Production deployment** plan with Tailscale + Docker
+- 📚 **Complete documentation** for users and developers
+
+**Next Step**: Begin Phase 1 implementation (Core Orchestration - 8-10 hours)
 
 ## 🎮 **Try It Now**
 
@@ -146,15 +154,22 @@ export OPENROUTER_API_KEY="your-key"
 # Open http://localhost:3000 and start voice coding!
 ```
 
-## 🌍 **What's Next**
+## 🌍 **The V4 Vision**
 
-**Ralex V3** represents the future of AI-assisted development:
-- **Voice-first** workflows for natural coding
-- **Mobile accessibility** for coding anywhere
-- **Real-time collaboration** via WebSocket technology
-- **Cost transparency** with per-request budget tracking
-- **Professional quality** through AgentOS standards
+**Ralex V4** represents the ultimate evolution of AI-assisted development:
+- **Complete voice-driven development** - from concept to deployment
+- **Intelligent tool orchestration** - seamless integration of best-in-class tools
+- **Persistent project intelligence** - context that grows with your codebase
+- **Cross-device collaboration** - code anywhere, sync everywhere
+- **Automated workflows** - voice commands that execute entire pipelines
+
+## 🚀 **Ready to Build V4?**
+
+1. **Review the specification** - [RALEX_V4_SPECIFICATION.md](RALEX_V4_SPECIFICATION.md)
+2. **Check the roadmap** - [RALEX_V4_ROADMAP.md](RALEX_V4_ROADMAP.md)  
+3. **Understand the architecture** - [docs/V4_ARCHITECTURE.md](docs/V4_ARCHITECTURE.md)
+4. **Start Phase 1** - Core Orchestration (8-10 hours)
 
 ---
 
-**Ready to revolutionize your coding workflow? Start voice coding in 5 minutes! 🚀🎙️**
+**The future of voice-driven development starts here. Let's build Ralex V4! 🎙️🚀**
