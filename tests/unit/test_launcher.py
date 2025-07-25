@@ -66,14 +66,14 @@ End.
         self.assertEqual(config, {"key": "value"})
 
     @patch('builtins.open', side_effect=FileNotFoundError)
-    @patch('sys.exit')
+    @patch('sys.exit', side_effect=SystemExit)
     def test_load_config_file_not_found(self, mock_exit, mock_open):
         with self.assertRaises(SystemExit):
             load_config("non_existent.json")
         mock_exit.assert_called_once_with(1)
 
     @patch('builtins.open', new_callable=mock_open, read_data='invalid json')
-    @patch('sys.exit')
+    @patch('sys.exit', side_effect=SystemExit)
     def test_load_config_invalid_json(self, mock_exit, mock_open):
         with self.assertRaises(SystemExit):
             load_config("invalid.json")

@@ -1,0 +1,10 @@
+
+# Placeholder for Ralex V4 Workflows
+# This file will define automated multi-step processes.
+
+example_workflow:
+  description: "An example workflow to demonstrate functionality."
+  steps:
+    - step1: "Perform initial analysis."
+    - step2: "Generate code based on analysis."
+    - step3: "Run tests and verify."

@@ -1,394 +1,152 @@
-"""
-Ralex V4 Orchestrator - Central coordination engine for voice-driven AI development
-
-This module serves as the main orchestrator that coordinates all V4 components:
-- OpenCode.ai for file operations and shell commands
-- LiteLLM for intelligent model routing
-- AgentOS for prompt enhancement and standards
-- Context7 for dynamic documentation
-- Context management for persistent intelligence
-"""
-
-import asyncio
-import logging
-from datetime import datetime
-from typing import Dict, Any, Optional, List
-from dataclasses import dataclass
-from enum import Enum
-from pathlib import Path
-
-# Import V4 components (will be implemented in subsequent tasks)
-from ralex_core.context_manager import ContextManager
-from ralex_core.command_parser import CommandParser
-from ralex_core.agentos_v4_integration import AgentOSV4Enhancer
-from ralex_core.litellm_v4_router import LiteLLMV4Router
-from ralex_core.opencode_client import OpenCodeClient
-from ralex_core.security_manager import SecurityManager
-from ralex_core.workflow_engine import WorkflowEngine
-from ralex_core.error_handler import ErrorHandler
-
-
-class ProcessingStatus(Enum):
-    """Status codes for processing results"""
-    SUCCESS = "success"
-    ERROR = "error"
-    BLOCKED = "blocked"
-    PENDING = "pending"
-    IN_PROGRESS = "in_progress"
-
-
-@dataclass
-class ProcessingResult:
-    """Result of voice command processing"""
-    status: ProcessingStatus
-    message: str
-    data: Dict[str, Any]
-    execution_time: float
-    cost: float
-    context_updates: Dict[str, Any]
-    
-    @classmethod
-    def success(cls, data: Dict[str, Any], message: str = "Command executed successfully", 
-                execution_time: float = 0.0, cost: float = 0.0, 
-                context_updates: Dict[str, Any] = None) -> 'ProcessingResult':
-        return cls(
-            status=ProcessingStatus.SUCCESS,
-            message=message,
-            data=data,
-            execution_time=execution_time,
-            cost=cost,
-            context_updates=context_updates or {}
-        )
-    
-    @classmethod
-    def error(cls, message: str, data: Dict[str, Any] = None, 
-              execution_time: float = 0.0) -> 'ProcessingResult':
-        return cls(
-            status=ProcessingStatus.ERROR,
-            message=message,
-            data=data or {},
-            execution_time=execution_time,
-            cost=0.0,
-            context_updates={}
-        )
-    
-    @classmethod
-    def blocked(cls, reason: str, data: Dict[str, Any] = None) -> 'ProcessingResult':
-        return cls(
-            status=ProcessingStatus.BLOCKED,
-            message=f"Command blocked: {reason}",
-            data=data or {},
-            execution_time=0.0,
-            cost=0.0,
-            context_updates={}
-        )
-
+from .context_manager import ContextManager
+from .opencode_client import OpenCodeClient
+from .litellm_router import LiteLLMRouter
+from .agentos_enhancer import AgentOSEnhancer
+from .git_sync_manager import GitSyncManager
+from .command_parser import CommandParser
+from .security_manager import SecurityManager
+from .error_handler import ErrorHandler
+from .workflow_engine import WorkflowEngine
+import os
 
 class RalexV4Orchestrator:
-    """
-    Central orchestration engine for Ralex V4
-    
-    Coordinates all components in the V4 architecture:
-    - Voice command processing and validation
-    - Context loading and management
-    - AgentOS enhancement pipeline
-    - LiteLLM model routing
-    - OpenCode execution
-    - Results processing and context updates
-    """
-    
-    def __init__(self, project_path: str = None):
-        """Initialize the V4 orchestrator with all components"""
-        self.project_path = Path(project_path) if project_path else Path.cwd()
-        self.logger = logging.getLogger(__name__)
-        
-        # Initialize core components
-        self.context_manager = ContextManager(self.project_path)
+    def __init__(self):
+        project_path = os.getcwd()
+        self.context_manager = ContextManager(project_path)
+        self.opencode_client = OpenCodeClient(project_path)
+        self.litellm_router = LiteLLMRouter(model_tiers=self.model_tiers, budget_optimizer=self.budget_optimizer)
+        self.agentos_enhancer = AgentOSEnhancer()
+        self.git_sync_manager = GitSyncManager(project_path)
         self.command_parser = CommandParser()
-        self.agentos_enhancer = AgentOSV4Enhancer()
-        self.litellm_router = LiteLLMV4Router()
-        self.opencode_client = OpenCodeClient(self.project_path)
-        self.security_manager = SecurityManager(self.project_path)
-        self.workflow_engine = WorkflowEngine()
+        self.security_manager = SecurityManager()
+        from .budget_optimizer import BudgetOptimizer
+from .launcher import load_config # Assuming load_config is in launcher.py
+
+class RalexV4Orchestrator:
+    def __init__(self):
+        project_path = os.getcwd()
+        self.context_manager = ContextManager(project_path)
+        self.opencode_client = OpenCodeClient(project_path)
+        self.agentos_enhancer = AgentOSEnhancer()
+        self.git_sync_manager = GitSyncManager(project_path)
+        self.command_parser = CommandParser()
+        self.security_manager = SecurityManager()
         self.error_handler = ErrorHandler()
-        
-        # Processing state
-        self.active_sessions: Dict[str, Dict[str, Any]] = {}
-        self.processing_queue: List[Dict[str, Any]] = []
-        self.is_initialized = False
-        
-        self.logger.info("Ralex V4 Orchestrator initialized")
-    
-    async def initialize(self) -> bool:
-        """Initialize all components and verify system readiness"""
+        # Assuming a default workflows.yaml for now, will be configurable later
+        self.workflow_engine = WorkflowEngine(os.path.join(project_path, "config", "workflows.yaml"))
+
+        # Load model tiers and initialize budget optimizer
+        config_dir = os.path.join(project_path, "config")
+        self.model_tiers = load_config(os.path.join(config_dir, "model_tiers.json"))
+        self.budget_optimizer = BudgetOptimizer(daily_limit=10.0, model_tiers=self.model_tiers) # Daily limit is a placeholder
+
+    async def process_voice_command(self, command: str, session_id: str) -> dict:
         try:
-            self.logger.info("Initializing Ralex V4 Orchestrator...")
-            
-            # Initialize components in order
-            await self.context_manager.initialize()
-            await self.agentos_enhancer.initialize()
-            await self.litellm_router.initialize()
-            await self.opencode_client.initialize()
-            await self.security_manager.initialize()
-            await self.workflow_engine.initialize()
-            
-            # Verify system health
-            health_check = await self._perform_health_check()
-            if not health_check["healthy"]:
-                raise Exception(f"Health check failed: {health_check['issues']}")
-            
-            self.is_initialized = True
-            self.logger.info("Ralex V4 Orchestrator initialization complete")
-            return True
-            
-        except Exception as e:
-            self.logger.error(f"Failed to initialize orchestrator: {e}")
-            return False
-    
-    async def process_voice_command(self, 
-                                  command: str, 
-                                  session_id: str,
-                                  user_context: Dict[str, Any] = None) -> ProcessingResult:
-        """
-        Main orchestration pipeline for processing voice commands
-        
-        Args:
-            command: Raw voice command text
-            session_id: Unique session identifier
-            user_context: Additional user context (optional)
-            
-        Returns:
-            ProcessingResult with execution details and results
-        """
-        start_time = datetime.now()
-        
-        try:
-            if not self.is_initialized:
-                return ProcessingResult.error("Orchestrator not initialized")
-            
-            self.logger.info(f"Processing voice command: '{command}' for session {session_id}")
-            
-            # Stage 1: Parse and validate command
-            parsed_command = await self.command_parser.parse(command)
-            if not parsed_command.is_valid:
-                return ProcessingResult.error(f"Invalid command: {parsed_command.error}")
-            
-            # Stage 2: Security validation
-            security_check = await self.security_manager.validate_command(
-                parsed_command, user_context or {}
-            )
-            if not security_check.is_safe:
-                return ProcessingResult.blocked(security_check.reason, {
-                    "command": command,
-                    "security_issues": security_check.issues
-                })
-            
-            # Stage 3: Load relevant context
-            context_package = await self.context_manager.load_context(
-                session_id, parsed_command
-            )
-            
-            # Stage 4: Enhance with AgentOS standards
-            enhanced_prompt = await self.agentos_enhancer.enhance(
-                parsed_command, context_package
-            )
-            
-            # Stage 5: Route to appropriate model
-            model_selection = await self.litellm_router.select_model(
-                enhanced_prompt, context_package.complexity
-            )
-            
-            # Stage 6: Execute via OpenCode
-            execution_result = await self.opencode_client.execute(
-                enhanced_prompt, model_selection, context_package
-            )
-            
-            # Stage 7: Update context with results
-            await self.context_manager.update_context(
-                session_id, execution_result, parsed_command
-            )
-            
-            # Calculate execution metrics
-            execution_time = (datetime.now() - start_time).total_seconds()
-            
-            # Build success result
-            result = ProcessingResult.success(
-                data={
-                    "command": command,
-                    "parsed_command": parsed_command.to_dict(),
-                    "execution_result": execution_result.to_dict(),
-                    "model_used": model_selection.model_name,
-                    "context_sources": context_package.get_sources()
-                },
-                message="Command executed successfully",
-                execution_time=execution_time,
-                cost=execution_result.cost,
-                context_updates=execution_result.context_updates
-            )
-            
-            self.logger.info(f"Command processed successfully in {execution_time:.2f}s")
-            return result
-            
-        except Exception as e:
-            execution_time = (datetime.now() - start_time).total_seconds()
-            error_message = await self.error_handler.handle_error(e, {
-                "command": command,
-                "session_id": session_id,
-                "execution_time": execution_time
-            })
-            
-            self.logger.error(f"Error processing command: {error_message}")
-            return ProcessingResult.error(error_message, execution_time=execution_time)
-    
-    async def execute_workflow(self, 
-                             workflow_name: str, 
-                             session_id: str,
-                             parameters: Dict[str, Any] = None) -> ProcessingResult:
-        """
-        Execute a predefined automated workflow
-        
-        Args:
-            workflow_name: Name of the workflow to execute
-            session_id: Session identifier
-            parameters: Workflow parameters
-            
-        Returns:
-            ProcessingResult with workflow execution details
-        """
-        start_time = datetime.now()
-        
-        try:
-            self.logger.info(f"Executing workflow: {workflow_name} for session {session_id}")
-            
-            # Load workflow definition
-            workflow = await self.workflow_engine.get_workflow(workflow_name)
-            if not workflow:
-                return ProcessingResult.error(f"Workflow '{workflow_name}' not found")
-            
-            # Execute workflow steps
-            workflow_result = await self.workflow_engine.execute(
-                workflow, session_id, parameters or {}
-            )
-            
-            execution_time = (datetime.now() - start_time).total_seconds()
-            
-            return ProcessingResult.success(
-                data={
-                    "workflow": workflow_name,
-                    "steps_completed": workflow_result.steps_completed,
-                    "results": workflow_result.results
-                },
-                message=f"Workflow '{workflow_name}' completed successfully",
-                execution_time=execution_time,
-                cost=workflow_result.total_cost,
-                context_updates=workflow_result.context_updates
-            )
-            
-        except Exception as e:
-            execution_time = (datetime.now() - start_time).total_seconds()
-            error_message = await self.error_handler.handle_error(e, {
-                "workflow": workflow_name,
-                "session_id": session_id
-            })
-            
-            return ProcessingResult.error(error_message, execution_time=execution_time)
-    
-    async def get_session_status(self, session_id: str) -> Dict[str, Any]:
-        """Get current status and context for a session"""
-        try:
-            context = await self.context_manager.get_session_context(session_id)
-            return {
-                "session_id": session_id,
-                "status": "active" if session_id in self.active_sessions else "inactive",
-                "context_files": len(context.get("files", {})),
-                "recent_commands": context.get("recent_commands", [])[:5],
-                "budget_remaining": await self.litellm_router.get_session_budget(session_id)
-            }
-        except Exception as e:
-            self.logger.error(f"Error getting session status: {e}")
-            return {"session_id": session_id, "status": "error", "error": str(e)}
-    
-    async def _perform_health_check(self) -> Dict[str, Any]:
-        """Perform comprehensive health check of all components"""
-        health_status = {
-            "healthy": True,
-            "issues": [],
-            "components": {}
-        }
-        
-        # Check each component
-        components = [
-            ("context_manager", self.context_manager),
-            ("command_parser", self.command_parser),
-            ("agentos_enhancer", self.agentos_enhancer),
-            ("litellm_router", self.litellm_router),
-            ("opencode_client", self.opencode_client),
-            ("security_manager", self.security_manager),
-            ("workflow_engine", self.workflow_engine)
-        ]
-        
-        for name, component in components:
-            try:
-                if hasattr(component, 'health_check'):
-                    component_health = await component.health_check()
+            # 1. Parse the command
+            parsed_command = self.command_parser.parse(command)
+            intent = parsed_command.get("intent", "default")
+            params = parsed_command.get("params", {})
+
+            # 2. Validate the command
+            if not self.security_manager.validate_command(parsed_command):
+                return {"status": "error", "message": "Command not allowed."}
+
+            # Check for dangerous commands and ask for confirmation
+            if self.security_manager.is_dangerous_command(parsed_command):
+                # In a real interactive CLI, you'd prompt the user here.
+                # For now, we'll return an error indicating manual confirmation is needed.
+                return {"status": "error", "message": "Dangerous command detected. Manual confirmation required.", "user_message": "This command is potentially dangerous. Please confirm manually if you wish to proceed."}
+
+            # 3. Classify complexity
+            complexity = self.command_parser.classify_complexity(parsed_command)
+
+            # 4. Enhance the command (placeholder for AgentOS)
+            enhanced_command = await self.agentos_enhancer.enhance(command, session_id)
+
+            # 5. Route to the appropriate model (placeholder for LiteLLM)
+            # For now, we'll just use the enhanced command as the query
+            model_response = await self.litellm_router.route(enhanced_command, complexity)
+
+            # 6. Execute the command based on intent
+            execution_result = {"status": "success", "output": ""}
+            if intent == "read_file":
+                file_path = params.get("file_path")
+                if file_path:
+                    cmd_result = self.opencode_client.read_file(file_path)
+                    if cmd_result["returncode"] == 0:
+                        execution_result["output"] = cmd_result["stdout"]
+                    else:
+                        execution_result = {"status": "error", "message": f"Failed to read file: {cmd_result['stderr']}", "user_message": "Could not read the file. Please check the file path and permissions."}
                 else:
-                    component_health = {"status": "unknown", "message": "No health check available"}
-                
-                health_status["components"][name] = component_health
-                
-                if component_health.get("status") != "healthy":
-                    health_status["healthy"] = False
-                    health_status["issues"].append(f"{name}: {component_health.get('message', 'Unknown issue')}")
-                    
-            except Exception as e:
-                health_status["healthy"] = False
-                health_status["issues"].append(f"{name}: Health check failed - {str(e)}")
-                health_status["components"][name] = {"status": "error", "message": str(e)}
-        
-        return health_status
-    
-    async def shutdown(self):
-        """Gracefully shutdown the orchestrator and all components"""
-        try:
-            self.logger.info("Shutting down Ralex V4 Orchestrator...")
-            
-            # Shutdown components in reverse order
-            await self.workflow_engine.shutdown()
-            await self.security_manager.shutdown()
-            await self.opencode_client.shutdown()
-            await self.litellm_router.shutdown()
-            await self.agentos_enhancer.shutdown()
-            await self.context_manager.shutdown()
-            
-            self.is_initialized = False
-            self.logger.info("Ralex V4 Orchestrator shutdown complete")
-            
+                    execution_result = {"status": "error", "message": "File path not provided for read_file.", "user_message": "Please specify which file you want to read."}
+            elif intent == "write_file":
+                file_path = params.get("file_path")
+                content = params.get("content")
+                if file_path and content:
+                    cmd_result = self.opencode_client.write_file(file_path, content)
+                    if cmd_result["returncode"] == 0:
+                        execution_result["output"] = f"Successfully wrote to {file_path}"
+                    else:
+                        execution_result = {"status": "error", "message": f"Failed to write file: {cmd_result['stderr']}", "user_message": "Could not write to the file. Please check the file path and permissions."}
+                else:
+                    execution_result = {"status": "error", "message": "File path or content not provided for write_file.", "user_message": "Please specify the file and content you want to write."}
+            elif intent == "list_directory":
+                cmd_result = self.opencode_client.execute_command("ls -F")
+                if cmd_result["returncode"] == 0:
+                    execution_result["output"] = cmd_result["stdout"]
+                else:
+                    execution_result = {"status": "error", "message": f"Failed to list directory: {cmd_result['stderr']}", "user_message": "Could not list the directory."}
+            elif intent == "fix_bug":
+                # This would involve more complex interaction with LLM and code execution
+                execution_result["output"] = f"Attempting to fix bug in {params.get('file_path', 'unknown file')}. Model response: {model_response}"
+            elif intent == "create_component":
+                execution_result["output"] = f"Creating component {params.get('name', 'unknown component')}. Model response: {model_response}"
+            elif intent == "run_tests":
+                cmd_result = self.opencode_client.execute_command("pytest")
+                if cmd_result["returncode"] == 0:
+                    execution_result["output"] = cmd_result["stdout"]
+                else:
+                    execution_result = {"status": "error", "message": f"Tests failed: {cmd_result['stderr']}", "user_message": "Tests failed. Please check the output for details."}
+            elif intent == "review_code":
+                execution_result["output"] = f"Reviewing code. Model response: {model_response}"
+            elif intent == "explain_code":
+                execution_result["output"] = f"Explaining code. Model response: {model_response}"
+            else:
+                execution_result["output"] = f"Processed command: {command}. Model response: {model_response}"
+
+            # 7. Update context
+            current_context = self.context_manager.get_context(session_id)
+            new_context = f"{current_context}\nUser: {command}\nAssistant: {execution_result.get('output', '')}"
+            self.context_manager.update_context(session_id, new_context)
+
+            # 8. Audit operation (placeholder)
+            self.security_manager.audit_operation(parsed_command, execution_result)
+
+            return execution_result
+
         except Exception as e:
-            self.logger.error(f"Error during shutdown: {e}")
+            user_message = self.error_handler.get_user_friendly_message(e)
+            self.error_handler.handle_error(e, context=command)
+            return {"status": "error", "message": str(e), "user_message": user_message}
 
+    async def execute_workflow(self, workflow_name: str, params: dict) -> dict:
+        try:
+            workflow = self.workflow_engine.get_workflow(workflow_name)
+            if not workflow:
+                return {"status": "error", "message": f"Workflow '{workflow_name}' not found."}
 
-# Global orchestrator instance (will be initialized by main application)
-_orchestrator_instance: Optional[RalexV4Orchestrator] = None
+            # Simplified workflow execution: just print steps
+            output = []
+            for step in workflow.get("steps", []):
+                step_description = list(step.keys())[0]
+                step_detail = step[step_description]
+                output.append(f"Executing workflow step: {step_description} - {step_detail}")
+                # In a real implementation, this would call other orchestrator methods
+                # e.g., await self.process_voice_command(step_detail, "workflow_session")
 
+            return {"status": "success", "output": "\n".join(output)}
 
-def get_orchestrator() -> RalexV4Orchestrator:
-    """Get the global orchestrator instance"""
-    global _orchestrator_instance
-    if _orchestrator_instance is None:
-        _orchestrator_instance = RalexV4Orchestrator()
-    return _orchestrator_instance
-
-
-async def initialize_orchestrator(project_path: str = None) -> bool:
-    """Initialize the global orchestrator instance"""
-    global _orchestrator_instance
-    _orchestrator_instance = RalexV4Orchestrator(project_path)
-    return await _orchestrator_instance.initialize()
-
-
-async def shutdown_orchestrator():
-    """Shutdown the global orchestrator instance"""
-    global _orchestrator_instance
-    if _orchestrator_instance:
-        await _orchestrator_instance.shutdown()
-        _orchestrator_instance = None
+        except Exception as e:
+            user_message = self.error_handler.get_user_friendly_message(e)
+            self.error_handler.handle_error(e, context=f"workflow: {workflow_name}")
+            return {"status": "error", "message": str(e), "user_message": user_message}
