@@ -17,6 +17,10 @@ class OpenCodeClient:
         return self.execute_command(command)
 
     def write_file(self, file_path: str, content: str) -> dict:
-        # Using printf to handle special characters and newlines better than echo
-        command = f"printf \"%s\" \"{content}\" > {file_path}"
-        return self.execute_command(command)
+        # Write file directly using Python instead of shell command to avoid escaping issues
+        try:
+            with open(file_path, 'w') as f:
+                f.write(content)
+            return {"stdout": f"Successfully wrote to {file_path}", "stderr": "", "returncode": 0}
+        except Exception as e:
+            return {"stdout": "", "stderr": str(e), "returncode": 1}
