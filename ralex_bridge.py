@@ -185,15 +185,106 @@ class RalexBridge:
         except Exception as e:
             return {"error": f"Bridge error: {str(e)}"}
 
-# FastAPI wrapper for OpenWebUI integration
+# CLI interface with health check
 if __name__ == "__main__":
-    # Simple CLI test
     import asyncio
     
+    # Health check command
+    if len(sys.argv) == 2 and sys.argv[1] in ['--health', '--check', '--status']:
+        print("🔍 Ralex V4 Health Check")
+        print("========================")
+        
+        # Check API key
+        api_key = os.getenv("OPENROUTER_API_KEY")
+        if api_key:
+            print("✅ OpenRouter API key configured")
+        else:
+            print("❌ OpenRouter API key not set")
+            print("   Run: export OPENROUTER_API_KEY='your-key-here'")
+            
+        # Check dependencies
+        try:
+            import litellm
+            print("✅ LiteLLM available")
+        except ImportError:
+            print("❌ LiteLLM missing - run: pip install litellm")
+            
+        # Check write permissions
+        try:
+            with open('.ralex_test', 'w') as f:
+                f.write('test')
+            os.remove('.ralex_test')
+            print("✅ File write permissions OK")
+        except:
+            print("❌ Cannot write files in current directory")
+            
+        # Check git
+        try:
+            import subprocess
+            subprocess.run(['git', '--version'], capture_output=True, check=True)
+            print("✅ Git available")
+        except:
+            print("⚠️  Git not available (optional)")
+            
+        print("\n🎯 Try: python ralex_bridge.py 'create a test.py file'")
+        sys.exit(0)
+    
+    # Help command
+    if len(sys.argv) == 1 or (len(sys.argv) == 2 and sys.argv[1] in ['--help', '-h']):
+        print("🎯 Ralex V4 - Voice-Controlled AI Coding Assistant")
+        print("================================================")
+        print("")
+        print("Usage:")
+        print("  python ralex_bridge.py 'your command here'")
+        print("")
+        print("Examples:")
+        print("  python ralex_bridge.py 'create a calculator.py with add/subtract functions'")
+        print("  python ralex_bridge.py 'create a config.json with database settings'")
+        print("  python ralex_bridge.py 'create an index.html with a contact form'")
+        print("")
+        print("Options:")
+        print("  --health    Check system health and configuration")
+        print("  --help      Show this help message")
+        print("")
+        print("Setup:")
+        print("  1. Set API key: export OPENROUTER_API_KEY='your-key'")
+        print("  2. Get free key: https://openrouter.ai")
+        print("")
+        print("Documentation:")
+        print("  README: cat README_V4.md")
+        print("  Setup:  cat QUICKSTART.md")
+        print("  Status: cat PRODUCTION_READINESS.md")
+        sys.exit(0)
+    
     if len(sys.argv) < 2:
+        print("❌ Error: No command provided")
         print("Usage: python ralex_bridge.py 'your prompt here'")
+        print("Help:  python ralex_bridge.py --help")
         sys.exit(1)
     
-    bridge = RalexBridge()
-    result = asyncio.run(bridge.process_request(sys.argv[1]))
-    print(json.dumps(result, indent=2))
+    # Check API key before processing
+    if not os.getenv("OPENROUTER_API_KEY"):
+        print("❌ Error: OpenRouter API key not set")
+        print("Solution: export OPENROUTER_API_KEY='your-key-here'")
+        print("Get free key: https://openrouter.ai")
+        sys.exit(1)
+    
+    try:
+        bridge = RalexBridge()
+        result = asyncio.run(bridge.process_request(sys.argv[1]))
+        
+        if "error" in result:
+            print(f"❌ Error: {result['error']}")
+            if "API" in result["error"]:
+                print("💡 Check your OpenRouter API key and internet connection")
+            sys.exit(1)
+        else:
+            print(json.dumps(result, indent=2))
+            
+    except KeyboardInterrupt:
+        print("\n⚠️  Operation cancelled by user")
+        sys.exit(1)
+    except Exception as e:
+        print(f"❌ Unexpected error: {str(e)}")
+        print("💡 Run: python ralex_bridge.py --health")
+        sys.exit(1)

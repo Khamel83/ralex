@@ -68,7 +68,7 @@ def start_openwebui():
     os.chdir(webui_dir)
     
     # Start OpenWebUI with custom port
-    cmd = ["python", "-m", "uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "3000"]
+    cmd = ["python", "-m", "uvicorn", "open_webui.main:app", "--host", "0.0.0.0", "--port", "3000"]
     webui_process = subprocess.Popen(cmd)
     
     print("✅ OpenWebUI started on port 3000")
