@@ -60,14 +60,18 @@ def start_openwebui():
         print("❌ OpenWebUI directory not found")
         return None
     
+    # Set environment variables for OpenWebUI
+    os.environ["PORT"] = "3000"
+    os.environ["HOST"] = "0.0.0.0"
+    
     # Change to OpenWebUI directory
     os.chdir(webui_dir)
     
-    # Start OpenWebUI
-    cmd = ["python", "backend/start.sh"]
+    # Start OpenWebUI with custom port
+    cmd = ["python", "-m", "uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "3000"]
     webui_process = subprocess.Popen(cmd)
     
-    print("✅ OpenWebUI started")
+    print("✅ OpenWebUI started on port 3000")
     return webui_process
 
 def main():
@@ -92,7 +96,7 @@ def main():
     
     print("\n🎉 Ralex V4 started successfully!")
     print("📊 RalexBridge API: http://localhost:8000")
-    print("🖥️  OpenWebUI: http://localhost:8080")
+    print("🖥️  OpenWebUI: http://localhost:3000")
     print("📁 Context saved to: .ralex/")
     print("\nPress Ctrl+C to stop all services")
     

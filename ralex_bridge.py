@@ -76,19 +76,20 @@ class RalexBridge:
             in_code_block = False
             
             for line in lines:
-                if line.startswith('```python') or line.startswith('```'):
+                if line.startswith('```python'):
                     in_code_block = True
                     continue
                 elif line.startswith('```') and in_code_block:
+                    in_code_block = False
                     break
                 elif in_code_block:
                     content_lines.append(line)
-                elif not filename and '.py' in line:
+                elif not filename and '.py' in line and not in_code_block:
                     # Try to extract filename
                     words = line.split()
                     for word in words:
                         if '.py' in word:
-                            filename = word.strip('`"\'')
+                            filename = word.strip('`"\'.:')
                             break
             
             if filename and content_lines:

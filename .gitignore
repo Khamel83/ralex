@@ -24,7 +24,7 @@ atlas-env-v2/
 .ralex-env/
 .env
 .atlas-code/
-.ralex/
+# .ralex/ - Now tracking session logs for V4
 *.jsonl
 budget_config.json
 

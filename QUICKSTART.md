@@ -1,7 +1,9 @@
 # Ralex V4 Quickstart Guide
 
 ## What is Ralex?
-Ralex is a voice-controlled AI coding assistant that helps you write, edit, and manage code by talking to it. Say "create a Python calculator" and it will write the code for you automatically.
+Ralex is a voice-controlled AI coding assistant that helps you write, edit, and manage code by talking to it. Say "create a Python calculator" and it will write the actual code files for you automatically.
+
+**Key difference**: Instead of just getting code suggestions, Ralex actually creates the files on your computer.
 
 ## Why Use Ralex?
 - **Voice control**: Code by speaking instead of typing
@@ -27,25 +29,30 @@ pip install -r requirements.txt
 
 ### 3. Get API Key (Free tier available)
 - Go to [OpenRouter.ai](https://openrouter.ai)
-- Sign up for free account
-- Copy your API key from dashboard
-- Set it: `export OPENROUTER_API_KEY="your-key-here"`
+- Sign up for free account (required for API access)
+- Go to "Keys" section in dashboard  
+- Copy your API key
+- **Important**: Set it in your terminal: `export OPENROUTER_API_KEY="your-key-here"`
+- **Note**: Without this API key, Ralex cannot access AI models
 
 ### 4. Test It Works
 ```bash
 python ralex_bridge.py "create a hello.py file with a print statement"
 ```
 
-You should see:
-- A new `hello.py` file created
-- A session log in `.ralex/` folder
-- Success message with details
+**Expected results** (this confirms everything is working):
+- ✅ A new `hello.py` file appears in your current directory
+- ✅ A session log appears in `.ralex/session_TIMESTAMP.md`
+- ✅ Success message in terminal with model used and execution details
+- ✅ You can run `python hello.py` and see "Hello, World!" output
+
+**If this doesn't work**, check the troubleshooting section below.
 
 ### 5. Run Full Interface (Optional)
 ```bash
 python start_ralex_v4.py
 ```
-Then open http://localhost:8080 for web interface with voice input.
+Then open http://localhost:3000 for web interface with voice input.
 
 ## How to Use Ralex
 
@@ -65,7 +72,7 @@ python ralex_bridge.py "fix the syntax error in my script"
 ```
 
 ### Voice Commands (Web Interface)
-1. Open http://localhost:8080 after running `python start_ralex_v4.py`
+1. Open http://localhost:3000 after running `python start_ralex_v4.py`
 2. Click the microphone button
 3. Say: "Create a web scraper in Python"
 4. Watch as it writes the code automatically
@@ -131,7 +138,7 @@ export OPENROUTER_API_KEY="your-key-here"
 - Try a simpler command first
 
 ### Web Interface Won't Start
-- Make sure no other service is using port 8080
+- Make sure no other service is using port 3000
 - Check the terminal output for error messages
 - Try the command-line version first
 

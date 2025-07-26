@@ -56,7 +56,7 @@ python ralex_bridge.py "create a hello world script"
 ### Use Voice Interface
 ```bash
 python start_ralex_v4.py
-# Open http://localhost:8080
+# Open http://localhost:3000
 # Click microphone, say your command
 ```
 
