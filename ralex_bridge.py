@@ -67,30 +67,42 @@ class RalexBridge:
     
     def execute_via_opencode(self, ai_response: str, original_prompt: str) -> dict:
         """Execute AI response using OpenCode"""
-        # For now, if it's a file creation request, do it directly
-        if "create" in original_prompt.lower() and ".py" in ai_response:
+        # For file creation requests, extract code from response
+        if "create" in original_prompt.lower():
             # Extract filename and content from AI response
             lines = ai_response.split('\n')
             filename = None
             content_lines = []
             in_code_block = False
+            code_type = None
+            
+            # Look for any file extension in the prompt or response
+            import re
+            file_extensions = ['.py', '.js', '.json', '.md', '.txt', '.html', '.css', '.yaml', '.yml', '.xml']
             
             for line in lines:
-                if line.startswith('```python'):
-                    in_code_block = True
-                    continue
-                elif line.startswith('```') and in_code_block:
-                    in_code_block = False
-                    break
+                # Detect code block start
+                if line.startswith('```'):
+                    if not in_code_block:
+                        in_code_block = True
+                        code_type = line[3:].strip() or 'text'
+                        continue
+                    else:
+                        in_code_block = False
+                        break
                 elif in_code_block:
                     content_lines.append(line)
-                elif not filename and '.py' in line and not in_code_block:
-                    # Try to extract filename
-                    words = line.split()
-                    for word in words:
-                        if '.py' in word:
-                            filename = word.strip('`"\'.:')
-                            break
+                elif not filename:
+                    # Try to extract filename from text
+                    for ext in file_extensions:
+                        if ext in line:
+                            words = line.split()
+                            for word in words:
+                                if ext in word:
+                                    filename = word.strip('`"\'.:')
+                                    break
+                            if filename:
+                                break
             
             if filename and content_lines:
                 content = '\n'.join(content_lines)
