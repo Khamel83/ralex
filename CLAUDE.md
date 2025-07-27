@@ -87,7 +87,46 @@ export OPENROUTER_API_KEY="your-key-here"
 python start_ralex_v4.py
 ```
 - **RalexBridge API**: http://localhost:8000
-- **OpenWebUI Interface**: http://localhost:3000
+- **OpenWebUI Interface**: http://localhost:3000 (web interface - resource intensive on RPi)
+
+## iOS Mobile Interface (Recommended for RPi)
+
+For Raspberry Pi deployments, using an iOS app provides better performance than the web interface:
+
+### Recommended iOS Apps (Best to Least)
+
+#### 1. OpenCat (Best for Development)
+- **Download**: [App Store - OpenCat](https://apps.apple.com/us/app/opencat-chat-with-ai-bot/id6445999201)
+- **Setup**:
+  1. Install OpenCat from App Store
+  2. Open app → Settings → API Configuration
+  3. Set Base URL: `http://192.168.7.197:8000/v1` (your RPi IP)
+  4. API Key: Any value (Ralex doesn't require auth currently)
+  5. Model: `ralex-bridge`
+- **Why Best**: Developer-focused, keyboard extensions, prompt library, cross-device sync
+
+#### 2. ChatBox AI (Excellent Alternative)
+- **Download**: [chatboxai.app](https://chatboxai.app/en) → iOS version
+- **Setup**:
+  1. Install ChatBox AI
+  2. Settings → Custom API Endpoint
+  3. Endpoint: `http://192.168.7.197:8000`
+  4. API Key: `ralex-key` (any value)
+- **Why Good**: Team collaboration features, Azure endpoint support
+
+#### 3. Pal Chat (Simple Option)
+- **Download**: [App Store - Pal Chat](https://apps.apple.com/us/app/pal-chat-ai-chat-client/id6447545085)
+- **Setup**:
+  1. Install Pal Chat from App Store
+  2. Settings → Custom Server
+  3. Base URL: `http://192.168.7.197:8000`
+  4. API Key: Any value
+- **Why Decent**: Clean interface, privacy-focused
+
+### Network Access Notes
+- Replace `192.168.7.197` with your actual Raspberry Pi IP address
+- Ensure your iPhone is on the same network as your RPi
+- For remote access, configure port forwarding or use Tailscale VPN
 
 #### Legacy Ralex (V1-V3)
 ```bash

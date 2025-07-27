@@ -1,0 +1,8 @@
+# Super minimal OpenWebUI for ARM/Raspberry Pi
+fastapi==0.115.7
+uvicorn==0.35.0
+pydantic==2.11.7
+requests==2.32.4
+starlette==0.42.0
+aiofiles
+openai

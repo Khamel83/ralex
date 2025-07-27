@@ -81,13 +81,17 @@ def start_openwebui():
     os.environ["WEBUI_SECRET_KEY"] = "ralex-v4-secret-key"
     os.environ["ENV"] = "prod"
     
-    # Install ultra-minimal dependencies for Raspberry Pi (ARM compatibility)
+    # Install super minimal dependencies for Raspberry Pi (ARM compatibility)
+    arm_minimal_requirements = Path.cwd() / "requirements-webui-minimal-arm.txt"
     ultraminimal_requirements = Path.cwd() / "requirements-webui-ultraminimal.txt"
     minimal_requirements = Path.cwd() / "requirements-webui-minimal.txt"
     requirements_file = webui_dir / "requirements.txt"
     
-    # Use ultra-minimal requirements for Raspberry Pi ARM compatibility
-    if ultraminimal_requirements.exists():
+    # Use super minimal requirements for Raspberry Pi ARM compatibility
+    if arm_minimal_requirements.exists():
+        print("📦 Installing super minimal OpenWebUI dependencies for Raspberry Pi ARM...")
+        requirements_to_use = arm_minimal_requirements
+    elif ultraminimal_requirements.exists():
         print("📦 Installing ultra-minimal OpenWebUI dependencies for Raspberry Pi ARM...")
         requirements_to_use = ultraminimal_requirements
     elif minimal_requirements.exists():
