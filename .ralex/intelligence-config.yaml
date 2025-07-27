@@ -1,0 +1,55 @@
+# Intelligence Optimization Configuration
+# Cost-first routing and model tier management
+
+enabled: false  # Set to true to enable intelligence routing
+
+# Intent-to-complexity mappings
+intent_mappings:
+  simple:
+    - "what"
+    - "explain" 
+    - "how"
+    - "define"
+    - "show"
+  complex:
+    - "refactor"
+    - "debug"
+    - "optimize"
+    - "analyze"
+    - "build"
+    - "create"
+    - "implement"
+
+# Cost-tier model mappings for LiteLLM
+model_tiers:
+  cheap:
+    - "openrouter/meta-llama/llama-3.1-8b-instruct"
+    - "openrouter/anthropic/claude-3-haiku"
+    - "gpt-3.5-turbo"
+  medium:
+    - "gpt-4"
+    - "openrouter/anthropic/claude-3.5-sonnet"
+    - "openrouter/meta-llama/llama-3.1-70b-instruct"
+  premium:
+    - "gpt-4o"
+    - "openrouter/anthropic/claude-3-opus"
+    - "openrouter/openai/o1-preview"
+
+# Cost optimization settings
+cost_limits:
+  max_per_query: 0.10
+  daily_budget: 5.00
+  weekly_budget: 25.00
+
+# Performance targets  
+performance:
+  routing_time_max: 3.0  # seconds
+  context_token_limit: 5  # tokens appended for context
+  fallback_enabled: true
+
+# Metrics tracking
+metrics:
+  cost_tracking: true
+  performance_tracking: true
+  log_file: ".ralex/cost_log.txt"
+EOF < /dev/null
