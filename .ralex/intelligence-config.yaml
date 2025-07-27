@@ -1,7 +1,7 @@
 # Intelligence Optimization Configuration
 # Cost-first routing and model tier management
 
-enabled: false  # Set to true to enable intelligence routing
+enabled: true  # Set to true to enable intelligence routing
 
 # Intent-to-complexity mappings
 intent_mappings:
@@ -52,4 +52,3 @@ metrics:
   cost_tracking: true
   performance_tracking: true
   log_file: ".ralex/cost_log.txt"
-EOF < /dev/null

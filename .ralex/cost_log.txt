@@ -1,0 +1,4 @@
+{'timestamp': '2025-07-27T16:08:19.027869', 'query_length': 10, 'intent': 'Simple query routed to cheap model', 'route': 'direct', 'model_tier': 'cheap', 'routing_time': 7.414817810058594e-05}
+{'timestamp': '2025-07-27T16:08:19.029396', 'query_length': 14, 'intent': 'Simple query routed to cheap model', 'route': 'direct', 'model_tier': 'cheap', 'routing_time': 6.937980651855469e-05}
+{'timestamp': '2025-07-27T16:08:19.030358', 'query_length': 18, 'intent': 'Complex query routed to agent-os workflow', 'route': 'agent-os', 'model_tier': 'medium', 'routing_time': 6.67572021484375e-05}
+{'timestamp': '2025-07-27T16:08:26.413121', 'query_length': 17, 'intent': 'Simple query routed to cheap model', 'route': 'direct', 'model_tier': 'cheap', 'routing_time': 0.008240699768066406}
