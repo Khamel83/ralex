@@ -77,7 +77,15 @@ class RalexBridge:
             )
             return response.choices[0].message.content
         except Exception as e:
-            return f"Error calling LiteLLM/OpenRouter: {str(e)}"
+            error_msg = str(e)
+            if "No auth credentials found" in error_msg:
+                return "OpenRouter API key required. Set OPENROUTER_API_KEY environment variable."
+            elif "rate limit" in error_msg.lower():
+                return "Rate limit exceeded. Please wait before making another request."
+            elif "network" in error_msg.lower() or "connection" in error_msg.lower():
+                return "Network connection error. Check internet connectivity."
+            else:
+                return f"Error calling LiteLLM/OpenRouter: {error_msg}"
     
     def execute_via_opencode(self, ai_response: str, original_prompt: str) -> dict:
         """Execute AI response using OpenCode"""
