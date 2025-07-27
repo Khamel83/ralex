@@ -69,9 +69,10 @@ def start_openwebui():
     """Start OpenWebUI"""
     print("🌐 Starting OpenWebUI...")
     
-    webui_dir = Path("archive/web-interfaces/ralex-webui/backend")
+    # Use absolute path to avoid path issues
+    webui_dir = Path.cwd() / "archive" / "web-interfaces" / "ralex-webui" / "backend"
     if not webui_dir.exists():
-        print("❌ OpenWebUI backend directory not found")
+        print(f"❌ OpenWebUI backend directory not found: {webui_dir}")
         return None
     
     # Set environment variables for OpenWebUI
@@ -80,16 +81,32 @@ def start_openwebui():
     os.environ["WEBUI_SECRET_KEY"] = "ralex-v4-secret-key"
     os.environ["ENV"] = "prod"
     
-    # Change to OpenWebUI backend directory
-    original_dir = os.getcwd()
-    os.chdir(webui_dir)
+    # Install ultra-minimal dependencies for Raspberry Pi (ARM compatibility)
+    ultraminimal_requirements = Path.cwd() / "requirements-webui-ultraminimal.txt"
+    minimal_requirements = Path.cwd() / "requirements-webui-minimal.txt"
+    requirements_file = webui_dir / "requirements.txt"
     
-    # Install dependencies if needed
-    requirements_file = Path("requirements.txt")
-    if requirements_file.exists():
-        print("📦 Installing OpenWebUI dependencies...")
-        subprocess.run([sys.executable, "-m", "pip", "install", "-r", "requirements.txt"], 
-                      stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    # Use ultra-minimal requirements for Raspberry Pi ARM compatibility
+    if ultraminimal_requirements.exists():
+        print("📦 Installing ultra-minimal OpenWebUI dependencies for Raspberry Pi ARM...")
+        requirements_to_use = ultraminimal_requirements
+    elif minimal_requirements.exists():
+        print("📦 Installing minimal OpenWebUI dependencies for Raspberry Pi...")
+        requirements_to_use = minimal_requirements
+    else:
+        print("📦 Installing full OpenWebUI dependencies...")
+        requirements_to_use = requirements_file
+    
+    if requirements_to_use.exists():
+        try:
+            result = subprocess.run([sys.executable, "-m", "pip", "install", "-r", str(requirements_to_use)], 
+                                  capture_output=True, text=True, timeout=300)  # 5 minute timeout
+            if result.returncode != 0:
+                print(f"⚠️  Warning: Some dependencies failed to install: {result.stderr}")
+        except subprocess.TimeoutExpired:
+            print("⚠️  Warning: Dependency installation timed out, continuing with available packages...")
+        except Exception as e:
+            print(f"⚠️  Warning: Dependency installation failed: {e}")
     
     # Start OpenWebUI with better configuration for Raspberry Pi
     cmd = [
@@ -102,10 +119,12 @@ def start_openwebui():
     ]
     
     # Start with output visible to debug issues
-    webui_process = subprocess.Popen(cmd, cwd=str(webui_dir))
-    
-    # Change back to original directory
-    os.chdir(original_dir)
+    try:
+        webui_process = subprocess.Popen(cmd, cwd=str(webui_dir), 
+                                       stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    except Exception as e:
+        print(f"❌ Failed to start OpenWebUI process: {e}")
+        return None
     
     # Wait for OpenWebUI to start and become accessible
     max_retries = 15
