@@ -153,8 +153,9 @@ def start_openwebui():
 
 def main():
     """Main startup sequence"""
-    print("🎯 Starting Ralex V4 - Full Stack Integration")
+    print("🎯 Starting Ralex (v1.3.0) - Full Stack Integration")
     print("Components: AgentOS + LiteLLM + OpenRouter + OpenCode + OpenWebUI")
+    print("Standards: .agent-os/standards/modern-development.yaml")
     print("=" * 60)
     
     # Check required environment variables
