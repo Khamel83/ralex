@@ -1,0 +1,55 @@
+# Agent-OS Template: Debugging
+# Cost-efficient systematic debugging approach
+
+template_id: "debug"
+version: "1.0.0"
+category: "troubleshooting"
+philosophy: "cost_first_development"
+
+description: |
+  Systematic debugging with cost-effective model routing.
+  Focus on quick issue resolution over deep analysis.
+
+triggers:
+  - keywords: ["debug", "error", "bug", "fix", "broken"]
+  - complexity: "medium"
+  - model_tier: "medium"
+
+workflow:
+  1. reproduction:
+      - "Confirm error exists and is reproducible"
+      - "Gather minimal error details (logs, stack traces)"
+      - "Identify scope: single function vs system-wide"
+      
+  2. investigation:
+      - "Check recent changes (git log)"
+      - "Review error messages for obvious causes"
+      - "Test isolated components"
+      
+  3. hypothesis:
+      - "Generate 2-3 most likely causes"
+      - "Start with simplest/most common issues"
+      - "Avoid complex theoretical debugging"
+      
+  4. resolution:
+      - "Apply fix for most likely cause"
+      - "Test fix immediately"
+      - "Document solution if non-obvious"
+
+parameters:
+  max_investigation_time: "20min"  # Prevent rabbit holes
+  focus_scope: "recent_changes"    # Likely culprits first
+  fallback_models: true           # Use cheap models for docs
+  test_required: true
+
+cost_optimization:
+  - "Use cheap models for log analysis"
+  - "Use medium models for code analysis only"
+  - "Switch to human escalation after 30min"
+  
+debugging_checklist:
+  - "Environment variables set correctly?"
+  - "Dependencies installed and up to date?"
+  - "File permissions correct?"
+  - "Network connectivity working?"
+  - "Recent git changes introduced issue?"

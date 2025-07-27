@@ -1,0 +1,48 @@
+# Agent-OS Template: Code Refactoring
+# Cost-first approach to systematic code improvement
+
+template_id: "refactor"
+version: "1.0.0"
+category: "development"
+philosophy: "cost_first_development"
+
+description: |
+  Systematic code refactoring with minimal overhead.
+  Focus on immediate improvements over comprehensive rewriting.
+
+triggers:
+  - keywords: ["refactor", "improve", "clean", "optimize"]
+  - complexity: "medium"
+  - model_tier: "medium"
+
+workflow:
+  1. analysis:
+      - "Identify specific code smells or issues"
+      - "Estimate refactoring effort (< 30 minutes = proceed)"
+      - "Check for breaking changes risk"
+      
+  2. planning:
+      - "Create minimal change list"
+      - "Identify files requiring modification"
+      - "Plan backwards-compatible approach"
+      
+  3. execution:
+      - "Apply smallest viable improvements first"
+      - "Test after each change"
+      - "Stop when core issues resolved"
+      
+  4. validation:
+      - "Run existing tests"
+      - "Verify no functionality changes"
+      - "Commit incremental improvements"
+
+parameters:
+  max_files: 5  # Limit scope to prevent over-engineering
+  time_budget: "30min"  # Cost control
+  test_required: true
+  rollback_plan: true
+
+cost_optimization:
+  - "Use medium-tier models for analysis"
+  - "Switch to cheap models for documentation"
+  - "Prefer simple patterns over complex abstractions"

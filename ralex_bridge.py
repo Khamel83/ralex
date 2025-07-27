@@ -54,6 +54,18 @@ class RalexBridge:
             except Exception:
                 pass  # Graceful fallback if intelligence router fails
         
+    def load_agentos_template(self, route: str) -> dict:
+        """Load agent-os template for complex queries"""
+        template_path = Path(f".agent-os/templates/{route.lower()}.yaml")
+        if template_path.exists():
+            try:
+                import yaml
+                with open(template_path) as f:
+                    return yaml.safe_load(f)
+            except Exception:
+                pass
+        return {}
+    
     def apply_agentos_thinking(self, prompt: str) -> dict:
         """Apply AgentOS strategic thinking to structure the prompt"""
         # Use intelligence router if available
@@ -69,6 +81,19 @@ class RalexBridge:
                     "route": routing_result["route"],
                     "enhanced_query": routing_result["query"]
                 }
+                
+                # Load agent-os template for complex routes
+                if routing_result["route"] == "agent-os":
+                    # Detect template type based on keywords
+                    prompt_lower = prompt.lower()
+                    if any(word in prompt_lower for word in ["refactor", "improve", "clean"]):
+                        thinking["template"] = self.load_agentos_template("refactor")
+                    elif any(word in prompt_lower for word in ["debug", "error", "bug", "fix"]):
+                        thinking["template"] = self.load_agentos_template("debug")
+                    elif any(word in prompt_lower for word in ["test", "testing", "validate"]):
+                        thinking["template"] = self.load_agentos_template("test")
+                    else:
+                        thinking["template"] = {}
                 return thinking
             except Exception:
                 pass  # Fallback to simple classification

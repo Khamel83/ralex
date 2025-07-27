@@ -1,0 +1,69 @@
+# Agent-OS Template: Testing
+# Cost-efficient testing strategy with practical coverage
+
+template_id: "test"
+version: "1.0.0"
+category: "quality_assurance"
+philosophy: "cost_first_development"
+
+description: |
+  Practical testing approach focusing on critical paths.
+  Avoid over-testing while ensuring core functionality works.
+
+triggers:
+  - keywords: ["test", "testing", "coverage", "qa", "validate"]
+  - complexity: "simple"
+  - model_tier: "cheap"
+
+workflow:
+  1. scope_definition:
+      - "Identify critical user paths"
+      - "Focus on new/changed functionality"
+      - "Skip testing stable, well-tested code"
+      
+  2. test_strategy:
+      - "Unit tests for business logic"
+      - "Integration tests for API endpoints"
+      - "Manual testing for UI/UX"
+      
+  3. execution:
+      - "Run existing tests first"
+      - "Add minimal tests for new features"
+      - "Test error conditions and edge cases"
+      
+  4. validation:
+      - "Ensure tests are fast (< 30 seconds total)"
+      - "Verify tests catch real issues"
+      - "Document any manual testing steps"
+
+parameters:
+  max_test_time: "10min"           # Keep testing lightweight
+  coverage_target: "critical_only" # Don't aim for 100%
+  focus_new_code: true             # Test changes, not everything
+  fast_feedback: true              # Prefer quick tests
+
+cost_optimization:
+  - "Use cheap models for test generation"
+  - "Focus on high-impact test cases"
+  - "Prefer simple assertions over complex test logic"
+  
+testing_priorities:
+  1. "API endpoints respond correctly"
+  2. "Error handling works as expected"
+  3. "Critical user workflows complete"
+  4. "Configuration loading works"
+  5. "Integration between components"
+
+test_types:
+  unit:
+    - "Business logic functions"
+    - "Data transformation"
+    - "Validation rules"
+  integration:
+    - "API request/response flow"
+    - "Database operations"
+    - "External service calls"
+  manual:
+    - "User interface behavior"
+    - "Mobile app compatibility"
+    - "Error message clarity"
