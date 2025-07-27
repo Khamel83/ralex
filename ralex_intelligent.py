@@ -157,4 +157,3 @@ def test_fallbacks():
 
 if __name__ == "__main__":
     test_fallbacks()
-EOF < /dev/null

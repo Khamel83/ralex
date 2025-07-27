@@ -32,6 +32,12 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'ralex_core'))
 from opencode_client import OpenCodeClient
 from git_sync_manager import GitSyncManager
 
+# Import intelligence router for cost optimization
+try:
+    from ralex_intelligent import RalexIntelligenceRouter
+except ImportError:
+    RalexIntelligenceRouter = None
+
 class RalexBridge:
     def __init__(self):
         self.project_path = os.getcwd()
@@ -40,20 +46,66 @@ class RalexBridge:
         self.context_dir = Path(self.project_path) / ".ralex"
         self.context_dir.mkdir(exist_ok=True)
         
+        # Initialize intelligence router if available
+        self.intelligence_router = None
+        if RalexIntelligenceRouter:
+            try:
+                self.intelligence_router = RalexIntelligenceRouter()
+            except Exception:
+                pass  # Graceful fallback if intelligence router fails
+        
     def apply_agentos_thinking(self, prompt: str) -> dict:
         """Apply AgentOS strategic thinking to structure the prompt"""
-        # Load AgentOS standards
-        standards_path = Path("agent_os/standards")
+        # Use intelligence router if available
+        if self.intelligence_router:
+            try:
+                routing_result = self.intelligence_router.route_query(prompt)
+                thinking = {
+                    "original_prompt": prompt,
+                    "complexity": "simple" if routing_result["model_tier"] == "cheap" else "medium",
+                    "requires_code": "create" in prompt.lower() or "write" in prompt.lower(),
+                    "safety_check": "rm " not in prompt and "delete" not in prompt,
+                    "model_tier": routing_result["model_tier"],
+                    "route": routing_result["route"],
+                    "enhanced_query": routing_result["query"]
+                }
+                return thinking
+            except Exception:
+                pass  # Fallback to simple classification
+        
+        # Fallback to simple classification
         thinking = {
             "original_prompt": prompt,
-            "complexity": "medium",  # Simple classification for now
+            "complexity": "medium",
             "requires_code": "create" in prompt.lower() or "write" in prompt.lower(),
             "safety_check": "rm " not in prompt and "delete" not in prompt
         }
         return thinking
     
-    def select_model_via_litellm(self, thinking: dict) -> str:
-        """Use LiteLLM to select appropriate model based on complexity"""
+    def load_intelligence_config(self) -> dict:
+        """Load intelligence configuration for model tier mappings"""
+        config_path = Path(".ralex/intelligence-config.yaml")
+        if config_path.exists():
+            try:
+                import yaml
+                with open(config_path) as f:
+                    return yaml.safe_load(f)
+            except Exception:
+                pass
+        return {"model_tiers": {"cheap": [], "medium": [], "premium": []}}
+    
+    def select_model_via_litellm(self, thinking: dict, tier: str = None) -> str:
+        """Use LiteLLM to select appropriate model based on complexity and cost tier"""
+        # Load intelligence config for model tier mappings
+        intelligence_config = self.load_intelligence_config()
+        
+        if tier:
+            # Use specified tier
+            models = intelligence_config.get("model_tiers", {}).get(tier, [])
+            if models:
+                return models[0]  # Use first model in tier
+        
+        # Fallback to complexity-based selection
         if thinking["complexity"] == "high":
             return "openrouter/anthropic/claude-3.5-sonnet"
         elif thinking["requires_code"]:
@@ -177,11 +229,13 @@ class RalexBridge:
             if not thinking["safety_check"]:
                 return {"error": "Unsafe command detected by AgentOS"}
             
-            # Step 2: LiteLLM model selection
-            model = self.select_model_via_litellm(thinking)
+            # Step 2: LiteLLM model selection with cost tier
+            tier = thinking.get("model_tier", None)
+            model = self.select_model_via_litellm(thinking, tier)
             
-            # Step 3: OpenRouter API call via LiteLLM
-            ai_response = self.call_openrouter_via_litellm(prompt, model)
+            # Step 3: OpenRouter API call via LiteLLM with enhanced query
+            query_to_use = thinking.get("enhanced_query", prompt)
+            ai_response = self.call_openrouter_via_litellm(query_to_use, model)
             
             # Step 4: OpenCode execution
             execution_result = self.execute_via_opencode(ai_response, prompt)
