@@ -128,6 +128,32 @@ For Raspberry Pi deployments, using an iOS app provides better performance than 
 - Ensure your iPhone is on the same network as your RPi
 - For remote access, configure port forwarding or use Tailscale VPN
 
+### Troubleshooting OpenCat Setup
+
+**Connection Issues:**
+1. **"Connection Failed"** - Check RPi IP address and port 8000 accessibility
+2. **"Invalid API Key"** - Any value works, try "ralex-key"
+3. **"Model Not Found"** - Ensure model is set to "ralex-bridge"
+4. **Network timeout** - Verify RPi and iPhone on same WiFi network
+
+**OpenCat Configuration Steps:**
+1. Download OpenCat from App Store
+2. Open OpenCat → Settings → API Configuration
+3. Base URL: `http://[YOUR-RPI-IP]:8000/v1`
+4. API Key: `ralex-key` (any value works)
+5. Model: `ralex-bridge`
+6. Test connection with simple query
+
+**Performance Optimization:**
+- Use OpenCat for mobile interaction
+- Keep terminal for development tasks
+- OpenWebUI on RPi is resource-intensive (use iOS instead)
+
+**Development Workflow Integration:**
+- OpenCat: General queries, code discussions, planning
+- Terminal: File operations, git commands, testing
+- Context flows between both interfaces via Ralex API
+
 #### Legacy Ralex (V1-V3)
 ```bash
 python -m ralex_core.launcher
