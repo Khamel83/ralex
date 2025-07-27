@@ -162,7 +162,18 @@ def main():
     if not os.getenv("OPENROUTER_API_KEY"):
         print("❌ OPENROUTER_API_KEY environment variable not set!")
         print("Please set it with: export OPENROUTER_API_KEY='your-key-here'")
+        print("⚠️  Security: Never commit API keys to version control")
+        print("📖 See SECURITY.md for production deployment guidance")
         sys.exit(1)
+    
+    # Basic security validation (cost-effective checks)
+    env_file = Path(".env")
+    if env_file.exists():
+        import stat
+        file_stat = env_file.stat()
+        if file_stat.st_mode & stat.S_IROTH or file_stat.st_mode & stat.S_IRGRP:
+            print("⚠️  Security: .env file readable by others")
+            print("Fix: chmod 600 .env")
     
     # Start components in order
     bridge_process = start_ralex_bridge()
