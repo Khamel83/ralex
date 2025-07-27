@@ -1,0 +1,149 @@
+---
+# Development Methodology
+# How to build software with cost-first, pragmatic principles
+
+development_approach:
+  name: "Pragmatic Cost-First Development"
+  
+  core_methodology:
+    problem_identification:
+      1: "Identify the specific, measurable problem"
+      2: "Quantify the current cost/pain in exact terms"
+      3: "Define success criteria with numbers"
+      4: "Set maximum time/cost budget for solution"
+      
+    solution_design:
+      1: "Find existing solutions first (search GitHub, libraries, SaaS)"
+      2: "If exists: adapt/configure rather than rebuild"
+      3: "If doesn't exist: design minimum viable solution"
+      4: "Always include fallback to current working method"
+      
+    implementation_strategy:
+      1: "Start with 20-line proof of concept"
+      2: "Test proof of concept immediately"
+      3: "If works: gradually expand functionality"
+      4: "If doesn't work: pivot or abandon quickly"
+      
+    validation_approach:
+      1: "Measure actual improvement vs baseline"
+      2: "Test all fallback mechanisms"
+      3: "Verify cost reduction with real numbers"
+      4: "Confirm setup time with fresh environment"
+
+decision_trees:
+  when_evaluating_solutions:
+    cost_analysis:
+      question: "What's the total cost (time + money + maintenance)?"
+      cheap_solution: "Choose this if it solves 80%+ of the problem"
+      expensive_solution: "Only choose if measured benefit > 3x cost"
+      
+    complexity_analysis:
+      question: "Can this be explained in one paragraph?"
+      simple_solution: "Prefer this even if slightly less capable"
+      complex_solution: "Only choose if no simple alternative exists"
+      
+    dependency_analysis:
+      question: "How many new dependencies does this add?"
+      zero_dependencies: "Strongly prefer"
+      few_dependencies: "Acceptable if well-maintained"
+      many_dependencies: "Avoid unless critical business need"
+      
+    maintenance_analysis:
+      question: "How much ongoing work will this require?"
+      zero_maintenance: "Ideal choice"
+      minimal_maintenance: "Acceptable for high-value features"
+      ongoing_maintenance: "Avoid unless generates revenue"
+
+implementation_patterns:
+  wrapper_approach:
+    when_to_use: "Existing tool does 80% of what you need"
+    pattern: "Create thin wrapper that adds missing 20%"
+    example: "LiteLLM + simple routing logic vs building model router from scratch"
+    
+  configuration_approach:
+    when_to_use: "Behavior needs to change without code deployment"
+    pattern: "YAML/JSON config files with sensible defaults"
+    example: "Model tier mappings in config vs hardcoded in application"
+    
+  progressive_enhancement:
+    when_to_use: "Advanced features are nice-to-have"
+    pattern: "Basic version works, enhanced version adds value"
+    example: "Direct API calls work, intelligence routing optimizes costs"
+    
+  graceful_degradation:
+    when_to_use: "Every feature that could fail"
+    pattern: "Feature fails → system continues with basic functionality"
+    example: "Agent-OS unavailable → fall back to direct command execution"
+
+testing_philosophy:
+  pragmatic_testing:
+    unit_tests: "Only for complex logic that could break subtly"
+    integration_tests: "Only for critical user workflows"
+    manual_tests: "Always test the actual user experience"
+    performance_tests: "Always measure actual cost/speed improvements"
+    
+  testing_priorities:
+    1: "Does the main user workflow work end-to-end?"
+    2: "Do all fallback mechanisms work when features fail?"
+    3: "Are cost optimizations actually reducing costs?"
+    4: "Can a new user complete setup successfully?"
+    
+  what_not_to_test:
+    - "Edge cases that users will never encounter"
+    - "Perfect error handling for impossible scenarios"
+    - "100% code coverage for configuration scripts"
+    - "Performance of features that aren't performance-critical"
+
+deployment_strategy:
+  continuous_deployment:
+    main_branch: "Always production-ready"
+    feature_branches: "Merge when complete and tested"
+    release_process: "Deploy immediately when merged"
+    rollback_plan: "Always available and tested"
+    
+  version_management:
+    semantic_versioning: "1.2.3 format for releases"
+    no_version_marketing: "Never call features 'V5' or 'Version 2.0'"
+    changelog_focus: "What changed and why users care"
+    migration_guides: "Only for breaking changes"
+    
+  monitoring_approach:
+    essential_metrics: "Cost, uptime, user completion rates"
+    nice_to_have_metrics: "Response times, error rates"
+    avoid_metrics: "Vanity metrics that don't drive decisions"
+    alerting: "Only for issues that require immediate action"
+
+code_organization:
+  file_structure:
+    principle: "Easy to find, easy to understand"
+    config_files: "All configuration in obvious locations"
+    documentation: "Co-located with code it documents"
+    standards: "Centralized and self-referencing"
+    
+  naming_conventions:
+    descriptive_over_clever: "intelligence_router.py not smart_thing.py"
+    consistent_patterns: "Same naming pattern across all files"
+    no_abbreviations: "cost_optimization not cost_opt"
+    action_oriented: "route_query() not query_processor()"
+    
+  comment_philosophy:
+    when_to_comment: "Why something was done, not what it does"
+    avoid_comments: "Explaining obvious code"
+    prefer_comments: "Explaining business logic and trade-offs"
+    update_comments: "When changing code, update explanations"
+
+collaboration_principles:
+  code_reviews:
+    focus_on: "Cost implications, simplicity, maintainability"
+    avoid_focus_on: "Perfect code style, theoretical improvements"
+    required_questions: "Is this the cheapest approach? Will this be easy to debug?"
+    
+  documentation:
+    target_audience: "Someone solving the same problem in 6 months"
+    required_sections: "What it does, why it exists, how to change it"
+    avoid_sections: "Implementation details that are obvious from code"
+    
+  knowledge_sharing:
+    decision_records: "Document why choices were made with alternatives considered"
+    learning_notes: "Capture lessons learned from each implementation"
+    pattern_library: "Reusable approaches for common problems"
