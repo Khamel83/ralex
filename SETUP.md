@@ -1,13 +1,13 @@
-# Ralex V3 Setup Guide
+# Ralex V4 Setup Guide
 
-**🎙️ Get from zero to voice-driven AI coding in 5 minutes.**
+**🚀 Get from zero to AI coding orchestration in 5 minutes.**
 
 ## 🚀 **Quick Setup (Recommended)**
 
 ### **1. Prerequisites**
-- **Python 3.10+** and **Node.js 18+** installed
+- **Python 3.10+** installed
 - **OpenRouter API key** (free from [openrouter.ai](https://openrouter.ai/))
-- **Modern web browser** with microphone access
+- **8GB+ RAM** (4GB minimum for Raspberry Pi)
 
 ### **2. Get API Key**
 ```bash
@@ -21,269 +21,223 @@ echo 'export OPENROUTER_API_KEY="sk-or-v1-your-key-here"' >> ~/.bashrc
 source ~/.bashrc
 ```
 
-### **3. Install Ralex V3**
+### **3. Install Ralex V4**
 ```bash
 # Clone repository
 git clone https://github.com/Khamel83/ralex.git
 cd ralex
 
-# Install Python dependencies
-python3 -m pip install -r requirements.txt
+# Create virtual environment (recommended)
+python3 -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 
-# Install frontend dependencies
-npm install --prefix ralex-frontend
-
-# Make launch script executable
-chmod +x ralex-v3-launch.sh
+# Install dependencies
+pip install -r requirements.txt
 ```
 
-### **4. Launch & Test**
+### **4. Launch Ralex V4**
 ```bash
-# Start both backend and web interface
-./ralex-v3-launch.sh
+# Start the full stack (API + WebUI)
+python start_ralex_v4.py
 
 # Should show:
-# 🚀 Starting Ralex V3 - AI Coding Assistant
-# ✅ Backend API started (PID: xxxx)
-# ✅ Frontend started (PID: xxxx)
-# 📱 Web Interface: http://localhost:3000
+# 🎯 Starting Ralex V4 - Full Stack Integration
+# ✅ RalexBridge API started successfully
+# ✅ OpenWebUI configured to use RalexBridge
+# ✅ OpenWebUI started on port 3000
 ```
 
-### **5. Test Voice Input**
-1. Open **http://localhost:3000** in your browser
-2. Click **🎙️ Voice** button and allow microphone access
-3. Say: **"Create a Python function to calculate fibonacci numbers"**
-4. Watch as your voice becomes working code!
+### **5. Access Your AI Coding Assistant**
+1. **Local Access**: http://localhost:3000
+2. **Network Access**: http://YOUR-IP:3000
+3. **Tailscale Access**: http://TAILSCALE-IP:3000
 
-## ✅ **You're Ready for Voice Coding!**
+## ✅ **What You Get with Ralex V4**
 
-Your Ralex V3 setup includes:
-- 🎙️ **Voice input** from any modern browser
-- 💰 **Real-time budget tracking** with $5.00 daily limit
-- 📱 **Mobile-responsive** interface for coding anywhere
-- 🧠 **AgentOS standards** automatically applied
-- 🔄 **WebSocket updates** for real-time collaboration
+- 🌐 **OpenWebUI Interface** - Modern chat-based coding interface
+- 🔄 **RalexBridge API** - Intelligent model routing via OpenRouter
+- 🏗️ **AgentOS Integration** - Automated coding standards and workflows
+- 💰 **Cost Optimization** - Smart model selection for budget efficiency
+- 🔧 **Multi-Provider Support** - OpenRouter, LiteLLM, and more
 
 ---
 
-## 🌐 **Web Interface Features**
+## 🍓 **Raspberry Pi Setup**
 
-### **Voice Commands**
+Ralex V4 is optimized for ARM devices like Raspberry Pi with special lightweight configurations:
+
+### **Raspberry Pi Quick Setup**
+```bash
+# Same basic setup as above, but V4 automatically detects ARM architecture
+# and uses ultra-minimal requirements for compatibility
+
+# Clone and setup
+git clone https://github.com/Khamel83/ralex.git
+cd ralex
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+
+# Start (ARM-optimized automatically)
+export OPENROUTER_API_KEY="your-key-here"
+python start_ralex_v4.py
 ```
-🎙️ "Fix this bug, execute"          → Auto-submits after recognition
-🎙️ "Refactor this code, send it"    → Smart auto-submit phrases  
-🎙️ "Add tests, go ahead"            → Natural language workflow
-🎙️ "Create user authentication"     → Complex feature development
-```
 
-### **Budget Management**
-- **Real-time tracking** with visual progress bars
-- **Add budget** buttons ($0.25, $1.00, $5.00)
-- **Transaction history** showing model usage and costs
-- **Low budget warnings** when approaching limits
-
-### **Mobile Coding**
-- **Touch-optimized** voice button for phones/tablets
-- **Responsive design** adapts to any screen size
-- **Landscape/portrait** mode support
-- **iOS/Android** compatible via browser
+### **ARM Compatibility Features**
+- ✅ **Auto-detects ARM architecture** and skips heavy PyTorch dependencies
+- ✅ **Ultra-minimal OpenWebUI** requirements for faster startup
+- ✅ **Memory-efficient** configurations for 4GB+ Raspberry Pi models
+- ✅ **No illegal instruction errors** - ARM-compatible package selection
 
 ---
 
-## 🔧 **Advanced Setup Options**
+## 🔧 **Services & Ports**
 
-### **Custom Configuration**
+After startup, you'll have these services running:
 
-#### **Budget Limits**
+| Service | Port | Purpose | URL |
+|---------|------|---------|-----|
+| **RalexBridge API** | 8000 | AI orchestration backend | http://localhost:8000 |
+| **OpenWebUI** | 3000 | Web-based chat interface | http://localhost:3000 |
+
+### **Health Checks**
 ```bash
-# Edit default budget in web session manager
-vim ralex_core/web_session.py
+# Check RalexBridge API
+curl http://localhost:8000/health
+# Returns: {"status":"healthy","components":["AgentOS","LiteLLM","OpenRouter","OpenCode"]}
 
-# Change initial_budget default value:
-def create_session(self, initial_budget: float = 10.0):  # Changed from 5.0
-```
-
-#### **Model Preferences**
-```json
-// Edit config/model_tiers.json
-{
-  "tiers": {
-    "fast": [
-      {"name": "openrouter/google/gemini-flash-1.5", "cost_per_token": 0.000001}
-    ],
-    "smart": [
-      {"name": "openrouter/anthropic/claude-3-sonnet", "cost_per_token": 0.000015}
-    ]
-  }
-}
-```
-
-#### **AgentOS Standards**
-Customize coding standards for your project:
-```bash
-# Python coding standards
-vim agent_os/standards/python.md
-
-# Git workflow preferences  
-vim agent_os/standards/git-workflow.md
-
-# Testing requirements
-vim agent_os/instructions/testing.md
-```
-
-### **Production Deployment**
-
-#### **Docker Setup**
-```bash
-# Build multi-service stack
-docker-compose up -d
-
-# Access via:
-# Frontend: http://localhost:3000
-# Backend API: http://localhost:8000
-```
-
-#### **Tailscale HTTPS**
-```bash
-# Enable Tailscale certificates
-sudo tailscale cert $(tailscale status --json | jq -r '.Self.DNSName')
-
-# Configure nginx reverse proxy
-sudo cp nginx/ralex.conf /etc/nginx/sites-enabled/
-sudo systemctl reload nginx
-
-# Access securely via: https://your-device.tailnet.ts.net
-```
-
-### **Development Setup**
-```bash
-# Install development tools
-pip install pytest ruff black isort
-
-# Run tests
-python test-ralex-v3.py
-
-# Run frontend in dev mode
-cd ralex-frontend && npm run dev
-
-# Backend with auto-reload
-python -m ralex_core.openai_api --reload
+# Check if OpenWebUI is running
+curl -I http://localhost:3000
+# Returns: HTTP/1.1 404 Not Found (this is normal for root path)
 ```
 
 ---
 
 ## 🚨 **Troubleshooting**
 
-### **"Microphone Access Denied"**
+### **"OpenWebUI Won't Start"**
 ```bash
-# Chrome: chrome://settings/content/microphone
-# Firefox: about:preferences#privacy → Permissions → Microphone
-# Safari: Safari → Preferences → Websites → Microphone
+# Check if ultra-minimal requirements exist
+ls requirements-webui-ultraminimal.txt
 
-# Allow access for localhost:3000
+# If missing, the startup script will fall back to minimal or full requirements
+# On ARM devices, ensure PyTorch-based packages are avoided
 ```
 
-### **"Backend Connection Failed"** 
+### **"Illegal Instruction Error"**
 ```bash
-# Check if backend is running
+# This happens on ARM devices with incompatible PyTorch
+# V4 automatically prevents this by using ultra-minimal requirements
+
+# If you encounter this, manually remove problematic packages:
+pip uninstall -y sentence-transformers torch transformers
+
+# Then restart
+python start_ralex_v4.py
+```
+
+### **"Dependency Installation Takes Forever"**
+```bash
+# Normal on Raspberry Pi - V4 has 5-minute timeout protection
+# Heavy packages (PyTorch, transformers) are skipped on ARM
+
+# Check what's installing:
+ps aux | grep pip
+```
+
+### **"Backend Connection Failed"**
+```bash
+# Check if RalexBridge API is running
+ps aux | grep ralex_api.py
+
+# Check the health endpoint
 curl http://localhost:8000/health
 
-# Should return: {"status": "healthy", "version": "3.0.0"}
-
-# Check logs
-tail -f logs/backend.log
+# Restart if needed
+pkill -f ralex_api.py
+export OPENROUTER_API_KEY="your-key-here"
+python ralex_api.py &
 ```
 
-### **"Voice Recognition Not Working"**
-```bash
-# Supported browsers:
-# ✅ Chrome/Chromium (best support)
-# ✅ Safari (iOS/macOS)
-# ✅ Edge
-# ❌ Firefox (limited support)
-
-# Test Web Speech API:
-# Open browser console → new webkitSpeechRecognition()
-```
-
-### **"Frontend Won't Start"**
-```bash
-# Check Node.js version
-node --version  # Should be 18.x or higher
-
-# Reinstall dependencies
-cd ralex-frontend
-rm -rf node_modules package-lock.json
-npm install
-
-# Check for port conflicts
-lsof -i :3000  # Kill any conflicting processes
-```
-
-### **"API Key Issues"**
+### **"OpenRouter API Key Issues"**
 ```bash
 # Verify key is set
-echo $OPENROUTER_API_KEY  # Should show your key
+echo $OPENROUTER_API_KEY
 
-# Test API connectivity
+# Test OpenRouter connectivity
 curl https://openrouter.ai/api/v1/models \
   -H "Authorization: Bearer $OPENROUTER_API_KEY"
-
-# Should return model list JSON
-```
-
-### **"Budget Tracking Not Working"**
-```bash
-# Check WebSocket connection in browser console
-# Should see: "WebSocket connected" messages
-
-# Verify WebSocket endpoint
-curl -i -N -H "Connection: Upgrade" \
-  -H "Upgrade: websocket" \
-  http://localhost:8000/ws/test-session
 ```
 
 ---
 
-## ⚡ **Performance Optimization**
+## 🌐 **Remote Access Setup**
 
-### **Faster Development**
+### **Network Access**
 ```bash
-# Use concurrent backend/frontend development
-npm run dev --prefix ralex-frontend & python -m ralex_core.openai_api
+# Get your local IP
+hostname -I
 
-# Enable hot reload for both services
-export RALEX_DEV_MODE=true
+# Access from other devices on your network:
+# http://YOUR-LOCAL-IP:3000
 ```
 
-### **Shell Aliases**
-Add to your `~/.bashrc`:
+### **Tailscale Setup (Recommended)**
 ```bash
-alias ralex3="cd /path/to/ralex && ./ralex-v3-launch.sh"
-alias ralex-logs="cd /path/to/ralex && tail -f logs/*.log"
-alias ralex-health="curl -s http://localhost:8000/health | jq"
+# Install Tailscale
+curl -fsSL https://tailscale.com/install.sh | sh
+
+# Authenticate
+sudo tailscale up
+
+# Get your Tailscale IP
+tailscale ip -4
+
+# Access securely from anywhere:
+# http://YOUR-TAILSCALE-IP:3000
 ```
 
-### **Browser Bookmarks**
-- **Ralex Web**: http://localhost:3000
-- **API Docs**: http://localhost:8000/docs  
-- **Health Check**: http://localhost:8000/health
-- **Budget Status**: http://localhost:8000/api/sessions/stats
+---
+
+## ⚡ **Performance Tips**
+
+### **Raspberry Pi Optimization**
+- Use **Class 10 or better SD card** for better I/O performance
+- Ensure **adequate cooling** during AI processing
+- **4GB+ RAM** recommended for smooth operation
+- Consider **USB 3.0 SSD** for storage if doing heavy development
+
+### **Memory Management**
+```bash
+# Monitor memory usage
+free -h
+
+# If running low, restart services
+pkill -f uvicorn
+pkill -f ralex_api.py
+python start_ralex_v4.py
+```
 
 ---
 
 ## 🎯 **Next Steps**
 
-1. **Try Voice Coding**: Use microphone for hands-free development
-2. **Explore Budget Tracking**: Monitor real-time costs and usage
-3. **Mobile Testing**: Code from your phone using the responsive interface
-4. **Customize Standards**: Edit `agent_os/` files for your coding style
-5. **Deploy Production**: Use Tailscale for secure remote access
+1. **Open the WebUI**: http://localhost:3000
+2. **Start a conversation**: Ask it to create a simple Python function
+3. **Test model routing**: Try different types of requests (simple vs complex)
+4. **Explore the API**: Check http://localhost:8000/docs for API documentation
+5. **Set up remote access**: Use Tailscale for secure access from anywhere
 
-### **Pro Tips**
-- **Voice Commands**: End with "execute", "send it", or "go ahead" for auto-submit
-- **Budget Management**: Add small amounts ($0.25) for testing, larger ($5) for sessions
-- **Mobile Workflow**: Voice input works excellently on phones for quick fixes
-- **Team Collaboration**: Share your Tailscale URL for real-time coding sessions
+### **Example First Conversation**
+```
+You: "Create a Python function to calculate the Fibonacci sequence"
+Ralex: [Provides optimized code with proper error handling]
 
-**Happy voice coding with Ralex V3! 🚀🎙️**
+You: "Now add unit tests for that function"
+Ralex: [Creates comprehensive pytest tests]
+
+You: "Run the tests and fix any issues"
+Ralex: [Executes tests and fixes any problems]
+```
+
+**Happy coding with Ralex V4! 🚀🤖**
