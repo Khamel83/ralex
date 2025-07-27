@@ -34,10 +34,25 @@ Ralex is a terminal-native AI coding assistant that uses semantic routing to int
 - **Problem**: Minimal requirements.txt, missing dev tools
 - **Fixed**: Added essential packages: openai, ruff, black, isort, pytest
 
+### 4. Ralex V4 Startup Issues (FIXED - 2025-07-27)
+- **Problem**: `start_ralex_v4.py` failing with `ModuleNotFoundError: No module named 'open_webui'`
+- **Root Cause**: Script was running OpenWebUI from wrong directory (`ralex-webui/` instead of `ralex-webui/backend/`)
+- **Fixed**: Updated startup script to:
+  - Run OpenWebUI from correct backend directory where `open_webui` module exists
+  - Auto-install OpenWebUI dependencies from `requirements.txt`
+  - Use consistent Python executable path (`sys.executable`)
+- **Files changed**: `start_ralex_v4.py`
+
 ## Architecture
 
-### Core Components
-- `ralex_core/launcher.py` - Main entry point
+### Ralex V4 Components (Current)
+- `start_ralex_v4.py` - **Main startup orchestrator** for full stack
+- `ralex_api.py` - **FastAPI server** providing OpenAI-compatible endpoints
+- `ralex_bridge.py` - **Core orchestrator** connecting AgentOS + LiteLLM + OpenRouter + OpenCode
+- `archive/web-interfaces/ralex-webui/` - **OpenWebUI interface** for web-based interaction
+
+### Legacy Core Components (V1-V3)
+- `ralex_core/launcher.py` - Legacy main entry point
 - `ralex_core/semantic_classifier.py` - Intent classification
 - `ralex_core/router.py` - Model routing logic
 - `ralex_core/openrouter_client.py` - API client
@@ -65,6 +80,16 @@ pip install -e .
 ```
 
 ### Running
+
+#### Ralex V4 (Full Stack - Recommended)
+```bash
+export OPENROUTER_API_KEY="your-key-here"
+python start_ralex_v4.py
+```
+- **RalexBridge API**: http://localhost:8000
+- **OpenWebUI Interface**: http://localhost:3000
+
+#### Legacy Ralex (V1-V3)
 ```bash
 python -m ralex_core.launcher
 ```
@@ -118,7 +143,12 @@ export RALEX_ANALYTICS=false
 - GitHub CI/CD was failing due to aider/ralex naming conflicts (FIXED)
 - Virtual environment setup was manual and error-prone (FIXED)
 - Missing development dependencies (FIXED)
+- Ralex V4 startup failing with OpenWebUI module errors (FIXED - 2025-07-27)
+
+## Recent Updates
+- **2025-07-27**: Fixed Ralex V4 startup script to properly run OpenWebUI from backend directory
+- **2025-07-27**: Updated documentation to reflect current V4 architecture vs legacy components
 
 ---
-*Last updated: 2025-07-23*
+*Last updated: 2025-07-27*
 *Prepared for: LLM handover and team collaboration*

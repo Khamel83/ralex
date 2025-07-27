@@ -69,20 +69,27 @@ def start_openwebui():
     """Start OpenWebUI"""
     print("🌐 Starting OpenWebUI...")
     
-    webui_dir = Path("archive/web-interfaces/ralex-webui")
+    webui_dir = Path("archive/web-interfaces/ralex-webui/backend")
     if not webui_dir.exists():
-        print("❌ OpenWebUI directory not found")
+        print("❌ OpenWebUI backend directory not found")
         return None
     
     # Set environment variables for OpenWebUI
     os.environ["PORT"] = "3000"
     os.environ["HOST"] = "0.0.0.0"
     
-    # Change to OpenWebUI directory
+    # Change to OpenWebUI backend directory
     os.chdir(webui_dir)
     
+    # Install dependencies if needed
+    requirements_file = Path("requirements.txt")
+    if requirements_file.exists():
+        print("📦 Installing OpenWebUI dependencies...")
+        subprocess.run([sys.executable, "-m", "pip", "install", "-r", "requirements.txt"], 
+                      stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    
     # Start OpenWebUI with custom port
-    cmd = ["python", "-m", "uvicorn", "open_webui.main:app", "--host", "0.0.0.0", "--port", "3000"]
+    cmd = [sys.executable, "-m", "uvicorn", "open_webui.main:app", "--host", "0.0.0.0", "--port", "3000"]
     webui_process = subprocess.Popen(cmd)
     
     print("✅ OpenWebUI started on port 3000")
