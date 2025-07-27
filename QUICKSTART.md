@@ -32,7 +32,8 @@ pip install -r requirements.txt
 - Sign up for free account (required for API access)
 - Go to "Keys" section in dashboard  
 - Copy your API key
-- **Important**: Set it in your terminal: `export OPENROUTER_API_KEY="your-key-here"`
+- **Option 1**: Set in terminal: `export OPENROUTER_API_KEY="your-key-here"`
+- **Option 2**: Create `.env` file: `echo "OPENROUTER_API_KEY=your-key-here" > .env`
 - **Note**: Without this API key, Ralex cannot access AI models
 
 ### 4. Test It Works

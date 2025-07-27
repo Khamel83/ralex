@@ -45,7 +45,7 @@ cd ralex
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-export OPENROUTER_API_KEY="your-key-here"
+echo "OPENROUTER_API_KEY=your-key-here" > .env
 ```
 
 ### Test It

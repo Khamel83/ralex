@@ -12,6 +12,20 @@ import subprocess
 from datetime import datetime
 from pathlib import Path
 
+# Load .env file if it exists
+def load_env():
+    env_file = Path(".env")
+    if env_file.exists():
+        with open(env_file) as f:
+            for line in f:
+                line = line.strip()
+                if line and not line.startswith('#') and '=' in line:
+                    key, value = line.split('=', 1)
+                    os.environ[key.strip()] = value.strip()
+
+# Load environment variables from .env
+load_env()
+
 # Add ralex_core to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'ralex_core'))
 
