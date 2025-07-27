@@ -77,8 +77,11 @@ def start_openwebui():
     # Set environment variables for OpenWebUI
     os.environ["PORT"] = "3000"
     os.environ["HOST"] = "0.0.0.0"
+    os.environ["WEBUI_SECRET_KEY"] = "ralex-v4-secret-key"
+    os.environ["ENV"] = "prod"
     
     # Change to OpenWebUI backend directory
+    original_dir = os.getcwd()
     os.chdir(webui_dir)
     
     # Install dependencies if needed
@@ -88,12 +91,42 @@ def start_openwebui():
         subprocess.run([sys.executable, "-m", "pip", "install", "-r", "requirements.txt"], 
                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     
-    # Start OpenWebUI with custom port
-    cmd = [sys.executable, "-m", "uvicorn", "open_webui.main:app", "--host", "0.0.0.0", "--port", "3000"]
-    webui_process = subprocess.Popen(cmd)
+    # Start OpenWebUI with better configuration for Raspberry Pi
+    cmd = [
+        sys.executable, "-m", "uvicorn", "open_webui.main:app", 
+        "--host", "0.0.0.0", 
+        "--port", "3000",
+        "--workers", "1",
+        "--timeout-keep-alive", "30",
+        "--access-log"
+    ]
     
-    print("✅ OpenWebUI started on port 3000")
-    return webui_process
+    # Start with output visible to debug issues
+    webui_process = subprocess.Popen(cmd, cwd=str(webui_dir))
+    
+    # Change back to original directory
+    os.chdir(original_dir)
+    
+    # Wait for OpenWebUI to start and become accessible
+    max_retries = 15
+    for i in range(max_retries):
+        if webui_process.poll() is not None:
+            print("❌ OpenWebUI process exited unexpectedly")
+            return None
+            
+        try:
+            response = requests.get("http://localhost:3000", timeout=2)
+            if response.status_code in [200, 404]:  # 404 is ok, means server is responding
+                print("✅ OpenWebUI started on port 3000")
+                return webui_process
+        except requests.exceptions.RequestException:
+            pass
+        
+        print(f"⏳ Waiting for OpenWebUI to become accessible... ({i+1}/{max_retries})")
+        time.sleep(2)
+    
+    print("❌ OpenWebUI failed to become accessible")
+    return webui_process  # Return process anyway, might be slow to start
 
 def main():
     """Main startup sequence"""
@@ -115,9 +148,21 @@ def main():
     configure_openwebui()
     webui_process = start_openwebui()
     
+    # Get local IP for remote access
+    try:
+        import socket
+        local_ip = subprocess.check_output(["hostname", "-I"]).decode().strip().split()[0]
+    except:
+        local_ip = "localhost"
+    
     print("\n🎉 Ralex V4 started successfully!")
-    print("📊 RalexBridge API: http://localhost:8000")
-    print("🖥️  OpenWebUI: http://localhost:3000")
+    print("📊 RalexBridge API:")
+    print(f"   • Local: http://localhost:8000")
+    print(f"   • Network: http://{local_ip}:8000")
+    print("🖥️  OpenWebUI:")
+    print(f"   • Local: http://localhost:3000")
+    print(f"   • Network: http://{local_ip}:3000")
+    print(f"   • Tailscale: http://<tailscale-ip>:3000")
     print("📁 Context saved to: .ralex/")
     print("\nPress Ctrl+C to stop all services")
     
