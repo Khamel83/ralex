@@ -1,0 +1,52 @@
+{
+  "timestamp": "2025-07-27_17-39-17",
+  "overall_score": 0.2,
+  "target_score": 0.9,
+  "components": {
+    "api_availability": {
+      "server_running": true,
+      "port_accessible": true,
+      "response_time": 0.02172684669494629,
+      "startup_detection": true
+    },
+    "api_compatibility": {
+      "chat_completions_endpoint": false,
+      "models_endpoint": true,
+      "request_format_compatibility": false,
+      "response_format_compatibility": false,
+      "error_handling": true
+    },
+    "query_workflows": {
+      "simple_queries": 0.0,
+      "complex_queries": 0.0,
+      "response_times": [
+        0.016596317291259766,
+        0.01742243766784668,
+        0.017433643341064453,
+        0.01666092872619629
+      ],
+      "success_rate": 0.0,
+      "cost_tracking": false
+    },
+    "documentation": {
+      "setup_instructions": false,
+      "configuration_values": true,
+      "workflow_completeness": false,
+      "troubleshooting_accuracy": false
+    },
+    "performance": {
+      "startup_time": 0.0,
+      "response_consistency": 0.0,
+      "load_handling": 0.0,
+      "resource_usage": {}
+    }
+  },
+  "score_breakdown": {
+    "api_server_running": true,
+    "openai_compatibility": false,
+    "workflow_success": false,
+    "documentation_accuracy": false,
+    "performance_acceptable": false
+  },
+  "pass": false
+}

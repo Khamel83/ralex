@@ -54,6 +54,14 @@ class RalexBridge:
             except Exception:
                 pass  # Graceful fallback if intelligence router fails
         
+        # Initialize budget enforcer for cost constraints
+        self.budget_enforcer = None
+        try:
+            from budget_enforcer import BudgetEnforcer
+            self.budget_enforcer = BudgetEnforcer()
+        except ImportError:
+            pass  # Graceful fallback if budget enforcer not available
+        
     def load_agentos_template(self, route: str) -> dict:
         """Load agent-os template for complex queries"""
         template_path = Path(f".agent-os/templates/{route.lower()}.yaml")
@@ -118,6 +126,20 @@ class RalexBridge:
             except Exception:
                 pass
         return {"model_tiers": {"cheap": [], "medium": [], "premium": []}}
+    
+    def calculate_actual_cost(self, response: str, model: str) -> float:
+        """Calculate actual cost of API response"""
+        if not self.budget_enforcer:
+            return 0.0
+        
+        # Estimate tokens in response
+        response_tokens = self.budget_enforcer.estimate_tokens(response)
+        
+        # Use budget enforcer's cost rates
+        cost_per_1k = self.budget_enforcer.model_costs.get(model, 0.003)
+        actual_cost = (response_tokens / 1000) * cost_per_1k
+        
+        return round(actual_cost, 4)
     
     def select_model_via_litellm(self, thinking: dict, tier: str = None) -> str:
         """Use LiteLLM to select appropriate model based on complexity and cost tier"""
@@ -246,7 +268,7 @@ class RalexBridge:
             pass  # Ignore git errors for now
     
     async def process_request(self, prompt: str) -> dict:
-        """Main orchestration pipeline"""
+        """Main orchestration pipeline with budget enforcement"""
         try:
             # Step 1: AgentOS strategic thinking
             thinking = self.apply_agentos_thinking(prompt)
@@ -258,14 +280,44 @@ class RalexBridge:
             tier = thinking.get("model_tier", None)
             model = self.select_model_via_litellm(thinking, tier)
             
-            # Step 3: OpenRouter API call via LiteLLM with enhanced query
+            # Step 3: BUDGET ENFORCEMENT - Check before API call
+            if self.budget_enforcer:
+                estimated_cost = self.budget_enforcer.estimate_cost(prompt, model)
+                budget_check = self.budget_enforcer.check_budget(estimated_cost)
+                
+                if not budget_check.get("allowed", True):
+                    # Budget exceeded - hard stop with informative message
+                    return {
+                        "error": "Budget constraint violation",
+                        "budget_status": budget_check,
+                        "model_attempted": model,
+                        "estimated_cost": estimated_cost,
+                        "philosophy": "System knows it's impossible and stops",
+                        "cost_optimization": self.budget_enforcer.get_cost_optimization_suggestions(prompt, model)
+                    }
+                
+                # Budget approved - record estimated cost
+                thinking["budget_approved"] = budget_check
+                thinking["estimated_cost"] = estimated_cost
+            
+            # Step 4: OpenRouter API call via LiteLLM with enhanced query
             query_to_use = thinking.get("enhanced_query", prompt)
             ai_response = self.call_openrouter_via_litellm(query_to_use, model)
             
-            # Step 4: OpenCode execution
+            # Step 5: Calculate actual cost and record for budget tracking
+            actual_cost = self.calculate_actual_cost(ai_response, model)
+            if self.budget_enforcer and "estimated_cost" in thinking:
+                self.budget_enforcer.record_actual_cost(
+                    thinking["estimated_cost"], 
+                    actual_cost, 
+                    model, 
+                    prompt
+                )
+            
+            # Step 6: OpenCode execution
             execution_result = self.execute_via_opencode(ai_response, prompt)
             
-            # Step 5: Context persistence
+            # Step 7: Context persistence
             session_data = {
                 "original_prompt": prompt,
                 "thinking": thinking,
@@ -280,7 +332,13 @@ class RalexBridge:
                 "model_used": model,
                 "response": ai_response,
                 "execution": execution_result,
-                "context_saved": True
+                "context_saved": True,
+                "budget_info": {
+                    "estimated_cost": thinking.get("estimated_cost", 0.0),
+                    "actual_cost": actual_cost,
+                    "remaining_daily": thinking.get("budget_approved", {}).get("remaining_daily", 0.0),
+                    "philosophy": "Cost-first decision making applied"
+                }
             }
             
         except Exception as e:
