@@ -1,0 +1,11 @@
+[
+  {
+    "timestamp": "2025-07-27T17:33:14.501105",
+    "model": "openrouter/meta-llama/llama-3.1-8b-instruct",
+    "query_length": 14,
+    "estimated_cost": 0.0,
+    "actual_cost": 0.0001,
+    "estimation_accuracy": 0.1,
+    "daily_spending_after": 0.0001
+  }
+]
