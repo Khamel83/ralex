@@ -30,3 +30,4 @@
 {'timestamp': '2025-07-27T17:14:39.719734', 'query_length': 14, 'intent': 'Simple query routed to cheap model', 'route': 'direct', 'model_tier': 'cheap', 'routing_time': 1.71661376953125e-05}
 {'timestamp': '2025-07-27T17:14:44.186193', 'query_length': 34, 'intent': 'Complex query routed to agent-os workflow', 'route': 'agent-os', 'model_tier': 'medium', 'routing_time': 3.337860107421875e-05}
 {'timestamp': '2025-07-27T17:32:40.364158', 'query_length': 14, 'intent': 'Simple query routed to cheap model', 'route': 'direct', 'model_tier': 'cheap', 'routing_time': 3.933906555175781e-05}
+{'timestamp': '2025-07-27T17:33:14.609708', 'query_length': 77, 'intent': 'Complex query routed to agent-os workflow', 'route': 'agent-os', 'model_tier': 'medium', 'routing_time': 6.0558319091796875e-05}
