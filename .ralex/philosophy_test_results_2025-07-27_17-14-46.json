@@ -1,0 +1,26 @@
+{
+  "timestamp": "2025-07-27_17-14-46",
+  "overall_score": 0.51875,
+  "target_score": 0.95,
+  "components": {
+    "budget_enforcement": 0.25,
+    "details": {
+      "agent_os_structure": 1.0,
+      "template_methodology": 1.0,
+      "cost_first_decisions": 1.0,
+      "measurable_outcomes": 1.0
+    },
+    "cost_first_routing": 0.875,
+    "agentic_thinking": 0.625,
+    "graceful_failure": 0.0,
+    "systematic_methodology": 1.0
+  },
+  "weights": {
+    "agentic_thinking": 0.2,
+    "budget_enforcement": 0.3,
+    "cost_first_routing": 0.25,
+    "graceful_failure": 0.15,
+    "systematic_methodology": 0.1
+  },
+  "pass": false
+}
