@@ -1,0 +1,27 @@
+testing:
+  budget_limits:
+  - 0.01
+  - 0.1
+  - 1.0
+  - 5.0
+  philosophy_weights:
+    agentic_thinking: 0.2
+    budget_enforcement: 0.3
+    cost_first_routing: 0.25
+    graceful_failure: 0.15
+    systematic_methodology: 0.1
+  test_queries:
+    complex:
+    - refactor this complex architecture
+    - debug memory leak in application
+    - create comprehensive test suite
+    - optimize database performance
+    expensive:
+    - analyze entire codebase for patterns
+    - generate complete documentation suite
+    - create comprehensive migration strategy
+    simple:
+    - what is python
+    - explain functions
+    - how to print hello world
+    - define variables
