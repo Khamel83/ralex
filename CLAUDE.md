@@ -3,6 +3,24 @@
 ## Project Overview
 Ralex is a terminal-native AI coding assistant that uses semantic routing to intelligently dispatch requests to appropriate LLM models via OpenRouter. It provides cost-effective, privacy-focused coding assistance with dynamic model selection.
 
+## Agent-OS Universal Integration
+**NEW: One-command Agent-OS setup for any project**
+
+```bash
+# Install Agent-OS structure anywhere
+curl -sSL https://raw.githubusercontent.com/Khamel83/agent-os/main/install.sh | bash
+
+# Or use local installer
+./install-agent-os.sh
+```
+
+**Features:**
+- ✅ **Universal compatibility**: Claude Code, Cursor, Gemini CLI
+- ✅ **Cost optimization**: $50 worth of results for $1 using smart model routing
+- ✅ **Upstream sync**: Downloads latest buildermethods/agent-os + Khamel83 enhancements
+- ✅ **Intelligent structure**: `.agent-os/` + `.khamel83/` layers
+- ✅ **LiteLLM integration**: Automatic model routing for cost efficiency
+
 ## Key Strategic Insights
 
 ### LiteLLM Overlap Analysis

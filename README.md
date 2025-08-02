@@ -6,6 +6,28 @@ Terminal-native AI coding assistant with semantic routing and cost-optimized mod
 **Development Standards:** Modern continuous deployment (see `.agent-os/standards/`)  
 **Primary Interface:** OpenCat iOS app (mobile) + terminal (development)
 
+## 🚀 Agent-OS Universal Setup
+
+**One-command installation for any project:**
+```bash
+curl -sSL https://raw.githubusercontent.com/Khamel83/agent-os/main/install.sh | bash
+```
+
+**Works with all AI coding tools:**
+- ✅ **Claude Code** (CLAUDE.md config)
+- ✅ **Cursor** (.cursorrules config)  
+- ✅ **Gemini CLI** (GEMINI.md config)
+- ✅ **Ralex** (enhanced cost optimization)
+
+## 💰 Cost Optimization (NEW)
+
+**Goal: $50 worth of results for $1 using intelligent model routing**
+
+- 🧠 **Planning**: Expensive models for architecture decisions
+- ⚡ **Implementation**: Cheap models for code generation  
+- 🔍 **Review**: Medium models for debugging/QA
+- 💾 **Caching**: Reuse successful patterns
+
 ## Quick Start
 
 ### Single Command Setup
