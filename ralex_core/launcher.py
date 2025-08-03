@@ -12,7 +12,7 @@ from ralex_core.openrouter_client import OpenRouterClient
 from ralex_core.semantic_classifier import SemanticClassifier
 from ralex_core.budget import BudgetManager
 from ralex_core.code_executor import CodeExecutor
-from ralex_core.agentos_integration import AgentOSIntegration
+from ralex_core.agentos_integration import AgentOSEnhancer
 
 def parse_file_modifications(response_text):
     """Parses the LLM response to find file modification blocks."""
@@ -67,7 +67,7 @@ def run_interactive_mode(settings, model_tiers, intent_routes, client, semantic_
     file_context = {}
     conversation_history = []
     code_executor = CodeExecutor()
-    agentos = AgentOSIntegration()
+    agentos = AgentOSEnhancer()
     
     # Track breakdown state for multi-step execution
     current_breakdown = None

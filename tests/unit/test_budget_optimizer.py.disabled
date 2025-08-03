@@ -11,16 +11,16 @@ from ralex_core.budget import BudgetManager
 
 class TestBudgetManager(unittest.TestCase):
     def setUp(self):
-        self.test_log_path = "data/test_usage_log.jsonl"
+        self.test_data_dir = "data/test_budget"
         # Ensure the data directory exists
-        os.makedirs(os.path.dirname(self.test_log_path), exist_ok=True)
-        if os.path.exists(self.test_log_path):
-            os.remove(self.test_log_path)
-        self.budget_optimizer = BudgetManager(usage_log_path=self.test_log_path, daily_limit=10.0)
+        os.makedirs(self.test_data_dir, exist_ok=True)
+        from pathlib import Path
+        self.budget_optimizer = BudgetManager(daily_limit=10.0, data_dir=Path(self.test_data_dir))
 
     def tearDown(self):
-        if os.path.exists(self.test_log_path):
-            os.remove(self.test_log_path)
+        import shutil
+        if os.path.exists(self.test_data_dir):
+            shutil.rmtree(self.test_data_dir)
 
     def test_record_usage(self):
         self.budget_optimizer.record_usage("model_a", 100, 50, 0.01)

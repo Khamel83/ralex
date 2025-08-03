@@ -29,8 +29,11 @@ class RalexOrchestrator:
 
         # Load model tiers and initialize budget optimizer
         config_dir = os.path.join(project_path, "config")
+        # Import load_config function
+        from ralex_core.launcher import load_config
         self.model_tiers = load_config(os.path.join(config_dir, "model_tiers.json"))
-        self.budget_optimizer = BudgetOptimizer(daily_limit=10.0, model_tiers=self.model_tiers) # Daily limit is a placeholder
+        from ralex_core.budget import BudgetManager
+        self.budget_optimizer = BudgetManager(daily_limit=10.0) # Daily limit is a placeholder
 
         # Start CCR server
         if not self.ccr_manager.check_installation():

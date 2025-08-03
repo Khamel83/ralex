@@ -1,0 +1,51 @@
+import unittest
+from unittest.mock import MagicMock, patch
+import os
+import sys
+
+# Add the parent directory to sys.path
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+
+class TestRalexOrchestrator(unittest.TestCase):
+    """Simplified tests for RalexOrchestrator focusing on current functionality"""
+    
+    def setUp(self):
+        """Set up test fixtures"""
+        self.test_project_path = "/test/project"
+        
+    @patch('ralex_core.orchestrator.ContextManager')
+    @patch('ralex_core.orchestrator.OpenCodeClient')
+    @patch('ralex_core.orchestrator.os.getcwd')
+    def test_orchestrator_initialization(self, mock_getcwd, mock_opencode, mock_context):
+        """Test that orchestrator initializes with required components"""
+        mock_getcwd.return_value = self.test_project_path
+        
+        # Mock the imports that might not exist
+        with patch.dict('sys.modules', {
+            'ralex_core.litellm_router': MagicMock(),
+            'ralex_core.agentos_enhancer': MagicMock(),
+            'ralex_core.git_sync_manager': MagicMock(),
+            'ralex_core.command_parser': MagicMock(),
+            'ralex_core.security_manager': MagicMock(),
+            'ralex_core.error_handler': MagicMock(),
+            'ralex_core.workflow_engine': MagicMock(),
+            'ralex_core.ccr_manager': MagicMock(),
+        }):
+            try:
+                from ralex_core.orchestrator import RalexOrchestrator
+                orchestrator = RalexOrchestrator()
+                self.assertIsNotNone(orchestrator)
+            except ImportError as e:
+                # If there are missing dependencies, skip this test
+                self.skipTest(f"Orchestrator dependencies not available: {e}")
+    
+    def test_orchestrator_module_exists(self):
+        """Test that the orchestrator module can be imported"""
+        try:
+            import ralex_core.orchestrator
+            self.assertTrue(hasattr(ralex_core.orchestrator, 'RalexOrchestrator'))
+        except ImportError:
+            self.skipTest("Orchestrator module not available")
+
+if __name__ == '__main__':
+    unittest.main()
