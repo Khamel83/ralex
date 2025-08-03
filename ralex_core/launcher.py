@@ -131,8 +131,19 @@ async def run_interactive_mode(
                 args = parts[1] if len(parts) > 1 else ""
 
                 if command == "/start":
-                    current_session = session_manager.create_new_session()
-                    print(f"New session started: {current_session['session_id']}")
+                    start_parser = argparse.ArgumentParser(description="Start a new session", exit_on_error=False)
+                    start_parser.add_argument("session_id", nargs='?', help="Optional session ID")
+                    start_parser.add_argument("--template", help="Optional template name")
+                    
+                    try:
+                        start_args = start_parser.parse_args(args.split())
+                        session_id = start_args.session_id
+                        template_name = start_args.template
+
+                        current_session = session_manager.create_new_session(session_id=session_id, template_name=template_name)
+                        print(f"New session started: {current_session['session_id']}")
+                    except SystemExit: # argparse exits on error
+                        print("Invalid /start command arguments.")
                     continue
                 elif command in agentos.get_slash_commands():
                     result = agentos.handle_slash_command(command, args)
