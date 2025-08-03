@@ -1,11 +1,10 @@
-openrouter_api_key: sk-...
+openrouter_api_key: sk-REPLACE_ME
 models:
-  - deepseek-chat
-  - deepseek-coder
-  - gemini-pro
-  - qwen3-coder
-  - mistral-7b-instruct
-evaluator_model: prometheus-2
+  - qwen/qwen3-coder:free
+  - google/gemini-pro
+  - mistralai/mistral-7b-instruct
+  - agentica-org/deepcoder-14b-preview
+evaluator_model: nousresearch/prometheus-2-7b-v2.0
 prompts:
   - "Write a function to reverse a string in-place."
   - "Explain the difference between BFS and DFS."
