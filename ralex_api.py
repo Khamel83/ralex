@@ -13,9 +13,12 @@ import os
 sys.path.insert(0, os.path.dirname(__file__))
 
 from ralex_bridge import RalexBridge
+from ralex_core.mobile_gateway import MobileAPIGateway
 
 app = FastAPI(title="Ralex Bridge API", version="4.0.0")
 bridge = RalexBridge()
+mobile_gateway = MobileAPIGateway()
+app.include_router(mobile_gateway.router)
 
 class ChatRequest(BaseModel):
     message: str
@@ -79,6 +82,18 @@ async def list_models():
             }
         ]
     }
+
+@app.get("/mobile/config")
+async def mobile_config():
+    """Mobile configuration endpoint"""
+    # Placeholder for actual configuration logic
+    return {"mobile_config": {"api_version": "1.0", "features": ["session_sync", "rich_response"]}}
+
+@app.get("/mobile/session")
+async def mobile_session():
+    """Mobile session management endpoint"""
+    # Placeholder for actual session management logic
+    return {"session_status": "active", "session_id": "mock_session_123"}
 
 @app.get("/health")
 async def health_check():
