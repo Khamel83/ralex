@@ -9,15 +9,48 @@
     "files_modified": [
       "tools/todo_writer.py",
       "tools/__init__.py",
-      "tools/todo_cli.py"
+      "tools/todo_cli.py",
+      "AGENT_OS_TODO_WRITE_INTEGRATION.md"
     ],
     "verification_steps": [
       "TodoWrite tool successfully created with GitManager integration",
       "Automatic git commit functionality tested and working",
       "Task completion triggers structured commit messages",
-      "Push to remote repository implemented with error handling"
+      "Push to remote repository implemented with error handling",
+      "Integration documentation created (AGENT_OS_TODO_WRITE_INTEGRATION.md)"
     ],
     "next_task_info": "Create integration documentation and test with Agent-OS",
     "priority": "high"
+  },
+  "A2": {
+    "id": "A2",
+    "name": "Agent-OS Workflow Integration",
+    "description": "Create an Agent-OS workflow to demonstrate and test the TodoWrite tool's integration.",
+    "status": "in_progress",
+    "created_at": "2025-08-02T22:00:00.000000",
+    "updated_at": "2025-08-02T22:00:00.000000",
+    "files_modified": [
+      ".agent-os/workflows/agent-os-todowrite-workflow.yaml"
+    ],
+    "verification_steps": [
+      "Agent-OS workflow successfully created",
+      "Workflow executes TodoWrite tool",
+      "Task creation and completion within workflow is successful",
+      "Automatic git commit triggered by workflow is verified"
+    ],
+    "next_task_info": "Implement Agent-OS workflow",
+    "priority": "high"
+  },
+  "MANUAL_TEST_001": {
+    "id": "MANUAL_TEST_001",
+    "name": "Verify TodoWrite Tool Manually",
+    "description": "This task is created to manually verify the functionality of the TodoWrite tool and its Git integration.",
+    "status": "pending",
+    "created_at": "2025-08-02T23:18:52.971324",
+    "updated_at": "2025-08-02T23:18:52.971324",
+    "files_modified": [],
+    "verification_steps": [],
+    "next_task_info": "",
+    "priority": "medium"
   }
 }

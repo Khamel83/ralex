@@ -10,10 +10,12 @@ from pathlib import Path
 
 # Add current directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent))
+sys.path.insert(0, str(Path(__file__).parent.parent)) # Add project root to path
 
 # Import modules with proper error handling
 try:
     from universal_logger import log_ai_operation
+    from ralex_core.v4_orchestrator import RalexV4Orchestrator
 except ImportError:
     # Fallback for missing universal logger
     def log_ai_operation(operation_type, prompt, metadata=None):
@@ -149,6 +151,11 @@ Examples:
     parser.add_argument(
         '--config',
         help='Configuration file path'
+    )
+    
+    parser.add_argument(
+        '--workflow',
+        help='Execute a specific Agent-OS workflow by name'
     )
     
     return parser
@@ -393,7 +400,7 @@ def main():
         show_budget_status()
         return
     
-    # Handle main command
+    # Handle main command or workflow execution
     if args.command:
         try:
             execute_command(args.command, args.verbose, args.debug)
@@ -402,6 +409,22 @@ def main():
             sys.exit(1)
         except Exception as e:
             print(f"❌ Error: {e}")
+            if args.debug:
+                import traceback
+                traceback.print_exc()
+            sys.exit(1)
+    elif args.workflow:
+        try:
+            orchestrator = RalexV4Orchestrator()
+            # Workflows are async, so we need to run them in an event loop
+            import asyncio
+            result = asyncio.run(orchestrator.execute_workflow(args.workflow, {{}}))
+            if result["status"] == "success":
+                print(f"✅ Workflow '{args.workflow}' executed successfully.\n{result['output']}")
+            else:
+                print(f"❌ Workflow '{args.workflow}' failed: {result['message']}\n{result.get('user_message', '')}")
+        except Exception as e:
+            print(f"❌ Error executing workflow: {e}")
             if args.debug:
                 import traceback
                 traceback.print_exc()

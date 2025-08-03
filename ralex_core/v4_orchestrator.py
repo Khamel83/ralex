@@ -8,6 +8,7 @@ from .security_manager import SecurityManager
 from .error_handler import ErrorHandler
 from .workflow_engine import WorkflowEngine
 import os
+from tools.todo_writer import TodoWriter, Task # Import TodoWriter and Task
 
 class RalexV4Orchestrator:
     def __init__(self):
@@ -141,8 +142,11 @@ class RalexV4Orchestrator:
                 step_description = list(step.keys())[0]
                 step_detail = step[step_description]
                 output.append(f"Executing workflow step: {step_description} - {step_detail}")
-                # In a real implementation, this would call other orchestrator methods
-                # e.g., await self.process_voice_command(step_detail, "workflow_session")
+                
+                if "tool_command" in step_detail:
+                    tool_command_str = step_detail["tool_command"]
+                    tool_result = await self._execute_tool_command(tool_command_str)
+                    output.append(f"Tool command result: {tool_result}")
 
             return {"status": "success", "output": "\n".join(output)}
 
@@ -150,3 +154,47 @@ class RalexV4Orchestrator:
             user_message = self.error_handler.get_user_friendly_message(e)
             self.error_handler.handle_error(e, context=f"workflow: {workflow_name}")
             return {"status": "error", "message": str(e), "user_message": user_message}
+
+    async def _execute_tool_command(self, command_str: str) -> Dict[str, Any]:
+        # This is a simplified dynamic execution. In a real system, you'd want more robust parsing and security.
+        if command_str.startswith("todo_write.create_task"):
+            # Example: todo_write.create_task(task_id='TW1', name='Sample Task', description='...')
+            try:
+                # Extract arguments using a simple regex or string manipulation
+                # This is brittle and should be replaced with a proper parser for production
+                import re
+                match = re.search(r"task_id=\\'(.*?)\\\', name=\\'(.*?)\\\', description=\\'(.*?)\\'", command_str)
+                if match:
+                    task_id, name, description = match.groups()
+                    todo_writer = TodoWriter()
+                    result = todo_writer.create_task(task_id=task_id, name=name, description=description)
+                    return result
+                else:
+                    return {"error": "Could not parse create_task command."}
+            except Exception as e:
+                return {"error": f"Error executing create_task: {e}"}
+        elif command_str.startswith("todo_write.complete_task"):
+            # Example: todo_write.complete_task(task_id='TW1', verification_steps=['...'], files_modified=['...'])
+            try:
+                import re
+                task_id_match = re.search(r"task_id=\\'(.*?)\\'", command_str)
+                verification_steps_match = re.search(r"verification_steps=\[(.*?)]", command_str)
+                files_modified_match = re.search(r"files_modified=\[(.*?)]", command_str)
+
+                task_id = task_id_match.group(1) if task_id_match else None
+                verification_steps_str = verification_steps_match.group(1) if verification_steps_match else ""
+                files_modified_str = files_modified_match.group(1) if files_modified_match else ""
+
+                verification_steps = [step.strip().strip("\'\'") for step in verification_steps_str.split(',') if step.strip()]
+                files_modified = [f.strip().strip("\'\'") for f in files_modified_str.split(',') if f.strip()]
+
+                if task_id:
+                    todo_writer = TodoWriter()
+                    result = todo_writer.complete_task(task_id=task_id, verification_steps=verification_steps, files_modified=files_modified)
+                    return result
+                else:
+                    return {"error": "Could not parse complete_task command."}
+            except Exception as e:
+                return {"error": f"Error executing complete_task: {e}"}
+        else:
+            return {"error": f"Unknown tool command: {command_str}"}

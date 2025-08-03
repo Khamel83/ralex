@@ -9,6 +9,7 @@ import subprocess
 import logging
 from datetime import datetime
 from typing import Dict, List, Optional, Any
+from ralex_core.git_sync_manager import GitSyncManager
 from dataclasses import dataclass, asdict
 
 
@@ -38,152 +39,7 @@ class TodoWriteError(Exception):
     pass
 
 
-class GitManager:
-    """Handles git operations for task completion commits"""
-    
-    def __init__(self, repo_path: str = None):
-        self.repo_path = repo_path or os.getcwd()
-        self.logger = logging.getLogger(__name__)
-        
-    def is_git_repo(self) -> bool:
-        """Check if current directory is a git repository"""
-        try:
-            result = subprocess.run(
-                ['git', 'status'],
-                cwd=self.repo_path,
-                capture_output=True,
-                text=True,
-                timeout=10
-            )
-            return result.returncode == 0
-        except (subprocess.TimeoutExpired, FileNotFoundError):
-            return False
-    
-    def commit_task_completion(self, task: Task) -> Dict[str, Any]:
-        """Create a git commit for task completion"""
-        if not self.is_git_repo():
-            return {"error": "Not a git repository"}
-        
-        try:
-            # Add all modified files to staging
-            add_result = subprocess.run(
-                ['git', 'add', '.'],
-                cwd=self.repo_path,
-                capture_output=True,
-                text=True,
-                timeout=30
-            )
-            
-            if add_result.returncode != 0:
-                return {"error": f"Failed to stage files: {add_result.stderr}"}
-            
-            # Create commit message
-            commit_message = self._create_commit_message(task)
-            
-            # Create commit using Python string for message
-            commit_result = subprocess.run(
-                ['git', 'commit', '-m', commit_message],
-                cwd=self.repo_path,
-                capture_output=True,
-                text=True,
-                timeout=30
-            )
-            
-            if commit_result.returncode != 0:
-                if "nothing to commit" in commit_result.stdout:
-                    return {"warning": "No changes to commit"}
-                return {"error": f"Failed to create commit: {commit_result.stderr}"}
-            
-            commit_hash = self._get_latest_commit_hash()
-            push_result = self._push_to_remote()
-            
-            return {
-                "success": True,
-                "commit_hash": commit_hash,
-                "commit_message": commit_message,
-                "push_result": push_result
-            }
-            
-        except subprocess.TimeoutExpired:
-            return {"error": "Git operation timed out"}
-        except Exception as e:
-            return {"error": f"Unexpected error: {str(e)}"}
-    
-    def _create_commit_message(self, task: Task) -> str:
-        """Create structured commit message for task completion"""
-        verification_text = ""
-        if task.verification_steps:
-            verification_text = "\n".join([f"- {step}" for step in task.verification_steps])
-        else:
-            verification_text = "- Task completed and verified"
-        
-        files_text = ""
-        if task.files_modified:
-            files_text = "\n".join([f"- {file}" for file in task.files_modified])
-        else:
-            files_text = "- (Auto-detected from git status)"
-        
-        next_info = task.next_task_info or "Continue with remaining tasks"
-        
-        return f"""feat: complete Task {task.id} - {task.name}
 
-✅ Implementation verified:
-{verification_text}
-
-🔧 Files modified:
-{files_text}
-
-📋 Next: {next_info}
-
-🤖 Generated with [Claude Code](https://claude.ai/code)
-
-Co-Authored-By: Claude <noreply@anthropic.com>"""
-    
-    def _get_latest_commit_hash(self) -> str:
-        """Get the hash of the latest commit"""
-        try:
-            result = subprocess.run(
-                ['git', 'rev-parse', 'HEAD'],
-                cwd=self.repo_path,
-                capture_output=True,
-                text=True,
-                timeout=10
-            )
-            return result.stdout.strip() if result.returncode == 0 else "unknown"
-        except:
-            return "unknown"
-    
-    def _push_to_remote(self) -> Dict[str, Any]:
-        """Attempt to push to remote repository"""
-        try:
-            remote_result = subprocess.run(
-                ['git', 'remote', '-v'],
-                cwd=self.repo_path,
-                capture_output=True,
-                text=True,
-                timeout=10
-            )
-            
-            if not remote_result.stdout.strip():
-                return {"status": "no_remote", "message": "No remote repository configured"}
-            
-            push_result = subprocess.run(
-                ['git', 'push'],
-                cwd=self.repo_path,
-                capture_output=True,
-                text=True,
-                timeout=60
-            )
-            
-            if push_result.returncode == 0:
-                return {"status": "success", "message": "Successfully pushed to remote"}
-            else:
-                return {"status": "failed", "message": f"Push failed: {push_result.stderr}"}
-                
-        except subprocess.TimeoutExpired:
-            return {"status": "timeout", "message": "Push operation timed out"}
-        except Exception as e:
-            return {"status": "error", "message": f"Push error: {str(e)}"}
 
 
 class TodoWriter:
@@ -191,7 +47,7 @@ class TodoWriter:
     
     def __init__(self, tasks_file: str = None):
         self.tasks_file = tasks_file or os.path.join(os.getcwd(), ".ralex_tasks.json")
-        self.git_manager = GitManager()
+        self.git_manager = GitSyncManager(repo_path=os.getcwd())
         self.logger = logging.getLogger(__name__)
         self.tasks = self._load_tasks()
         
@@ -257,7 +113,7 @@ class TodoWriter:
         git_result = None
         if old_status != "completed" and task.status == "completed":
             self.logger.info(f"Task {task_id} marked as completed, creating git commit...")
-            git_result = self.git_manager.commit_task_completion(task)
+            git_result = self.git_manager.sync("Placeholder commit message")
         
         self._save_tasks()
         
