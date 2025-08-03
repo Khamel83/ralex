@@ -1,0 +1,41 @@
+# Development dependencies for Ralex
+# Install with: pip install -r requirements-dev.txt
+
+# Include production requirements
+-r requirements.txt
+
+# Code formatting
+black>=23.12.1
+isort>=5.13.0
+
+# Linting and static analysis
+ruff>=0.1.9
+mypy>=1.8.0
+bandit>=1.7.5
+safety>=2.3.0
+
+# Testing
+pytest>=7.4.0
+pytest-cov>=4.1.0
+pytest-mock>=3.12.0
+pytest-asyncio>=0.21.0
+
+# Pre-commit hooks
+pre-commit>=3.6.0
+
+# Build and packaging
+build>=1.0.0
+twine>=4.0.0
+setuptools-scm>=8.0.0
+
+# Type stubs
+types-requests>=2.31.0
+types-PyYAML>=6.0.0
+
+# Documentation
+sphinx>=7.1.0
+sphinx-rtd-theme>=1.3.0
+
+# Jupyter (for development notebooks)
+jupyter>=1.0.0
+ipython>=8.18.0

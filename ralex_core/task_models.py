@@ -1,9 +1,11 @@
 from dataclasses import dataclass
 from typing import List
 
+
 @dataclass
 class Task:
     """Task data structure"""
+
     id: str
     name: str
     description: str
@@ -14,7 +16,7 @@ class Task:
     verification_steps: List[str] = None
     next_task_info: str = ""
     priority: str = "medium"  # "low", "medium", "high", "critical"
-    
+
     def __post_init__(self):
         if self.files_modified is None:
             self.files_modified = []

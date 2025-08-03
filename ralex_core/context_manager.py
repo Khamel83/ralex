@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 
+
 class ContextManager:
     def __init__(self, project_path: str):
         self.project_path = Path(project_path)

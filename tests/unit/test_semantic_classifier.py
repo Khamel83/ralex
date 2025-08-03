@@ -3,9 +3,10 @@ import sys
 import os
 
 # Add the parent directory to the sys.path to allow importing ralex_core
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 
 from ralex_core.semantic_classifier import SemanticClassifier
+
 
 class TestSemanticClassifier(unittest.TestCase):
     def setUp(self):
@@ -53,5 +54,6 @@ class TestSemanticClassifier(unittest.TestCase):
         # For now, we'll just assert it returns something.
         self.assertIsNotNone(intent)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

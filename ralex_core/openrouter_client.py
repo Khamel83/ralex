@@ -5,6 +5,7 @@ import sys
 import json
 import requests
 
+
 class OpenRouterClient:
     """A simplified client for making requests to the OpenRouter API."""
 
@@ -26,19 +27,27 @@ class OpenRouterClient:
         }
 
         try:
-            with requests.post(f"{self.base_url}/chat/completions", headers=headers, json=data, stream=True) as response:
+            with requests.post(
+                f"{self.base_url}/chat/completions",
+                headers=headers,
+                json=data,
+                stream=True,
+            ) as response:
                 response.raise_for_status()
                 for chunk in response.iter_lines():
                     if chunk:
-                        decoded_chunk = chunk.decode('utf-8')
+                        decoded_chunk = chunk.decode("utf-8")
                         if decoded_chunk.startswith("data: "):
-                            json_str = decoded_chunk[len("data: "):]
+                            json_str = decoded_chunk[len("data: ") :]
                             if json_str.strip() == "[DONE]":
                                 break
                             try:
                                 json_obj = json.loads(json_str)
                                 if "choices" in json_obj and json_obj["choices"]:
-                                    if "delta" in json_obj["choices"][0] and "content" in json_obj["choices"][0]["delta"]:
+                                    if (
+                                        "delta" in json_obj["choices"][0]
+                                        and "content" in json_obj["choices"][0]["delta"]
+                                    ):
                                         yield json_obj["choices"][0]["delta"]["content"]
                             except json.JSONDecodeError:
                                 # Ignore chunks that are not valid JSON

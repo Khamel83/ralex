@@ -5,9 +5,15 @@ import json
 from unittest.mock import patch, mock_open
 
 # Add the parent directory to the sys.path to allow importing ralex_core
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 
-from ralex_core.launcher import parse_file_modifications, parse_code_blocks, load_config, classify_intent
+from ralex_core.launcher import (
+    parse_file_modifications,
+    parse_code_blocks,
+    load_config,
+    classify_intent,
+)
+
 
 class TestLauncherFunctions(unittest.TestCase):
 
@@ -27,7 +33,7 @@ Some text after.
         modifications = parse_file_modifications(response_text)
         expected = {
             "path/to/file1.py": "# content of file1\nline 2 of file1",
-            "another/file.txt": "new content for another file"
+            "another/file.txt": "new content for another file",
         }
         self.assertEqual(modifications, expected)
 
@@ -51,7 +57,7 @@ End.
         code_blocks = parse_code_blocks(response_text)
         expected = [
             {"language": "python", "code": "print('Hello')"},
-            {"language": "bash", "code": "ls -l"}
+            {"language": "bash", "code": "ls -l"},
         ]
         self.assertEqual(code_blocks, expected)
 
@@ -60,20 +66,20 @@ End.
         code_blocks = parse_code_blocks(response_text)
         self.assertEqual(code_blocks, [])
 
-    @patch('builtins.open', new_callable=mock_open, read_data='{"key": "value"}')
+    @patch("builtins.open", new_callable=mock_open, read_data='{"key": "value"}')
     def test_load_config_success(self, mock_file):
         config = load_config("config.json")
         self.assertEqual(config, {"key": "value"})
 
-    @patch('builtins.open', side_effect=FileNotFoundError)
-    @patch('sys.exit', side_effect=SystemExit)
+    @patch("builtins.open", side_effect=FileNotFoundError)
+    @patch("sys.exit", side_effect=SystemExit)
     def test_load_config_file_not_found(self, mock_exit, mock_open):
         with self.assertRaises(SystemExit):
             load_config("non_existent.json")
         mock_exit.assert_called_once_with(1)
 
-    @patch('builtins.open', new_callable=mock_open, read_data='invalid json')
-    @patch('sys.exit', side_effect=SystemExit)
+    @patch("builtins.open", new_callable=mock_open, read_data="invalid json")
+    @patch("sys.exit", side_effect=SystemExit)
     def test_load_config_invalid_json(self, mock_exit, mock_open):
         with self.assertRaises(SystemExit):
             load_config("invalid.json")
@@ -89,5 +95,6 @@ End.
         self.assertEqual(classify_intent("explain this function"), "explain")
         self.assertEqual(classify_intent("what is this"), "default")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

@@ -1,12 +1,25 @@
 class SecurityManager:
     def __init__(self):
         self.SAFE_OPERATIONS = [
-            "read_file", "write_file", "list_directory", "fix_bug",
-            "create_component", "run_tests", "review_code", "explain_code"
+            "read_file",
+            "write_file",
+            "list_directory",
+            "fix_bug",
+            "create_component",
+            "run_tests",
+            "review_code",
+            "explain_code",
         ]
         self.DANGEROUS_OPERATIONS = [
-            "rm -rf", "sudo", "chmod 777", "dd if=",
-            "format", "fdisk", "mkfs", "shutdown", "delete_all"
+            "rm -rf",
+            "sudo",
+            "chmod 777",
+            "dd if=",
+            "format",
+            "fdisk",
+            "mkfs",
+            "shutdown",
+            "delete_all",
         ]
 
     def validate_command(self, parsed_command: dict) -> bool:

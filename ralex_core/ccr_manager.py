@@ -3,6 +3,7 @@ import os
 
 from .utils import find_available_port
 
+
 class CCRManager:
     def __init__(self):
         self.pid = None
@@ -10,7 +11,11 @@ class CCRManager:
 
     def check_installation(self):
         try:
-            subprocess.run(["npm", "-g", "list", "@musistudio/claude-code-router"], check=True, capture_output=True)
+            subprocess.run(
+                ["npm", "-g", "list", "@musistudio/claude-code-router"],
+                check=True,
+                capture_output=True,
+            )
             return True
         except (subprocess.CalledProcessError, FileNotFoundError):
             return False
@@ -18,7 +23,9 @@ class CCRManager:
     def install(self):
         print("Installing @musistudio/claude-code-router...")
         try:
-            subprocess.run(["npm", "install", "-g", "@musistudio/claude-code-router"], check=True)
+            subprocess.run(
+                ["npm", "install", "-g", "@musistudio/claude-code-router"], check=True
+            )
             print("Installation successful.")
             return True
         except (subprocess.CalledProcessError, FileNotFoundError) as e:
@@ -37,7 +44,11 @@ class CCRManager:
 
         print(f"Starting CCR server on port {self.port}...")
         try:
-            process = subprocess.Popen(["ccr", "start", "--port", str(self.port)], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            process = subprocess.Popen(
+                ["ccr", "start", "--port", str(self.port)],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            )
             self.pid = process.pid
             print(f"CCR server started with PID: {self.pid}")
         except (subprocess.CalledProcessError, FileNotFoundError) as e:
@@ -50,7 +61,7 @@ class CCRManager:
 
         print(f"Stopping CCR server with PID: {self.pid}...")
         try:
-            os.kill(self.pid, 15) # SIGTERM
+            os.kill(self.pid, 15)  # SIGTERM
             print("CCR server stopped.")
             self.pid = None
         except OSError as e:

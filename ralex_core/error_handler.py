@@ -1,14 +1,19 @@
 import logging
 import time
 
-logging.basicConfig(level=logging.ERROR, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.ERROR, format="%(asctime)s - %(levelname)s - %(message)s"
+)
+
 
 class ErrorHandler:
     def __init__(self, max_retries: int = 3, initial_backoff: float = 1.0):
         self.max_retries = max_retries
         self.initial_backoff = initial_backoff
 
-    def handle_error(self, error: Exception, context: str = "", retryable: bool = False) -> bool:
+    def handle_error(
+        self, error: Exception, context: str = "", retryable: bool = False
+    ) -> bool:
         error_message = f"An error occurred: {error}"
         if context:
             error_message += f" in context: {context}"
@@ -16,8 +21,8 @@ class ErrorHandler:
 
         if retryable:
             logging.info(f"Attempting retry (max_retries: {self.max_retries})")
-            return True # Indicate that a retry should be attempted by the caller
-        return False # Indicate no retry or retry not applicable
+            return True  # Indicate that a retry should be attempted by the caller
+        return False  # Indicate no retry or retry not applicable
 
     def exponential_backoff(self, attempt: int) -> float:
         return self.initial_backoff * (2 ** (attempt - 1))

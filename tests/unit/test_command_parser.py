@@ -1,6 +1,6 @@
-
 import unittest
 from ralex_core.command_parser import CommandParser
+
 
 class TestCommandParser(unittest.TestCase):
     def setUp(self):
@@ -66,5 +66,6 @@ class TestCommandParser(unittest.TestCase):
         parsed = {"intent": "unknown_intent"}
         self.assertEqual(self.parser.classify_complexity(parsed), "medium")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

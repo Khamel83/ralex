@@ -2,6 +2,7 @@ import subprocess
 from typing import Dict, Any
 from ralex_core.task_models import Task
 
+
 class GitSyncManager:
     def __init__(self, repo_path: str):
         self.repo_path = repo_path
@@ -10,8 +11,14 @@ class GitSyncManager:
         """Commit changes to git (without pushing)"""
         try:
             subprocess.run(["git", "add", ".ralex/"], cwd=self.repo_path, check=True)
-            subprocess.run(["git", "commit", "-m", commit_message], cwd=self.repo_path, check=True)
-            return {"success": True, "status": "success", "message": "Changes committed successfully"}
+            subprocess.run(
+                ["git", "commit", "-m", commit_message], cwd=self.repo_path, check=True
+            )
+            return {
+                "success": True,
+                "status": "success",
+                "message": "Changes committed successfully",
+            }
         except subprocess.CalledProcessError as e:
             return {"success": False, "status": "failed", "message": str(e)}
 
@@ -20,7 +27,9 @@ class GitSyncManager:
         """Create structured commit message for task completion"""
         verification_text = ""
         if task.verification_steps:
-            verification_text = "\n".join([f"- {step}" for step in task.verification_steps])
+            verification_text = "\n".join(
+                [f"- {step}" for step in task.verification_steps]
+            )
         else:
             verification_text = "- Task completed and verified"
 
@@ -37,18 +46,22 @@ class GitSyncManager:
         return commit_msg
 
     def sync(self, commit_message: str):
-        print(f"DEBUG: sync method called with commit_message: {commit_message[:100]}...")
+        print(
+            f"DEBUG: sync method called with commit_message: {commit_message[:100]}..."
+        )
         """Full sync with push"""
         try:
             subprocess.run(["git", "add", "."], cwd=self.repo_path, check=True)
-            subprocess.run(["git", "commit", "-m", commit_message], cwd=self.repo_path, check=True)
+            subprocess.run(
+                ["git", "commit", "-m", commit_message], cwd=self.repo_path, check=True
+            )
             commit_hash = self._get_latest_commit_hash()
             push_result = self._push_to_remote()
             result = {
                 "success": True,
                 "commit_hash": commit_hash,
                 "commit_message": commit_message,
-                "push_result": push_result
+                "push_result": push_result,
             }
             print(f"DEBUG: sync method returning: {result}")
             return result
@@ -61,11 +74,11 @@ class GitSyncManager:
         """Get the hash of the latest commit"""
         try:
             result = subprocess.run(
-                ['git', 'rev-parse', 'HEAD'],
+                ["git", "rev-parse", "HEAD"],
                 cwd=self.repo_path,
                 capture_output=True,
                 text=True,
-                timeout=10
+                timeout=10,
             )
             return result.stdout.strip() if result.returncode == 0 else "unknown"
         except:
@@ -75,28 +88,34 @@ class GitSyncManager:
         """Attempt to push to remote repository"""
         try:
             remote_result = subprocess.run(
-                ['git', 'remote', '-v'],
+                ["git", "remote", "-v"],
                 cwd=self.repo_path,
                 capture_output=True,
                 text=True,
-                timeout=10
+                timeout=10,
             )
 
             if not remote_result.stdout.strip():
-                return {"status": "no_remote", "message": "No remote repository configured"}
+                return {
+                    "status": "no_remote",
+                    "message": "No remote repository configured",
+                }
 
             push_result = subprocess.run(
-                ['git', 'push'],
+                ["git", "push"],
                 cwd=self.repo_path,
                 capture_output=True,
                 text=True,
-                timeout=60
+                timeout=60,
             )
 
             if push_result.returncode == 0:
                 return {"status": "success", "message": "Successfully pushed to remote"}
             else:
-                return {"status": "failed", "message": f"Push failed: {push_result.stderr}"}
+                return {
+                    "status": "failed",
+                    "message": f"Push failed: {push_result.stderr}",
+                }
 
         except subprocess.TimeoutExpired:
             return {"status": "timeout", "message": "Push operation timed out"}

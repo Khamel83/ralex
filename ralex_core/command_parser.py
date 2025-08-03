@@ -1,15 +1,26 @@
 import re
 
+
 class CommandParser:
     def __init__(self):
         self.safe_operations = [
-            "read_file", "write_file", "list_directory", "fix_bug",
-            "create_component", "run_tests", "review_code", "explain_code"
+            "read_file",
+            "write_file",
+            "list_directory",
+            "fix_bug",
+            "create_component",
+            "run_tests",
+            "review_code",
+            "explain_code",
         ]
 
     def parse(self, command: str) -> dict:
         command_lower = command.lower()
-        parsed_command = {"original_command": command, "intent": "default", "params": {}}
+        parsed_command = {
+            "original_command": command,
+            "intent": "default",
+            "params": {},
+        }
 
         # Pattern for "read file <path>"
         # Pattern for "read file <path>"
@@ -33,7 +44,7 @@ class CommandParser:
             parsed_command["intent"] = "fix_bug"
             parsed_command["params"]["file_path"] = match.group(1).strip()
             return parsed_command
-            
+
         # Pattern for "create component named <name>"
         match = re.match(r"create component named (.+)", command)
         if match:
@@ -65,4 +76,4 @@ class CommandParser:
             return "medium"
         elif intent in ["fix_bug", "create_component", "review_code"]:
             return "high"
-        return "medium" # Default for "default" intent or unclassified
+        return "medium"  # Default for "default" intent or unclassified

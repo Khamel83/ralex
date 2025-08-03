@@ -4,9 +4,10 @@ import os
 import time
 
 # Add the parent directory to the sys.path to allow importing ralex_core
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 
 from ralex_core.code_executor import CodeExecutor
+
 
 class TestCodeExecutor(unittest.TestCase):
     def setUp(self):
@@ -32,7 +33,9 @@ class TestCodeExecutor(unittest.TestCase):
         end_time = time.time()
         self.assertFalse(result["success"])
         self.assertIn("Execution timed out", result["stderr"])
-        self.assertLess(end_time - start_time, 2) # Should be slightly more than timeout, but not 5 seconds
+        self.assertLess(
+            end_time - start_time, 2
+        )  # Should be slightly more than timeout, but not 5 seconds
 
     def test_execute_python_code_file_creation(self):
         code = "with open('test_file.txt', 'w') as f: f.write('test content')"
@@ -44,5 +47,6 @@ class TestCodeExecutor(unittest.TestCase):
         self.assertEqual(result["stdout"].strip(), "")
         self.assertEqual(result["stderr"].strip(), "")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()
