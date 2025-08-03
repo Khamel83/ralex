@@ -12,6 +12,9 @@ from pathlib import Path
 from typing import Optional, Dict, List
 from dataclasses import dataclass, asdict
 
+from .free_mode_manager import FreeModeManager
+from .free_model_selector import FreeModelSelector, NoAvailableFreeModelsError
+
 logger = logging.getLogger(__name__)
 
 
@@ -34,7 +37,7 @@ class BudgetManager:
     """
 
     def __init__(
-        self, daily_limit: Optional[float] = None, data_dir: Optional[Path] = None
+        self, daily_limit: Optional[float] = None, data_dir: Optional[Path] = None, free_mode_enabled: bool = False
     ):
         """
         Initialize budget manager.
@@ -42,6 +45,7 @@ class BudgetManager:
         Args:
             daily_limit: Daily spending limit in USD (None for no limit)
             data_dir: Directory to store usage data (defaults to ~/.ralex)
+            free_mode_enabled: Whether free mode is enabled by default.
         """
         self.daily_limit = daily_limit
         if isinstance(data_dir, str):
@@ -53,6 +57,10 @@ class BudgetManager:
         self.usage_file = self.data_dir / "usage.jsonl"
         self.config_file = self.data_dir / "budget_config.json"
 
+        self.free_mode_manager = FreeModeManager()
+        self.free_model_selector = FreeModelSelector(self.free_mode_manager)
+        self.free_mode_enabled = free_mode_enabled
+
         self._load_config()
 
     def _load_config(self):
@@ -62,8 +70,9 @@ class BudgetManager:
                 with open(self.config_file, "r") as f:
                     config = json.load(f)
                     self.daily_limit = config.get("daily_limit", self.daily_limit)
+                    self.free_mode_enabled = config.get("free_mode_enabled", self.free_mode_enabled)
                     logger.info(
-                        f"Loaded budget config: daily_limit=${self.daily_limit}"
+                        f"Loaded budget config: daily_limit=${self.daily_limit}, free_mode_enabled={self.free_mode_enabled}"
                     )
             except Exception as e:
                 logger.warning(f"Failed to load budget config: {e}")
@@ -72,6 +81,7 @@ class BudgetManager:
         """Save current budget configuration."""
         config = {
             "daily_limit": self.daily_limit,
+            "free_mode_enabled": self.free_mode_enabled,
             "updated": datetime.now().isoformat(),
         }
         try:
@@ -190,7 +200,7 @@ class BudgetManager:
         status = self.check_budget_status()
         return status["warning_level"] in ["yellow", "red"]
 
-    def estimate_cost(self, model: str, estimated_tokens: int) -> float:
+    async def estimate_cost(self, model: str, estimated_tokens: int) -> float:
         """
         Estimate cost for a model and token count.
 
@@ -201,6 +211,20 @@ class BudgetManager:
         Returns:
             Estimated cost in USD
         """
+        if self.free_mode_enabled:
+            try:
+                # In free mode, cost is 0 if a free model can be selected
+                # We don't actually select it here, just check if one is available for the task
+                # The actual model selection will happen at the point of API call
+                # For cost estimation, if a free model *could* be used, cost is 0
+                # We need a way to determine task complexity and context size here.
+                # For now, assume 'medium' complexity and use estimated_tokens as context_size.
+                asyncio.run(self.free_model_selector.select_model(task_complexity='medium', context_size=estimated_tokens))
+                return 0.0
+            except NoAvailableFreeModelsError:
+                # If no free model is available, fall through to paid model estimation
+                pass
+
         # Import here to avoid circular imports
         from .router import ModelRouter
 

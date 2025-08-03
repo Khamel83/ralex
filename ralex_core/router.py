@@ -20,6 +20,8 @@ logger = logging.getLogger(__name__)
 class ModelTier(Enum):
     """4-tier model classification system"""
 
+    FREE_BASE = "free_base" # Free, fast, efficient models
+    FREE_GOOD = "free_good" # Free, high-quality models
     SILVER = "silver"  # Budget tier
     GOLD = "gold"  # Balanced tier
     PLATINUM = "platinum"  # Premium tier
@@ -46,13 +48,6 @@ class ModelRouter:
     # OpenRouter model configurations for the 4-tier system
     MODELS = {
         # Silver Tier - Budget
-        "openrouter/deepseek/deepseek-r1:free": ModelConfig(
-            name="openrouter/deepseek/deepseek-r1:free",
-            tier=ModelTier.SILVER,
-            cost_per_1k_tokens=0.0,
-            description="Free DeepSeek R1 (rate limited)",
-            best_for=["learning", "simple tasks", "experimentation"],
-        ),
         "openrouter/anthropic/claude-3-haiku": ModelConfig(
             name="openrouter/anthropic/claude-3-haiku",
             tier=ModelTier.SILVER,
@@ -147,6 +142,8 @@ class ModelRouter:
         self,
         default_tier: ModelTier = ModelTier.GOLD,
         budget_limit: Optional[float] = None,
+        free_model_selector=None,
+        free_mode_enabled: bool = False,
     ):
         """
         Initialize the model router.
@@ -158,6 +155,8 @@ class ModelRouter:
         self.default_tier = default_tier
         self.budget_limit = budget_limit
         self.usage_history = []
+        self.free_model_selector = free_model_selector
+        self.free_mode_enabled = free_mode_enabled
 
     def analyze_task(self, prompt: str, context: Optional[Dict] = None) -> ModelTier:
         """
@@ -224,17 +223,34 @@ class ModelRouter:
         """Get all models available for a specific tier."""
         return [model for model in self.MODELS.values() if model.tier == tier]
 
-    def select_model(self, tier: ModelTier, prefer_free: bool = False) -> str:
+    async def select_model(self, tier: ModelTier, task_complexity: str, context_size: int) -> str:
         """
         Select the best model for a given tier.
 
         Args:
             tier: The desired model tier
-            prefer_free: Whether to prefer free models when available
+            task_complexity: The complexity of the task (e.g., 'simple', 'complex')
+            context_size: The size of the context window required
 
         Returns:
             Model name string for use with OpenRouter
         """
+        if self.free_mode_enabled and self.free_model_selector:
+            try:
+                if tier == ModelTier.FREE_BASE:
+                    selected_model_obj = await self.free_model_selector.select_model(task_complexity='simple', context_size=context_size)
+                elif tier == ModelTier.FREE_GOOD:
+                    selected_model_obj = await self.free_model_selector.select_model(task_complexity='complex', context_size=context_size)
+                else:
+                    # If free mode is enabled but not a free tier, fall through to paid models
+                    pass
+                
+                if selected_model_obj:
+                    logger.info(f"Selected free model: {selected_model_obj['id']} for tier {tier.value}")
+                    return selected_model_obj['id']
+            except NoAvailableFreeModelsError:
+                logger.warning(f"No free models available for tier {tier.value}. Falling back to paid models.")
+
         tier_models = self.get_models_for_tier(tier)
 
         if not tier_models:
@@ -243,25 +259,18 @@ class ModelRouter:
             )
             tier_models = self.get_models_for_tier(ModelTier.GOLD)
 
-        # Prefer free models if requested
-        if prefer_free:
-            free_models = [m for m in tier_models if m.cost_per_1k_tokens == 0.0]
-            if free_models:
-                selected = free_models[0]
-                logger.info(f"Selected free model: {selected.name}")
-                return selected.name
-
         # Select the first (primary) model for the tier
         selected = tier_models[0]
         logger.info(f"Selected {tier.value} tier model: {selected.name}")
         return selected.name
 
-    def route_request(
+    async def route_request(
         self,
         prompt: str,
         context: Optional[Dict] = None,
         force_tier: Optional[ModelTier] = None,
-        prefer_free: bool = False,
+        task_complexity: str = "medium", # Default to medium if not provided
+        context_size: int = 4096, # Default context size
     ) -> Tuple[str, ModelTier, float]:
         """
         Main routing function that analyzes the request and returns the optimal model.
@@ -283,7 +292,7 @@ class ModelRouter:
             tier = self.analyze_task(prompt, context)
 
         # Select model
-        model_name = self.select_model(tier, prefer_free)
+        model_name = await self.select_model(tier, task_complexity, context_size)
         model_config = self.MODELS[model_name]
 
         # Log the decision

@@ -7,6 +7,7 @@ import json
 import difflib
 import argparse
 from collections import defaultdict
+import asyncio
 
 from ralex_core.openrouter_client import OpenRouterClient
 from ralex_core.semantic_classifier import SemanticClassifier
@@ -97,7 +98,7 @@ def classify_intent(user_input):
         return "default"
 
 
-def run_interactive_mode(
+async def run_interactive_mode(
     settings, model_tiers, intent_routes, client, semantic_classifier, budget_optimizer
 ):
     """Runs the interactive CLI mode."""
@@ -181,9 +182,21 @@ def run_interactive_mode(
                 )
 
                 messages = [{"role": "user", "content": execution_prompt}]
-                selected_model = budget_optimizer.get_cheapest_model_in_tier("cheap")
-                tier = "cheap"
-                intent = "simple"
+                if budget_optimizer.free_mode_enabled:
+                    try:
+                        selected_model_obj = await budget_optimizer.free_model_selector.select_model(task_complexity='simple', context_size=len(str(messages)))
+                        selected_model = selected_model_obj['id']
+                        tier = "free_base"
+                        intent = "simple"
+                    except NoAvailableFreeModelsError:
+                        print("\n⚠️ No free models available for simple task. Falling back to paid models.")
+                        selected_model = budget_optimizer.get_cheapest_model_in_tier("cheap")
+                        tier = "cheap"
+                        intent = "simple"
+                else:
+                    selected_model = budget_optimizer.get_cheapest_model_in_tier("cheap")
+                    tier = "cheap"
+                    intent = "simple"
 
             else:
                 # Complex task - needs expensive analysis first
@@ -196,11 +209,25 @@ def run_interactive_mode(
                     print("   Phase: ANALYSIS (using smart model)")
 
                     messages = [{"role": "user", "content": breakdown.analysis_prompt}]
-                    selected_model = budget_optimizer.get_cheapest_model_in_tier(
-                        "premium", model_tiers
-                    )
-                    tier = "premium"
-                    intent = "analysis"
+                    if budget_optimizer.free_mode_enabled:
+                        try:
+                            selected_model_obj = await budget_optimizer.free_model_selector.select_model(task_complexity='complex', context_size=len(str(messages)))
+                            selected_model = selected_model_obj['id']
+                            tier = "free_good"
+                            intent = "analysis"
+                        except NoAvailableFreeModelsError:
+                            print("\n⚠️ No free models available for complex task. Falling back to paid models.")
+                            selected_model = budget_optimizer.get_cheapest_model_in_tier(
+                                "premium", model_tiers
+                            )
+                            tier = "premium"
+                            intent = "analysis"
+                    else:
+                        selected_model = budget_optimizer.get_cheapest_model_in_tier(
+                            "premium", model_tiers
+                        )
+                        tier = "premium"
+                        intent = "analysis"
 
                 else:
                     # Step 2+: Cheap execution of specific tasks
@@ -226,6 +253,10 @@ def run_interactive_mode(
                     "silver",
                     "cheap",
                 ]
+                if budget_optimizer.free_mode_enabled:
+                    tier_hierarchy.insert(0, "free_good")
+                    tier_hierarchy.insert(0, "free_base")
+
                 current_tier = intent_routes.get(semantic_intent, "default")
                 current_tier_index = (
                     tier_hierarchy.index(current_tier)
@@ -235,31 +266,71 @@ def run_interactive_mode(
 
                 for i in range(current_tier_index + 1, len(tier_hierarchy)):
                     lower_tier = tier_hierarchy[i]
-                    cheapest_in_lower_tier = (
-                        budget_optimizer.get_cheapest_model_in_tier(
-                            lower_tier, model_tiers
+                    if lower_tier.startswith("free_") and budget_optimizer.free_mode_enabled:
+                        try:
+                            # For free tiers, try to select a model from the free_model_selector
+                            selected_model_obj = await budget_optimizer.free_model_selector.select_model(
+                                task_complexity='simple' if lower_tier == 'free_base' else 'complex',
+                                context_size=len(str(messages))
+                            )
+                            selected_model = selected_model_obj['id']
+                            tier = lower_tier
+                            intent = semantic_intent
+                            print(
+                                f"\n💡 Downgrading to {lower_tier} tier ({selected_model}) due to low semantic confidence."
+                            )
+                            break
+                        except NoAvailableFreeModelsError:
+                            # If no free model available in this tier, continue to next
+                            continue
+                    else:
+                        cheapest_in_lower_tier = (
+                            budget_optimizer.get_cheapest_model_in_tier(
+                                lower_tier, model_tiers
+                            )
                         )
-                    )
-                    if cheapest_in_lower_tier:
-                        # Check if the lower tier model is significantly cheaper and still reasonable
-                        # For simplicity, we'll just pick the first cheaper one for now
-                        intent = semantic_intent  # Keep the semantic intent
-                        tier = lower_tier
-                        selected_model = cheapest_in_lower_tier
-                        print(
-                            f"\n💡 Downgrading to {lower_tier} tier ({selected_model}) due to low semantic confidence."
-                        )
-                        break
+                        if cheapest_in_lower_tier:
+                            # Check if the lower tier model is significantly cheaper and still reasonable
+                            # For simplicity, we'll just pick the first cheaper one for now
+                            intent = semantic_intent  # Keep the semantic intent
+                            tier = lower_tier
+                            selected_model = cheapest_in_lower_tier
+                            print(
+                                f"\n💡 Downgrading to {lower_tier} tier ({selected_model}) due to low semantic confidence."
+                            )
+                            break
                 else:
                     # If no suitable lower tier found, stick with original semantic intent
                     intent = semantic_intent
                     tier = intent_routes.get(intent, "default")
-                    selected_model = budget_optimizer.get_cheapest_model_in_tier(tier)
+                    if budget_optimizer.free_mode_enabled:
+                        try:
+                            selected_model_obj = await budget_optimizer.free_model_selector.select_model(
+                                task_complexity='medium', # Default complexity for fallback
+                                context_size=len(str(messages))
+                            )
+                            selected_model = selected_model_obj['id']
+                            tier = "free_base" # Default to free_base if no other free tier found
+                        except NoAvailableFreeModelsError:
+                            selected_model = budget_optimizer.get_cheapest_model_in_tier(tier)
+                    else:
+                        selected_model = budget_optimizer.get_cheapest_model_in_tier(tier)
             else:
                 # Use semantic if confident enough
                 intent = semantic_intent
                 tier = intent_routes.get(intent, "default")
-                selected_model = budget_optimizer.get_cheapest_model_in_tier(tier)
+                if budget_optimizer.free_mode_enabled:
+                    try:
+                        selected_model_obj = await budget_optimizer.free_model_selector.select_model(
+                            task_complexity='medium', # Default complexity for confident semantic intent
+                            context_size=len(str(messages))
+                        )
+                        selected_model = selected_model_obj['id']
+                        tier = "free_base" # Default to free_base if free mode is on
+                    except NoAvailableFreeModelsError:
+                        selected_model = budget_optimizer.get_cheapest_model_in_tier(tier)
+                else:
+                    selected_model = budget_optimizer.get_cheapest_model_in_tier(tier)
 
             if not selected_model:
                 print(
@@ -309,7 +380,7 @@ def run_interactive_mode(
                 flush=True,
             )
             full_response = ""
-            for chunk in client.send_request(selected_model, messages):
+            for chunk in await client.send_request(selected_model, messages):
                 print(chunk, end="", flush=True)
                 full_response += chunk
             print("\n")
@@ -354,15 +425,27 @@ def run_interactive_mode(
                 execution_messages = [{"role": "user", "content": execution_prompt}]
 
                 # Override to use cheap model
-                selected_model = budget_optimizer.get_cheapest_model_in_tier("cheap")
-                tier = "cheap"
-                intent = "execution"
+                if budget_optimizer.free_mode_enabled:
+                    try:
+                        selected_model_obj = await budget_optimizer.free_model_selector.select_model(task_complexity='simple', context_size=len(str(execution_messages)))
+                        selected_model = selected_model_obj['id']
+                        tier = "free_base"
+                        intent = "execution"
+                    except NoAvailableFreeModelsError:
+                        print("\n⚠️ No free models available for execution task. Falling back to paid models.")
+                        selected_model = budget_optimizer.get_cheapest_model_in_tier("cheap")
+                        tier = "cheap"
+                        intent = "execution"
+                else:
+                    selected_model = budget_optimizer.get_cheapest_model_in_tier("cheap")
+                    tier = "cheap"
+                    intent = "execution"
 
                 print(
                     f"Assistant (executing with {selected_model}):", end="", flush=True
                 )
                 execution_response = ""
-                for chunk in client.send_request(selected_model, execution_messages):
+                for chunk in await client.send_request(selected_model, execution_messages):
                     print(chunk, end="", flush=True)
                     execution_response += chunk
                 print("\n")
@@ -493,13 +576,16 @@ def run_interactive_mode(
             print(f"Error: {e}", file=sys.stderr)
 
 
-def main():
+async def main():
     """The main entry point for the Ralex agent."""
     parser = argparse.ArgumentParser(description="Ralex - Your AI Coding Assistant")
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
 
     # Run command (interactive mode)
     run_parser = subparsers.add_parser("run", help="Run Ralex in interactive mode")
+    run_parser.add_argument(
+        "--free-mode", action="store_true", help="Enable free mode (use free models)"
+    )
 
     # Execute command (non-interactive mode)
     execute_parser = subparsers.add_parser(
@@ -552,12 +638,15 @@ def main():
     model_tiers = load_config(os.path.join(config_dir, "model_tiers.json"))
     intent_routes = load_config(os.path.join(config_dir, "intent_routes.json"))
 
-    client = OpenRouterClient(api_key, model_tiers)
+    client = OpenRouterClient(api_key, model_tiers, budget_optimizer.free_model_selector, args.free_mode)
     semantic_classifier = SemanticClassifier()
-    budget_optimizer = BudgetManager(daily_limit=settings.get("daily_limit"))
+    budget_optimizer = BudgetManager(daily_limit=settings.get("daily_limit"), free_mode_enabled=args.free_mode)
 
     if args.command == "run":
-        run_interactive_mode(
+        # Update free models if free mode is enabled
+        if args.free_mode:
+            await budget_optimizer.free_mode_manager.update_free_models()
+        await run_interactive_mode(
             settings,
             model_tiers,
             intent_routes,
@@ -593,4 +682,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
