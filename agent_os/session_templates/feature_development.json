@@ -1,0 +1,13 @@
+{
+    "name": "Feature Development Session",
+    "description": "Template for developing a new feature.",
+    "initial_tasks": [
+        "Understand requirements",
+        "Design the feature",
+        "Implement the core logic",
+        "Write tests",
+        "Integrate with existing codebase",
+        "Document the feature"
+    ],
+    "context_files": []
+}

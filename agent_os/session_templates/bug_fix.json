@@ -1,0 +1,12 @@
+{
+    "name": "Bug Fix Session",
+    "description": "Template for a bug fixing session.",
+    "initial_tasks": [
+        "Reproduce the bug",
+        "Identify the root cause",
+        "Develop a fix",
+        "Write unit tests for the fix",
+        "Verify the fix"
+    ],
+    "context_files": []
+}
