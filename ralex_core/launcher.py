@@ -14,6 +14,7 @@ from ralex_core.semantic_classifier import SemanticClassifier
 from ralex_core.budget import BudgetManager
 from ralex_core.code_executor import CodeExecutor
 from ralex_core.agentos_integration import AgentOSEnhancer
+from agent_os.session_manager import SessionManager
 
 
 def parse_file_modifications(response_text):
@@ -106,6 +107,8 @@ async def run_interactive_mode(
     conversation_history = []
     code_executor = CodeExecutor()
     agentos = AgentOSEnhancer()
+    session_manager = SessionManager(os.path.join(os.path.dirname(__file__), '..', 'session'))
+    current_session = None # To store the active session
 
     # Track breakdown state for multi-step execution
     current_breakdown = None
@@ -122,12 +125,16 @@ async def run_interactive_mode(
                 break
 
             # --- AgentOS Slash Commands ---
-            if user_input.startswith("/") and not user_input.startswith("/add"):
+            if user_input.startswith("/"):
                 parts = user_input.split(" ", 1)
                 command = parts[0]
                 args = parts[1] if len(parts) > 1 else ""
 
-                if command in agentos.get_slash_commands():
+                if command == "/start":
+                    current_session = session_manager.create_new_session()
+                    print(f"New session started: {current_session['session_id']}")
+                    continue
+                elif command in agentos.get_slash_commands():
                     result = agentos.handle_slash_command(command, args)
                     print(result)
                     continue
