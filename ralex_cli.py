@@ -15,7 +15,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent)) # Add project root to path
 # Import modules with proper error handling
 try:
     from universal_logger import log_ai_operation
-    from ralex_core.v4_orchestrator import RalexV4Orchestrator
+    from ralex_core.orchestrator import RalexOrchestrator
 except ImportError:
     # Fallback for missing universal logger
     def log_ai_operation(operation_type, prompt, metadata=None):

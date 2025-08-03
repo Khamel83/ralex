@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Ralex V4 Startup Script - Orchestrates all components
+Ralex Startup Script - Orchestrates all components
 1. Start RalexBridge API server
 2. Configure OpenWebUI to use RalexBridge
 3. Start OpenWebUI
@@ -78,7 +78,7 @@ def start_openwebui():
     # Set environment variables for OpenWebUI
     os.environ["PORT"] = "3000"
     os.environ["HOST"] = "0.0.0.0"
-    os.environ["WEBUI_SECRET_KEY"] = "ralex-v4-secret-key"
+    os.environ["WEBUI_SECRET_KEY"] = "ralex-secret-key"
     os.environ["ENV"] = "prod"
     
     # Install super minimal dependencies for Raspberry Pi (ARM compatibility)
@@ -190,7 +190,7 @@ def main():
     except:
         local_ip = "localhost"
     
-    print("\n🎉 Ralex V4 started successfully!")
+    print("\n🎉 Ralex started successfully!")
     print("📊 RalexBridge API:")
     print(f"   • Local: http://localhost:8000")
     print(f"   • Network: http://{local_ip}:8000")
@@ -206,7 +206,7 @@ def main():
         bridge_process.wait()
         webui_process.wait()
     except KeyboardInterrupt:
-        print("\n🛑 Stopping Ralex V4...")
+        print("\n🛑 Stopping Ralex...")
         bridge_process.terminate()
         webui_process.terminate()
         print("✅ All services stopped")

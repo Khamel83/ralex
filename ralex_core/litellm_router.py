@@ -1,5 +1,5 @@
 """
-LiteLLM V4 Router - Stub Implementation
+LiteLLM Router - Stub Implementation
 
 This is a stub implementation that will be fully developed in Task 2.2.
 For now, it provides the interface needed by the orchestrator.
@@ -29,7 +29,7 @@ class LiteLLMRouter:
 
     async def initialize(self):
         """Initialize LiteLLM router"""
-        self.logger.info("LiteLLM V4 router initialized (stub)")
+        self.logger.info("LiteLLM router initialized (stub)")
 
     async def select_model(self, enhanced_prompt, complexity: str) -> ModelSelection:
         """Select model based on complexity - stub implementation"""

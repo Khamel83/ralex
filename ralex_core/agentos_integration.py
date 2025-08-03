@@ -1,5 +1,5 @@
 """
-AgentOS V4 Integration - Stub Implementation
+AgentOS Integration - Stub Implementation
 
 This is a stub implementation that will be fully developed in Task 2.1.
 For now, it provides the interface needed by the orchestrator.
@@ -33,7 +33,7 @@ class AgentOSEnhancer:
 
     async def initialize(self):
         """Initialize AgentOS enhancer"""
-        self.logger.info("AgentOS V4 enhancer initialized (stub)")
+        self.logger.info("AgentOS enhancer initialized (stub)")
 
     async def enhance(self, parsed_command, context_package) -> EnhancedPrompt:
         """Enhance command with AgentOS standards - stub implementation"""

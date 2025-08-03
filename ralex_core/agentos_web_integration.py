@@ -11,7 +11,7 @@ from typing import Dict, List, Optional, Any
 from datetime import datetime
 from pathlib import Path
 
-from ralex_core.agentos_integration import AgentOSIntegration, TaskBreakdown
+from ralex_core.agentos_integration import AgentOSEnhancer, TaskBreakdown
 
 
 class WebFileContext:
@@ -63,7 +63,7 @@ class WebFileContext:
         return summary
 
 
-class AgentOSWebIntegration(AgentOSIntegration):
+class AgentOSWebIntegration(AgentOSEnhancer):
     """Enhanced AgentOS integration for web interface"""
 
     def __init__(self, agent_os_path: str = "agent_os"):

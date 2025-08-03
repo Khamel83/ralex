@@ -213,7 +213,7 @@ if __name__ == "__main__":
     
     # Health check command
     if len(sys.argv) == 2 and sys.argv[1] in ['--health', '--check', '--status']:
-        print("🔍 Ralex V4 Health Check")
+        print("🔍 Ralex Health Check")
         print("========================")
         
         # Check API key
@@ -253,7 +253,7 @@ if __name__ == "__main__":
     
     # Help command
     if len(sys.argv) == 1 or (len(sys.argv) == 2 and sys.argv[1] in ['--help', '-h']):
-        print("🎯 Ralex V4 - Voice-Controlled AI Coding Assistant")
+        print("🎯 Ralex - Voice-Controlled AI Coding Assistant")
         print("================================================")
         print("")
         print("Usage:")
@@ -273,7 +273,7 @@ if __name__ == "__main__":
         print("  2. Get free key: https://openrouter.ai")
         print("")
         print("Documentation:")
-        print("  README: cat README_V4.md")
+        print("  README: cat README.md")
         print("  Setup:  cat QUICKSTART.md")
         print("  Status: cat PRODUCTION_READINESS.md")
         sys.exit(0)
