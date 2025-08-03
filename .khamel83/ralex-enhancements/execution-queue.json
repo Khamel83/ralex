@@ -1,0 +1,433 @@
+{
+  "execution_queue": {
+    "queue_id": "ralex-transformation-2025-08-03",
+    "created_at": "2025-08-03T03:47:00Z",
+    "total_tasks": 35,
+    "estimated_cost": "$8-12",
+    "estimated_duration": "8 weeks",
+    "current_phase": "Phase 2: Core Infrastructure",
+    "next_task": "A1",
+    "status": "ready_to_execute"
+  },
+  
+  "phases": [
+    {
+      "phase_id": "phase_1",
+      "name": "Planning & Architecture",
+      "status": "completed",
+      "budget_allocated": "$3-4",
+      "budget_used": "$3.50",
+      "start_date": "2025-08-02",
+      "end_date": "2025-08-03",
+      "tasks_completed": 1,
+      "success_criteria_met": true
+    },
+    {
+      "phase_id": "phase_2", 
+      "name": "Core Infrastructure",
+      "status": "ready",
+      "budget_allocated": "$1.50",
+      "budget_used": "$0.00",
+      "estimated_start": "2025-08-03",
+      "estimated_end": "2025-08-17",
+      "total_tasks": 14,
+      "dependencies": ["phase_1"]
+    },
+    {
+      "phase_id": "phase_3",
+      "name": "Intelligence Layer", 
+      "status": "planned",
+      "budget_allocated": "$1.50",
+      "budget_used": "$0.00",
+      "estimated_start": "2025-08-18",
+      "estimated_end": "2025-08-31",
+      "total_tasks": 12,
+      "dependencies": ["phase_2"]
+    },
+    {
+      "phase_id": "phase_4",
+      "name": "Integration & Workflow",
+      "status": "planned", 
+      "budget_allocated": "$1.00",
+      "budget_used": "$0.00",
+      "estimated_start": "2025-09-01",
+      "estimated_end": "2025-09-14",
+      "total_tasks": 8,
+      "dependencies": ["phase_3"]
+    },
+    {
+      "phase_id": "phase_5",
+      "name": "Review & Optimization",
+      "status": "planned",
+      "budget_allocated": "$1-2",
+      "budget_used": "$0.00", 
+      "estimated_start": "2025-09-15",
+      "estimated_end": "2025-09-21",
+      "total_tasks": 1,
+      "dependencies": ["phase_4"]
+    }
+  ],
+
+  "tasks": {
+    "phase_2_infrastructure": [
+      {
+        "task_id": "A1",
+        "name": "Create unified CLI entry point",
+        "description": "Build main `ralex` command that handles all user interactions",
+        "estimated_cost": "$0.10",
+        "estimated_duration": "2-3 hours",
+        "priority": "high",
+        "status": "ready",
+        "dependencies": [],
+        "blocking": ["A2", "A3", "A4"],
+        "acceptance_criteria": [
+          "`ralex --version` returns correct version",
+          "`ralex --help` shows command options", 
+          "`ralex \"test command\"` accepts user input",
+          "CLI framework supports subcommands and options"
+        ],
+        "implementation_notes": "Use argparse or click for CLI framework, establish command structure"
+      },
+      {
+        "task_id": "A2", 
+        "name": "Build Agent-OS task classifier",
+        "description": "Implement intelligent task classification (simple/complex/mobile)",
+        "estimated_cost": "$0.15",
+        "estimated_duration": "3-4 hours",
+        "priority": "high",
+        "status": "blocked",
+        "dependencies": ["A1"],
+        "blocking": ["B1", "B3"],
+        "acceptance_criteria": [
+          "Classifies simple tasks correctly (>90% accuracy)",
+          "Identifies complex tasks requiring optimization",
+          "Detects mobile context requests",
+          "Returns confidence scores for decisions"
+        ],
+        "implementation_notes": "Use keyword analysis, prompt complexity metrics, context clues"
+      },
+      {
+        "task_id": "A3",
+        "name": "Implement LiteLLM routing configuration loader", 
+        "description": "Load and manage LiteLLM routing configurations for cost optimization",
+        "estimated_cost": "$0.10",
+        "estimated_duration": "2-3 hours",
+        "priority": "medium",
+        "status": "blocked",
+        "dependencies": ["A1"],
+        "blocking": ["B1", "B2"],
+        "acceptance_criteria": [
+          "Loads existing .khamel83/model-routing/litellm-config.yaml",
+          "Validates configuration format and models",
+          "Supports dynamic config reloading",
+          "Handles configuration errors gracefully"
+        ],
+        "implementation_notes": "Use YAML parser, validate model availability, cache configurations"
+      },
+      {
+        "task_id": "A4",
+        "name": "Create OpenCode.ai wrapper with error handling",
+        "description": "Build robust wrapper around OpenCode.ai execution with comprehensive error handling",
+        "estimated_cost": "$0.15", 
+        "estimated_duration": "3-4 hours",
+        "priority": "high",
+        "status": "blocked",
+        "dependencies": ["A1"],
+        "blocking": ["A5", "A9", "A10"],
+        "acceptance_criteria": [
+          "Successfully executes OpenCode.ai commands",
+          "Handles credential errors gracefully",
+          "Captures stdout/stderr from OpenCode.ai",
+          "Provides meaningful error messages to users",
+          "Supports timeout and cancellation"
+        ],
+        "implementation_notes": "Use subprocess with timeout, parse OpenCode.ai output, handle auth errors"
+      },
+      {
+        "task_id": "A5",
+        "name": "Add universal logger integration to all components",
+        "description": "Integrate universal logger throughout system for comprehensive tracking",
+        "estimated_cost": "$0.10",
+        "estimated_duration": "2-3 hours", 
+        "priority": "medium",
+        "status": "blocked",
+        "dependencies": ["A4"],
+        "blocking": ["A7"],
+        "acceptance_criteria": [
+          "All operations logged with unique IDs",
+          "Cost tracking integrated",
+          "Performance metrics captured",
+          "No significant performance impact (<5% overhead)"
+        ],
+        "implementation_notes": "Use existing universal_logger.py, add to all major functions"
+      },
+      {
+        "task_id": "A6",
+        "name": "Build configuration management system",
+        "description": "Create system for managing Ralex configuration files and settings",
+        "estimated_cost": "$0.10",
+        "estimated_duration": "2-3 hours",
+        "priority": "medium", 
+        "status": "ready",
+        "dependencies": [],
+        "blocking": ["A11", "A14"],
+        "acceptance_criteria": [
+          "Manages multiple config sources (CLI, file, env)",
+          "Supports configuration validation",
+          "Provides config merging and inheritance",
+          "Handles missing or invalid configs gracefully"
+        ],
+        "implementation_notes": "Use JSON/YAML for configs, implement precedence rules"
+      },
+      {
+        "task_id": "A7",
+        "name": "Create cost tracking and reporting module",
+        "description": "Build comprehensive cost tracking system with reporting capabilities",
+        "estimated_cost": "$0.15",
+        "estimated_duration": "3-4 hours",
+        "priority": "high",
+        "status": "blocked",
+        "dependencies": ["A5"],
+        "blocking": ["B2"],
+        "acceptance_criteria": [
+          "Tracks costs per operation with model used",
+          "Provides real-time cost monitoring", 
+          "Generates cost reports and analytics",
+          "Alerts on budget thresholds",
+          "Demonstrates cost savings vs traditional approach"
+        ],
+        "implementation_notes": "Integration with universal logger, real-time cost calculation"
+      },
+      {
+        "task_id": "A8",
+        "name": "Add session management for context persistence",
+        "description": "Implement session management to maintain context across operations",
+        "estimated_cost": "$0.15",
+        "estimated_duration": "3-4 hours",
+        "priority": "medium",
+        "status": "ready",
+        "dependencies": [],
+        "blocking": ["B7", "C3"],
+        "acceptance_criteria": [
+          "Maintains conversation context across commands",
+          "Supports session save/restore",
+          "Handles concurrent sessions",
+          "Provides session cleanup and management"
+        ],
+        "implementation_notes": "Use file-based or memory-based session storage"
+      },
+      {
+        "task_id": "A9",
+        "name": "Implement safety validation for OpenCode.ai requests",
+        "description": "Add safety checks before executing OpenCode.ai operations",
+        "estimated_cost": "$0.10",
+        "estimated_duration": "2-3 hours",
+        "priority": "medium",
+        "status": "blocked",
+        "dependencies": ["A4"],
+        "blocking": [],
+        "acceptance_criteria": [
+          "Validates commands for safety before execution",
+          "Blocks potentially dangerous operations",
+          "Provides user confirmation for risky operations",
+          "Maintains audit log of safety decisions"
+        ],
+        "implementation_notes": "Implement safety rules, command analysis, user prompts"
+      },
+      {
+        "task_id": "A10",
+        "name": "Create backup/rollback system for file changes",
+        "description": "Implement automatic backup and rollback for file modifications",
+        "estimated_cost": "$0.15",
+        "estimated_duration": "3-4 hours",
+        "priority": "medium",
+        "status": "blocked", 
+        "dependencies": ["A4"],
+        "blocking": [],
+        "acceptance_criteria": [
+          "Automatically backs up files before modification",
+          "Supports rollback of recent changes",
+          "Manages backup storage and cleanup",
+          "Provides backup restoration interface"
+        ],
+        "implementation_notes": "Use git-like versioning or timestamp-based backups"
+      },
+      {
+        "task_id": "A11",
+        "name": "Build development mode vs production mode switching",
+        "description": "Implement mode switching for development vs production environments",
+        "estimated_cost": "$0.05",
+        "estimated_duration": "1-2 hours",
+        "priority": "low",
+        "status": "blocked",
+        "dependencies": ["A6"],
+        "blocking": [],
+        "acceptance_criteria": [
+          "Supports --dev and --prod flags",
+          "Different logging levels per mode",
+          "Development mode includes debug features",
+          "Production mode optimized for performance"
+        ],
+        "implementation_notes": "Environment-based configuration, logging level adjustment"
+      },
+      {
+        "task_id": "A12",
+        "name": "Add verbose logging and debug modes",
+        "description": "Implement comprehensive logging and debugging capabilities",
+        "estimated_cost": "$0.05",
+        "estimated_duration": "1-2 hours", 
+        "priority": "low",
+        "status": "ready",
+        "dependencies": [],
+        "blocking": [],
+        "acceptance_criteria": [
+          "Supports --verbose and --debug flags",
+          "Provides detailed operation logging",
+          "Shows internal decision-making process",
+          "Helps with troubleshooting and optimization"
+        ],
+        "implementation_notes": "Multi-level logging, debug output formatting"
+      },
+      {
+        "task_id": "A13",
+        "name": "Create health check and system validation",
+        "description": "Build comprehensive system health checking and validation",
+        "estimated_cost": "$0.10",
+        "estimated_duration": "2-3 hours",
+        "priority": "medium",
+        "status": "ready",
+        "dependencies": [],
+        "blocking": [],
+        "acceptance_criteria": [
+          "Validates all system dependencies",
+          "Checks OpenCode.ai connectivity and credentials", 
+          "Verifies configuration file validity",
+          "Provides system status report",
+          "Suggests fixes for common issues"
+        ],
+        "implementation_notes": "Dependency checking, connectivity tests, config validation"
+      },
+      {
+        "task_id": "A14",
+        "name": "Build credential management for OpenCode.ai",
+        "description": "Implement secure credential storage and management for OpenCode.ai",
+        "estimated_cost": "$0.05",
+        "estimated_duration": "1-2 hours",
+        "priority": "low",
+        "status": "blocked",
+        "dependencies": ["A6"],
+        "blocking": [],
+        "acceptance_criteria": [
+          "Securely stores OpenCode.ai credentials",
+          "Supports multiple credential sources",
+          "Handles credential rotation",
+          "Provides credential validation"
+        ],
+        "implementation_notes": "Use keyring or encrypted storage, env var support"
+      }
+    ],
+
+    "phase_3_intelligence": [
+      {
+        "task_id": "B1",
+        "name": "Implement complexity analysis algorithm", 
+        "description": "Build algorithm to analyze task complexity for optimal routing",
+        "estimated_cost": "$0.15",
+        "estimated_duration": "3-4 hours",
+        "priority": "high",
+        "status": "blocked",
+        "dependencies": ["A2", "A3"],
+        "blocking": ["B4", "B8"],
+        "acceptance_criteria": [
+          "Accurately classifies task complexity (simple/medium/complex)",
+          "Considers multiple factors (length, keywords, context)",
+          "Provides confidence scores",
+          "Improves accuracy over time with feedback"
+        ]
+      },
+      {
+        "task_id": "B2",
+        "name": "Create cost estimation engine per task type",
+        "description": "Build engine to estimate costs for different types of tasks",
+        "estimated_cost": "$0.15", 
+        "estimated_duration": "3-4 hours",
+        "priority": "high",
+        "status": "blocked",
+        "dependencies": ["A3", "A7"],
+        "blocking": ["B8", "B11"],
+        "acceptance_criteria": [
+          "Estimates costs within 20% accuracy",
+          "Considers model pricing and complexity",
+          "Updates estimates based on actual usage",
+          "Provides cost comparisons between approaches"
+        ]
+      }
+    ],
+
+    "phase_4_integration": [
+      {
+        "task_id": "C1",
+        "name": "Modify existing ralex_api.py to use new wrapper",
+        "description": "Update FastAPI endpoints to use new intelligent wrapper system", 
+        "estimated_cost": "$0.15",
+        "estimated_duration": "3-4 hours",
+        "priority": "high",
+        "status": "blocked",
+        "dependencies": ["A4", "B1"],
+        "blocking": ["C8"],
+        "acceptance_criteria": [
+          "All existing API endpoints continue working",
+          "Requests routed through new wrapper system",
+          "Response format maintained for compatibility",
+          "Performance improved or maintained"
+        ]
+      }
+    ]
+  },
+
+  "current_status": {
+    "ready_to_execute": ["A1", "A6", "A8", "A12", "A13"],
+    "blocked_tasks": ["A2", "A3", "A4", "A5", "A7", "A9", "A10", "A11", "A14"],
+    "next_recommended": "A1",
+    "estimated_next_cost": "$0.10",
+    "total_budget_remaining": "$4.50-8.50"
+  },
+
+  "dependencies_graph": {
+    "A1": {
+      "blocks": ["A2", "A3", "A4"],
+      "critical_path": true
+    },
+    "A4": {
+      "blocks": ["A5", "A9", "A10"],
+      "critical_path": true  
+    },
+    "A2": {
+      "blocks": ["B1", "B3"],
+      "critical_path": true
+    }
+  },
+
+  "success_metrics": {
+    "cost_optimization": {
+      "target": "95% cost reduction vs traditional approach",
+      "measurement": "Compare actual costs vs estimated traditional costs",
+      "current_status": "baseline_established"
+    },
+    "performance": {
+      "target": "<2 seconds response time for simple tasks",
+      "measurement": "Average response time across task types",
+      "current_status": "not_measured"
+    },
+    "functionality": {
+      "target": "100% existing functionality preserved",
+      "measurement": "All current features working after transformation", 
+      "current_status": "baseline_documented"
+    },
+    "mobile_integration": {
+      "target": "iOS workflow seamlessly maintained",
+      "measurement": "OpenCat and mobile apps continue working",
+      "current_status": "baseline_working"
+    }
+  }
+}

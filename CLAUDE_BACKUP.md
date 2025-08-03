@@ -1,57 +1,25 @@
-# Ralex Project Documentation - Agent-OS Optimized
+# Ralex Project Handover Documentation
 
 ## Project Overview
 Ralex is a terminal-native AI coding assistant that uses semantic routing to intelligently dispatch requests to appropriate LLM models via OpenRouter. It provides cost-effective, privacy-focused coding assistance with dynamic model selection.
 
-**Enhanced with Agent-OS**: This project now uses Agent-OS for intelligent cost optimization and development workflow management, achieving **$50 worth of results for $1** using smart model routing.
+## Agent-OS Universal Integration
+**NEW: One-command Agent-OS setup for any project**
 
-## 💰 Cost Optimization Strategy (Agent-OS Enhanced)
-**Goal: Achieve $50 worth of results for $1 using smart model routing**
+```bash
+# Install Agent-OS structure anywhere
+curl -sSL https://raw.githubusercontent.com/Khamel83/agent-os/main/install.sh | bash
 
-### Model Usage Pattern
-1. **Planning Phase**: Use expensive models (Claude 3.5 Sonnet) for:
-   - Architecture decisions
-   - High-level problem solving
-   - Complex reasoning tasks
-   - Ralex component design
+# Or use local installer
+./install-agent-os.sh
+```
 
-2. **Implementation Phase**: Use cheap models (Llama 3.1 8B) for:
-   - Code generation from detailed specs
-   - Repetitive tasks
-   - Simple modifications
-   - Ralex feature implementation
-
-3. **Review Phase**: Use medium models (Claude Haiku) for:
-   - Code review and debugging
-   - Integration testing
-   - Performance optimization
-   - Ralex system validation
-
-### Task Breakdown Approach
-- Break complex Ralex development into micro-tasks
-- Use cached solutions when possible
-- Leverage Agent-OS templates and patterns
-- Minimize expensive model usage
-
-## Agent-OS Integration
-- **Standards**: Follow `.agent-os/standards/` for coding practices
-- **Workflows**: Use `.agent-os/workflows/` for development processes
-- **Cost Templates**: Reference `.khamel83/cost-optimization/` for efficient task breakdown
-
-## LiteLLM Routing
-This project uses LiteLLM for intelligent model routing. Configuration in `.khamel83/model-routing/litellm-config.yaml`.
-
-## Context Management
-- Relevant files are in `.agent-os/` and `.khamel83/`
-- Cache successful patterns in `.khamel83/cache/`
-- Document cost savings in session logs
-
-## Development Workflow
-1. **Analyze task complexity** - determine if planning phase needed
-2. **Break down into micro-tasks** - use cost optimization templates
-3. **Route to appropriate models** - let LiteLLM handle routing
-4. **Cache successful patterns** - for future reuse
-5. **Track cost savings** - measure efficiency gains
+**Features:**
+- ✅ **Universal compatibility**: Claude Code, Cursor, Gemini CLI
+- ✅ **Cost optimization**: $50 worth of results for $1 using smart model routing
+- ✅ **Upstream sync**: Downloads latest buildermethods/agent-os + Khamel83 enhancements
+- ✅ **Intelligent structure**: `.agent-os/` + `.khamel83/` layers
+- ✅ **LiteLLM integration**: Automatic model routing for cost efficiency
 
 ## Key Strategic Insights
 
@@ -261,13 +229,9 @@ export RALEX_ANALYTICS=false
 - Ralex V4 startup failing with OpenWebUI module errors (FIXED - 2025-07-27)
 
 ## Recent Updates
-- **2025-08-03**: Enhanced with Agent-OS cost optimization strategies
 - **2025-07-27**: Fixed Ralex V4 startup script to properly run OpenWebUI from backend directory
 - **2025-07-27**: Updated documentation to reflect current V4 architecture vs legacy components
 
 ---
-*Last updated: 2025-08-03*
-*Enhanced with Agent-OS cost optimization - Achieving $50 worth of results for $1*
-*Prepared for: Cost-optimized LLM development and team collaboration*
-
-Remember: The goal is maximum value with minimum cost through intelligent task decomposition and model routing.
+*Last updated: 2025-07-27*
+*Prepared for: LLM handover and team collaboration*
