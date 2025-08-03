@@ -13,7 +13,7 @@ class FreeModeManager:
         }
         self.last_update = None
         self.cache_file = os.path.join(os.path.dirname(__file__), 'free_mode_cache.json')
-        self.config_file = os.path.join(os.path.dirname(__file__), '..", "config", 'free_mode.yaml')
+        self.config_file = os.path.join(os.path.dirname(__file__), '..', 'config', 'free_mode.yaml')
         self._load_config()
 
     def _load_config(self):
@@ -75,23 +75,48 @@ class FreeModeManager:
 
     def rank_models_by_capability(self, models):
         """
-        Ranks models based on a combination of factors.
-        This is a placeholder and should be refined with actual performance metrics.
-        For now, it prioritizes context length and then model ID alphabetically.
+        Ranks models based on a combination of factors, prioritizing available and relevant metrics:
+        1. Explicit coding/instruction capabilities (keywords in ID)
+        2. Context length
+        3. Model ID alphabetically (as a tie-breaker)
         """
-        # Sort by context length (descending), then by ID (ascending)
-        return sorted(models, key=lambda x: (x.get('context_length', 0), x.get('id')), reverse=True)
+        def get_ranking_key(model):
+            model_id = model.get('id', '').lower()
+            context_length = model.get('context_length', 0)
+
+            # Prioritize models with 'coder', 'instruct', 'chat' in their ID
+            # Assign higher scores for these keywords
+            capability_score = 0
+            if 'coder' in model_id:
+                capability_score += 3
+            if 'instruct' in model_id:
+                capability_score += 2
+            if 'chat' in model_id:
+                capability_score += 1
+
+            # Combine scores for a comprehensive ranking
+            # Higher context_length and capability_score are better
+            return (capability_score, context_length, model_id)
+
+        # Sort in reverse order for scores (higher is better), and ascending for ID
+        return sorted(models, key=get_ranking_key, reverse=True)
 
     def select_base_tier(self, ranked_models):
         """
         Selects models for the 'base' tier.
-        Prioritizes speed, context window, and efficiency.
+        Prioritizes models that are fast, efficient, and highly capable for common coding tasks.
+        Aims for models like Qwen3 Coder, Gemini 2.0 Flash.
         """
         candidates = []
         for m in ranked_models:
-            # Placeholder criteria: minimum context, and common chat/instruct models
-            if m.get('context_length', 0) >= 8192 and \
-               ('instruct' in m.get('id', '').lower() or 'chat' in m.get('id', '').lower()):
+            model_id = m.get('id', '').lower()
+            context_length = m.get('context_length', 0)
+
+            # Criteria for base tier:
+            # - Minimum context length of 8192
+            # - Explicitly coding or instruction-following models preferred
+            if context_length >= 8192 and \
+               ('coder' in model_id or 'instruct' in model_id or 'chat' in model_id):
                 candidates.append(m)
         
         return {
@@ -102,13 +127,19 @@ class FreeModeManager:
     def select_good_tier(self, ranked_models):
         """
         Selects models for the 'good' tier.
-        Prioritizes quality, context window, and broader capabilities.
+        Prioritizes models with the highest quality, larger context windows, and advanced reasoning capabilities.
+        Aims for models like Gemini 2.5 Pro.
         """
         candidates = []
         for m in ranked_models:
-            # Placeholder criteria: reasonable context, and not basic models like gemma
-            if m.get('context_length', 0) >= 4096 and \
-               not m.get('id', '').startswith('google/gemma'):
+            model_id = m.get('id', '').lower()
+            context_length = m.get('context_length', 0)
+
+            # Criteria for good tier:
+            # - Minimum context length of 32768 (or higher for complex tasks)
+            # - Avoid very small or basic models (e.g., Llama 3B, Gemma)
+            if context_length >= 32768 and \
+               not ('llama-3.2-3b' in model_id or 'gemma' in model_id):
                 candidates.append(m)
 
         return {
