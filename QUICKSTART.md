@@ -18,7 +18,7 @@ cp .env.example .env
 ### Step 2: Start Ralex (1 minute)
 ```bash
 export OPENROUTER_API_KEY="your-key-here"
-python start_ralex_v4.py
+python start_ralex.py
 ```
 
 ### Step 3: Setup iPhone App (2 minutes)
