@@ -1,0 +1,12 @@
+openrouter_api_key: sk-...
+models:
+  - deepseek-chat
+  - deepseek-coder
+  - gemini-pro
+  - qwen3-coder
+  - mistral-7b-instruct
+evaluator_model: prometheus-2
+prompts:
+  - "Write a function to reverse a string in-place."
+  - "Explain the difference between BFS and DFS."
+  - "What's the time complexity of quicksort?"
