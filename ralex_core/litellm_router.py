@@ -20,7 +20,7 @@ class ModelSelection:
     provider: str = "openrouter"
 
 
-class LiteLLMV4Router:
+class LiteLLMRouter:
     """Stub implementation of LiteLLM router"""
     
     def __init__(self):

@@ -10,28 +10,11 @@ import logging
 from datetime import datetime
 from typing import Dict, List, Optional, Any
 from ralex_core.git_sync_manager import GitSyncManager
+from ralex_core.task_models import Task
 from dataclasses import dataclass, asdict
 
 
-@dataclass
-class Task:
-    """Task data structure"""
-    id: str
-    name: str
-    description: str
-    status: str  # "pending", "in_progress", "completed", "blocked"
-    created_at: str
-    updated_at: str
-    files_modified: List[str] = None
-    verification_steps: List[str] = None
-    next_task_info: str = ""
-    priority: str = "medium"  # "low", "medium", "high", "critical"
-    
-    def __post_init__(self):
-        if self.files_modified is None:
-            self.files_modified = []
-        if self.verification_steps is None:
-            self.verification_steps = []
+from dataclasses import asdict
 
 
 class TodoWriteError(Exception):
@@ -93,8 +76,17 @@ class TodoWriter:
         
         self.tasks[task_id] = task
         self._save_tasks()
+        self._create_github_issue(task)
         
         return {"success": True, "task": asdict(task)}
+
+    def _create_github_issue(self, task: Task):
+        """Create a GitHub issue for the task."""
+        try:
+            subprocess.run(["gh", "issue", "create", "--title", task.name, "--body", task.description], check=True)
+            self.logger.info(f"Successfully created GitHub issue for task {task.id}")
+        except (subprocess.CalledProcessError, FileNotFoundError) as e:
+            self.logger.error(f"Failed to create GitHub issue for task {task.id}: {e}")
     
     def update_task(self, task_id: str, **updates) -> Dict[str, Any]:
         """Update an existing task"""
@@ -113,7 +105,11 @@ class TodoWriter:
         git_result = None
         if old_status != "completed" and task.status == "completed":
             self.logger.info(f"Task {task_id} marked as completed, creating git commit...")
-            git_result = self.git_manager.sync("Placeholder commit message")
+            git_result = self.git_manager.sync(GitSyncManager._create_commit_message(task))
+        
+        if git_result is None:
+            self.logger.error(f"Git sync returned None for task {task_id}")
+            git_result = {"success": False, "error": "Git sync returned None"}
         
         self._save_tasks()
         

@@ -158,6 +158,23 @@ Examples:
         help='Execute a specific Agent-OS workflow by name'
     )
     
+    parser.add_argument(
+        '--think-harder',
+        action='store_true',
+        help='Use a more powerful model for the request'
+    )
+    
+    parser.add_argument(
+        '-y', '--yes',
+        action='store_true',
+        help='Bypass confirmation prompts'
+    )
+    
+    parser.add_argument(
+        '--claude',
+        help='Execute a command through the Claude Code router'
+    )
+    
     return parser
 
 def health_check():
@@ -207,7 +224,7 @@ def show_budget_status():
     except Exception as e:
         print(f"❌ Error checking budget: {e}")
 
-def execute_command(command: str, verbose: bool = False, debug: bool = False):
+def execute_command(command: str, verbose: bool = False, debug: bool = False, assume_yes: bool = False, think_harder: bool = False):
     """Execute a command through the Ralex system."""
     if verbose:
         print(f"🎯 Executing: {command}")
@@ -403,7 +420,7 @@ def main():
     # Handle main command or workflow execution
     if args.command:
         try:
-            execute_command(args.command, args.verbose, args.debug)
+            execute_command(args.command, args.verbose, args.debug, args.yes, args.think_harder)
         except KeyboardInterrupt:
             print("\n⚠️  Operation cancelled")
             sys.exit(1)
@@ -415,7 +432,7 @@ def main():
             sys.exit(1)
     elif args.workflow:
         try:
-            orchestrator = RalexV4Orchestrator()
+            orchestrator = RalexOrchestrator()
             # Workflows are async, so we need to run them in an event loop
             import asyncio
             result = asyncio.run(orchestrator.execute_workflow(args.workflow, {{}}))
@@ -429,8 +446,18 @@ def main():
                 import traceback
                 traceback.print_exc()
             sys.exit(1)
-    else:
-        parser.print_help()
+    elif args.claude:
+        try:
+            orchestrator = RalexOrchestrator()
+            import asyncio
+            result = asyncio.run(orchestrator.process_claude_command(args.claude))
+            print(result.get("output", ""))
+        except Exception as e:
+            print(f"❌ Error executing claude command: {e}")
+            if args.debug:
+                import traceback
+                traceback.print_exc()
+            sys.exit(1)
 
 if __name__ == "__main__":
     main()

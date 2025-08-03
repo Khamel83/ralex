@@ -1,0 +1,31 @@
+
+id: B07
+name: Workflow Consolidation and Cleanup
+description: A step-by-step plan to review, consolidate, and archive old workflow files to ensure the `.agent-os/workflows` directory remains the single source of truth for the current project roadmap.
+status: defined
+priority: low
+steps:
+  - name: "Step 1: Identify Legacy Workflow Files"
+    description: "List all YAML files in the `.agent-os/workflows/` directory that do not follow the new 'B##-name.yaml' naming convention."
+    command: "ls .agent-os/workflows/ | grep -v '^B[0-9][0-9]'"
+
+  - name: "Step 2: Analyze and Consolidate Legacy Workflows"
+    description: "Read the content of each legacy workflow file and determine if it contains any unique, valuable steps or ideas that are not present in the new B-series workflows."
+    sub_steps:
+      - "For each legacy file, use the `read_file` tool to view its contents."
+      - "Compare its contents against the relevant B-series workflows (e.g., an old todowrite workflow against B03)."
+      - "If any valuable, uncaptured ideas are found, use the `replace` tool to merge them into the appropriate B-series YAML file."
+
+  - name: "Step 3: Archive Legacy Workflow Files"
+    description: "Move the now-processed legacy workflow files to the `archive/` directory."
+    sub_steps:
+      - "For each legacy file identified in Step 1, execute a `mv` command to move it to the `archive/` directory."
+
+  - name: "Step 4: Verify Cleanup"
+    description: "Confirm that the only active workflows are the B-series workflows."
+    command: "ls -l .agent-os/workflows/"
+    notes: "The output should only show the B01 through B07 YAML files."
+
+  - name: "Step 5: Update Task B07 in .ralex_tasks.json"
+    description: "Mark the cleanup task as 'completed'."
+    tool_call: "default_api.replace(file_path='.ralex_tasks.json', old_string='"status": "pending"...', new_string='"status": "completed"...')"

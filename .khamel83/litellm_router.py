@@ -164,7 +164,8 @@ class LiteLLMRouter:
                 "complex": ["standard", "premium"], 
                 "mobile": ["budget", "standard"],
                 "batch": ["budget", "standard"],
-                "analysis": ["budget", "standard"]
+                "analysis": ["budget", "standard"],
+                "think_harder": ["premium"]
             },
             "cost_thresholds": {
                 "budget": 0.001,    # Max $0.001 per operation
@@ -177,7 +178,7 @@ class LiteLLMRouter:
         }
     
     def route_request(self, task_classification, budget_limit: Optional[float] = None,
-                     strategy: RoutingStrategy = RoutingStrategy.COST_OPTIMIZED) -> RoutingDecision:
+                     strategy: RoutingStrategy = RoutingStrategy.COST_OPTIMIZED, think_harder: bool = False) -> RoutingDecision:
         """
         Main routing function implementing Agent-OS cost optimization.
         
@@ -191,6 +192,8 @@ class LiteLLMRouter:
         """
         
         task_type = task_classification.task_type.value
+        if think_harder:
+            task_type = "think_harder"
         complexity = task_classification.complexity.value
         estimated_tokens = self._estimate_tokens(task_classification)
         

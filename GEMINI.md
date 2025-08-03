@@ -36,3 +36,19 @@ While Gemini CLI is used for exploration, refer to the main Ralex system (via Cl
 - **Model Routing**: `.khamel83/model-routing/`
 
 The goal is to use each tool for its strengths while maintaining cost efficiency through Agent-OS structure.
+
+---
+
+## Current Development Status (2025-08-03)
+
+**Comprehensive Planning Complete:**
+The entire project roadmap has been broken down into detailed, atomic workflow plans (B01-B07) located in `.agent-os/workflows/`.
+
+**Progress on Implementation:**
+*   **B01: Deprecate V5 MCP Documents:** **Completed.** Old V5 documents have been archived.
+*   **B02: Hybrid Claude Code Router Integration:** **Completed.** `CCRManager` implemented, integrated into orchestrator, and CLI command added.
+*   **B03: Agent-OS Ethos and Standards Implementation:** **Completed.** Dynamic port allocation, GitHub CLI dependency check, and flexible permissions model implemented.
+*   **B05: Codebase Refactoring Initiative:** **In Progress / Paused.** File renames and most class name updates are complete. However, persistent issues with updating `ralex_core/launcher.py` due to complex string replacements have led to a decision to pause this specific refactoring for now. This will be revisited with a more robust strategy.
+
+**Next Steps:**
+The immediate next step is to commit all current changes and push them to GitHub. Further code modifications are paused until a new strategy for the `ralex_core/launcher.py` refactoring is determined.

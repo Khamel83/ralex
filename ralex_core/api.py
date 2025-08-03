@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from .v4_orchestrator import RalexV4Orchestrator
 
 app = FastAPI()
-orchestrator = RalexV4Orchestrator()
+orchestrator = RalexOrchestrator()
 
 @app.post("/v4/voice-command")
 async def process_voice_command(command: str, session_id: str):

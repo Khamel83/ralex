@@ -47,73 +47,6 @@ This project uses LiteLLM for intelligent model routing. Configuration in `.kham
 - Document cost savings in session logs
 
 ## Development Workflow
-1. **Analyze task complexity** - determine if planning phase needed
-2. **Break down into micro-tasks** - use cost optimization templates
-3. **Route to appropriate models** - let LiteLLM handle routing
-4. **Cache successful patterns** - for future reuse
-5. **Track cost savings** - measure efficiency gains
-
-## Key Strategic Insights
-
-### LiteLLM Overlap Analysis
-- **70% overlap** with LiteLLM functionality (multi-provider routing, cost optimization, unified APIs)
-- **Ralex's unique value**: Semantic intent classification, terminal-native file management, integrated context
-- **Alternative approach**: Could use LiteLLM + AgentOS + OpenRouter stack instead of custom routing
-
-### OpenCode.ai Comparison
-- Very similar terminal AI coding assistant
-- Worth evaluating as replacement vs continuing ralex development
-- Offers "yolo" functionality for rapid execution
-
-## Critical Issues Fixed
-
-### 1. CI/CD Configuration Problems
-- **Problem**: Project still configured as "aider-chat" instead of "ralex"
-- **Fixed**: Updated pyproject.toml, GitHub workflows, pre-commit config
-- **Files changed**: 
-  - `pyproject.toml` - renamed project, fixed paths
-  - `.github/workflows/ubuntu-tests.yml` - updated path ignores
-  - `.pre-commit-config.yaml` - fixed codespell paths
-
-### 2. Virtual Environment Setup
-- **Problem**: No direnv configuration causing repeated venv errors
-- **Fixed**: Created `.envrc` with automatic venv setup and dependency management
-- **Features**: Auto-creates venv, installs dependencies, sets environment variables
-
-### 3. Requirements Management
-- **Problem**: Minimal requirements.txt, missing dev tools
-- **Fixed**: Added essential packages: openai, ruff, black, isort, pytest
-
-### 4. Ralex V4 Startup Issues (FIXED - 2025-07-27)
-- **Problem**: `start_ralex_v4.py` failing with `ModuleNotFoundError: No module named 'open_webui'`
-- **Root Cause**: Script was running OpenWebUI from wrong directory (`ralex-webui/` instead of `ralex-webui/backend/`)
-- **Fixed**: Updated startup script to:
-  - Run OpenWebUI from correct backend directory where `open_webui` module exists
-  - Auto-install OpenWebUI dependencies from `requirements.txt`
-  - Use consistent Python executable path (`sys.executable`)
-- **Files changed**: `start_ralex_v4.py`
-
-## Architecture
-
-### Ralex V4 Components (Current)
-- `start_ralex_v4.py` - **Main startup orchestrator** for full stack
-- `ralex_api.py` - **FastAPI server** providing OpenAI-compatible endpoints
-- `ralex_bridge.py` - **Core orchestrator** connecting AgentOS + LiteLLM + OpenRouter + OpenCode
-- `archive/web-interfaces/ralex-webui/` - **OpenWebUI interface** for web-based interaction
-
-### Legacy Core Components (V1-V3)
-- `ralex_core/launcher.py` - Legacy main entry point
-- `ralex_core/semantic_classifier.py` - Intent classification
-- `ralex_core/router.py` - Model routing logic
-- `ralex_core/openrouter_client.py` - API client
-- `ralex_core/executors/` - Execution handlers
-
-### Configuration Files
-- `config/model_tiers.json` - Model tier definitions
-- `config/intent_routes.json` - Intent routing rules
-- `config/pattern_rules.json` - Pattern matching rules
-
-## Development Workflow
 
 ### Setup
 ```bash
@@ -255,10 +188,15 @@ export RALEX_ANALYTICS=false
 ```
 
 ## Known Issues
-- GitHub CI/CD was failing due to aider/ralex naming conflicts (FIXED)
-- Virtual environment setup was manual and error-prone (FIXED)
+
+### Current Development Status (2025-08-03)
+*   **B05: Codebase Refactoring Initiative:** **In Progress / Paused.** File renames and most class name updates are complete. However, persistent issues with updating `ralex_core/launcher.py` due to complex string replacements have led to a decision to pause this specific refactoring for now. This will be revisited with a more robust strategy.
+
+### Previously Fixed Issues
+- CI/CD Configuration Problems (FIXED)
+- Virtual Environment Setup (FIXED)
 - Missing development dependencies (FIXED)
-- Ralex V4 startup failing with OpenWebUI module errors (FIXED - 2025-07-27)
+- Ralex V4 Startup Issues (FIXED - 2025-07-27)
 
 ## Recent Updates
 - **2025-08-03**: Enhanced with Agent-OS cost optimization strategies

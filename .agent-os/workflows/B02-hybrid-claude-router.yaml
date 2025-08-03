@@ -1,0 +1,42 @@
+
+id: B02
+name: Hybrid Claude Code Router Integration
+description: A step-by-step plan to integrate the Node.js-based claude-code-router as a specialized tool callable from the main Python orchestrator.
+status: defined
+priority: high
+steps:
+  - name: "Step 1: Create a Management Utility for the CCR Service"
+    description: "In a new file, `ralex_core/ccr_manager.py`, create a class `CCRManager` to handle the installation, configuration, and lifecycle of the `claude-code-router` service."
+    sub_steps:
+      - "Define a method `check_installation()` that uses `subprocess` to run `npm -g list @musistudio/claude-code-router` and checks if the package is installed."
+      - "Define a method `install()` that runs `npm install -g @musistudio/claude-code-router` if the package is not found."
+      - "Define a method `start_server()` that uses `subprocess.Popen` to run `ccr start` as a background process. It should find an available port, save it, and store the process ID (PID)."
+      - "Define a method `stop_server()` that terminates the background process using the stored PID."
+      - "Define a method `is_running()` that checks if the process with the stored PID is active."
+
+  - name: "Step 2: Integrate CCRManager into the Main Orchestrator"
+    description: "Modify `ralex_core/v4_orchestrator.py` to use the new `CCRManager`."
+    sub_steps:
+      - "In the `__init__` method of `RalexV4Orchestrator`, instantiate `self.ccr_manager = CCRManager()`."
+      - "Add logic to the orchestrator's startup sequence to call `self.ccr_manager.check_installation()` and `self.ccr_manager.start_server()`."
+      - "Add a shutdown hook to the application to call `self.ccr_manager.stop_server()`."
+
+  - name: "Step 3: Create a New Ralex CLI Command"
+    description: "Modify `ralex_cli.py` to add a new command for accessing the Claude Code mode."
+    sub_steps:
+      - "Add a new click command `ralex claude <prompt>`."
+      - "This command should call a new method in the orchestrator, e.g., `orchestrator.process_claude_command(prompt)`."
+
+  - name: "Step 4: Implement the Claude Command Logic"
+    description: "In `ralex_core/v4_orchestrator.py`, implement the logic to proxy a request to the running CCR service."
+    sub_steps:
+      - "Create a new method `process_claude_command(self, prompt: str)`."
+      - "This method will construct a request payload compatible with the Claude Code API."
+      - "It will then use the `requests` library to send this payload to the CCR service at `http://localhost:<port>`, where `<port>` is the port managed by `CCRManager`."
+      - "The response from the CCR service should be streamed back to the user's console."
+
+  - name: "Step 5: Update Task B02 in .ralex_tasks.json"
+    description: "Mark the task as 'completed' and list the modified files."
+    sub_steps:
+      - "Update the status of task B02 to 'completed'."
+      - "Add `ralex_core/ccr_manager.py`, `ralex_core/v4_orchestrator.py`, and `ralex_cli.py` to the `files_modified` list."

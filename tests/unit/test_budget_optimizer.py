@@ -7,16 +7,16 @@ import sys
 # Add the parent directory to the sys.path to allow importing ralex_core
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
-from ralex_core.budget_optimizer import BudgetOptimizer
+from ralex_core.budget import BudgetManager
 
-class TestBudgetOptimizer(unittest.TestCase):
+class TestBudgetManager(unittest.TestCase):
     def setUp(self):
         self.test_log_path = "data/test_usage_log.jsonl"
         # Ensure the data directory exists
         os.makedirs(os.path.dirname(self.test_log_path), exist_ok=True)
         if os.path.exists(self.test_log_path):
             os.remove(self.test_log_path)
-        self.budget_optimizer = BudgetOptimizer(usage_log_path=self.test_log_path, daily_limit=10.0)
+        self.budget_optimizer = BudgetManager(usage_log_path=self.test_log_path, daily_limit=10.0)
 
     def tearDown(self):
         if os.path.exists(self.test_log_path):
@@ -75,7 +75,7 @@ class TestBudgetOptimizer(unittest.TestCase):
         self.assertAlmostEqual(status["spent_today"], 10.5)
 
     def test_check_budget_status_no_limit(self):
-        budget_optimizer_no_limit = BudgetOptimizer(usage_log_path=self.test_log_path, daily_limit=None)
+        budget_optimizer_no_limit = BudgetManager(usage_log_path=self.test_log_path, daily_limit=None)
         budget_optimizer_no_limit.record_usage("model_a", 100, 50, 1.0)
         status = budget_optimizer_no_limit.check_budget_status()
         self.assertEqual(status["status"], "no_limit")

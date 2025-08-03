@@ -7,23 +7,13 @@ from .command_parser import CommandParser
 from .security_manager import SecurityManager
 from .error_handler import ErrorHandler
 from .workflow_engine import WorkflowEngine
+from .ccr_manager import CCRManager
 import os
 from tools.todo_writer import TodoWriter, Task # Import TodoWriter and Task
 
-class RalexV4Orchestrator:
-    def __init__(self):
-        project_path = os.getcwd()
-        self.context_manager = ContextManager(project_path)
-        self.opencode_client = OpenCodeClient(project_path)
-        self.litellm_router = LiteLLMRouter(model_tiers=self.model_tiers, budget_optimizer=self.budget_optimizer)
-        self.agentos_enhancer = AgentOSEnhancer()
-        self.git_sync_manager = GitSyncManager(project_path)
-        self.command_parser = CommandParser()
-        self.security_manager = SecurityManager()
-        from .budget_optimizer import BudgetOptimizer
-from .launcher import load_config # Assuming load_config is in launcher.py
+import requests
 
-class RalexV4Orchestrator:
+class RalexOrchestrator:
     def __init__(self):
         project_path = os.getcwd()
         self.context_manager = ContextManager(project_path)
@@ -33,6 +23,7 @@ class RalexV4Orchestrator:
         self.command_parser = CommandParser()
         self.security_manager = SecurityManager()
         self.error_handler = ErrorHandler()
+        self.ccr_manager = CCRManager()
         # Assuming a default workflows.yaml for now, will be configurable later
         self.workflow_engine = WorkflowEngine(os.path.join(project_path, "config", "workflows.yaml"))
 
@@ -41,7 +32,27 @@ class RalexV4Orchestrator:
         self.model_tiers = load_config(os.path.join(config_dir, "model_tiers.json"))
         self.budget_optimizer = BudgetOptimizer(daily_limit=10.0, model_tiers=self.model_tiers) # Daily limit is a placeholder
 
-    async def process_voice_command(self, command: str, session_id: str) -> dict:
+        # Start CCR server
+        if not self.ccr_manager.check_installation():
+            self.ccr_manager.install()
+        self.ccr_manager.start_server()
+
+    async def process_claude_command(self, prompt: str) -> dict:
+        if not self.ccr_manager.is_running():
+            return {"status": "error", "message": "Claude Code Router is not running."}
+
+        try:
+            response = requests.post(
+                f"http://localhost:{self.ccr_manager.port}",
+                json={"prompt": prompt, "stream": True}
+            )
+            response.raise_for_status()
+            # For now, we just return the whole response. Streaming would be implemented here.
+            return {"status": "success", "output": response.text}
+        except requests.exceptions.RequestException as e:
+            return {"status": "error", "message": f"Failed to connect to Claude Code Router: {e}"}
+
+    async def process_voice_command(self, command: str, session_id: str, assume_yes: bool = False, think_harder: bool = False) -> dict:
         try:
             # 1. Parse the command
             parsed_command = self.command_parser.parse(command)
@@ -53,7 +64,7 @@ class RalexV4Orchestrator:
                 return {"status": "error", "message": "Command not allowed."}
 
             # Check for dangerous commands and ask for confirmation
-            if self.security_manager.is_dangerous_command(parsed_command):
+            if not assume_yes and self.security_manager.is_dangerous_command(parsed_command):
                 # In a real interactive CLI, you'd prompt the user here.
                 # For now, we'll return an error indicating manual confirmation is needed.
                 return {"status": "error", "message": "Dangerous command detected. Manual confirmation required.", "user_message": "This command is potentially dangerous. Please confirm manually if you wish to proceed."}
@@ -66,7 +77,7 @@ class RalexV4Orchestrator:
 
             # 5. Route to the appropriate model (placeholder for LiteLLM)
             # For now, we'll just use the enhanced command as the query
-            model_response = await self.litellm_router.route(enhanced_command, complexity)
+            model_response = await self.litellm_router.route(enhanced_command, complexity, think_harder=think_harder)
 
             # 6. Execute the command based on intent
             execution_result = {"status": "success", "output": ""}
@@ -155,46 +166,5 @@ class RalexV4Orchestrator:
             self.error_handler.handle_error(e, context=f"workflow: {workflow_name}")
             return {"status": "error", "message": str(e), "user_message": user_message}
 
-    async def _execute_tool_command(self, command_str: str) -> Dict[str, Any]:
-        # This is a simplified dynamic execution. In a real system, you'd want more robust parsing and security.
-        if command_str.startswith("todo_write.create_task"):
-            # Example: todo_write.create_task(task_id='TW1', name='Sample Task', description='...')
-            try:
-                # Extract arguments using a simple regex or string manipulation
-                # This is brittle and should be replaced with a proper parser for production
-                import re
-                match = re.search(r"task_id=\\'(.*?)\\\', name=\\'(.*?)\\\', description=\\'(.*?)\\'", command_str)
-                if match:
-                    task_id, name, description = match.groups()
-                    todo_writer = TodoWriter()
-                    result = todo_writer.create_task(task_id=task_id, name=name, description=description)
-                    return result
-                else:
-                    return {"error": "Could not parse create_task command."}
-            except Exception as e:
-                return {"error": f"Error executing create_task: {e}"}
-        elif command_str.startswith("todo_write.complete_task"):
-            # Example: todo_write.complete_task(task_id='TW1', verification_steps=['...'], files_modified=['...'])
-            try:
-                import re
-                task_id_match = re.search(r"task_id=\\'(.*?)\\'", command_str)
-                verification_steps_match = re.search(r"verification_steps=\[(.*?)]", command_str)
-                files_modified_match = re.search(r"files_modified=\[(.*?)]", command_str)
-
-                task_id = task_id_match.group(1) if task_id_match else None
-                verification_steps_str = verification_steps_match.group(1) if verification_steps_match else ""
-                files_modified_str = files_modified_match.group(1) if files_modified_match else ""
-
-                verification_steps = [step.strip().strip("\'\'") for step in verification_steps_str.split(',') if step.strip()]
-                files_modified = [f.strip().strip("\'\'") for f in files_modified_str.split(',') if f.strip()]
-
-                if task_id:
-                    todo_writer = TodoWriter()
-                    result = todo_writer.complete_task(task_id=task_id, verification_steps=verification_steps, files_modified=files_modified)
-                    return result
-                else:
-                    return {"error": "Could not parse complete_task command."}
-            except Exception as e:
-                return {"error": f"Error executing complete_task: {e}"}
-        else:
-            return {"error": f"Unknown tool command: {command_str}"}
+    def shutdown(self):
+        self.ccr_manager.stop_server()

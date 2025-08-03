@@ -1,0 +1,31 @@
+
+id: B04
+name: Advanced Feature Prototyping
+description: A step-by-step plan to research and prototype forward-looking concepts like 'Think Harder' mode, context compacting, and the 'Atlas' distributed sync model.
+status: defined
+priority: medium
+steps:
+  - name: "Step 1: Prototype 'Think Harder' Mode"
+    description: "Implement a routing mechanism to select more powerful models on demand."
+    sub_steps:
+      - "Modify `ralex_core/litellm_router.py` to include a new routing rule. This rule should map a specific input flag or keyword (e.g., '--think-harder') to a pre-defined 'tier 3' or 'most_powerful' model from the `model_tiers.json` configuration."
+      - "Modify `ralex_cli.py` to add a `--think-harder` flag to the main command group. When this flag is present, the orchestrator should pass a corresponding argument to the `litellm_router`."
+
+  - name: "Step 2: Research Context Compacting Techniques"
+    description: "Investigate methods for intelligently summarizing and compacting conversation history and file context to optimize token usage."
+    sub_steps:
+      - "Use the `google_web_search` tool with queries like 'python text summarization library' and 'abstractive vs extractive summarization algorithms'."
+      - "Create a new document at `docs/research/context-compacting-analysis.md`."
+      - "In this document, summarize the findings, compare at least two potential libraries (e.g., Hugging Face Transformers, NLTK), and outline a proposed architecture for integrating a context compactor into the `ContextManager`."
+
+  - name: "Step 3: Evaluate 'Atlas' Distributed Sync Tools"
+    description: "Analyze potential technologies for the 'Atlas' concept, which aims to synchronize state and tasks across different machines."
+    sub_steps:
+      - "Use the `web_fetch` tool to get high-level summaries of the homepages for `livestore.dev`, `zero.rocicorp.dev`, and `convex.dev`."
+      - "Create a new document at `docs/research/atlas-sync-tool-evaluation.md`."
+      - "In this document, create a comparison table of the three services based on criteria such as: Data Model, Real-time Sync, Free Tier/Pricing, and Ease of Integration (Python support)."
+      - "Conclude with a recommendation for which tool to use for a proof-of-concept."
+
+  - name: "Step 4: Update Task B04 in .ralex_tasks.json"
+    description: "Mark the research and prototyping task as 'completed'."
+    tool_call: "default_api.replace(file_path='.ralex_tasks.json', old_string='"status": "pending"...', new_string='"status": "completed"...')"

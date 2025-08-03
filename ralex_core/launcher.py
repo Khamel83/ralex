@@ -10,7 +10,7 @@ from collections import defaultdict
 
 from ralex_core.openrouter_client import OpenRouterClient
 from ralex_core.semantic_classifier import SemanticClassifier
-from ralex_core.budget_optimizer import BudgetOptimizer
+from ralex_core.budget import BudgetManager
 from ralex_core.code_executor import CodeExecutor
 from ralex_core.agentos_integration import AgentOSIntegration
 
@@ -147,7 +147,7 @@ def run_interactive_mode(settings, model_tiers, intent_routes, client, semantic_
                     print("   Phase: ANALYSIS (using smart model)")
                     
                     messages = [{"role": "user", "content": breakdown.analysis_prompt}]
-                    selected_model = budget_optimizer.get_cheapest_model_in_tier("premium")
+                    selected_model = budget_optimizer.get_cheapest_model_in_tier("premium", model_tiers)
                     tier = "premium"
                     intent = "analysis"
                     
@@ -170,7 +170,7 @@ def run_interactive_mode(settings, model_tiers, intent_routes, client, semantic_
 
                 for i in range(current_tier_index + 1, len(tier_hierarchy)):
                     lower_tier = tier_hierarchy[i]
-                    cheapest_in_lower_tier = budget_optimizer.get_cheapest_model_in_tier(lower_tier)
+                    cheapest_in_lower_tier = budget_optimizer.get_cheapest_model_in_tier(lower_tier, model_tiers)
                     if cheapest_in_lower_tier:
                         # Check if the lower tier model is significantly cheaper and still reasonable
                         # For simplicity, we'll just pick the first cheaper one for now
@@ -315,7 +315,7 @@ def run_interactive_mode(settings, model_tiers, intent_routes, client, semantic_
                     cost_per_token = t["cost_per_token"]
                     break
             estimated_cost = (estimated_tokens_sent + estimated_tokens_received) * cost_per_token
-            budget_optimizer.record_usage(selected_model, estimated_tokens_sent, estimated_tokens_received, estimated_cost)
+            budget_optimizer.record_usage(selected_model, estimated_tokens_sent, estimated_tokens_received, estimated_cost, task_type=intent)
 
             # --- File Writing with Diff Preview (Task 2.2.1, 2.2.2, 2.5.1, 2.5.2, 2.5.3, 2.5.4) ---
             modifications = parse_file_modifications(full_response)
@@ -399,7 +399,7 @@ def main():
 
     client = OpenRouterClient(api_key, model_tiers)
     semantic_classifier = SemanticClassifier()
-    budget_optimizer = BudgetOptimizer(daily_limit=settings.get("daily_limit"), model_tiers=model_tiers)
+    budget_optimizer = BudgetManager(daily_limit=settings.get("daily_limit"))
 
     if args.command == "run":
         run_interactive_mode(settings, model_tiers, intent_routes, client, semantic_classifier, budget_optimizer)
@@ -408,10 +408,10 @@ def main():
     elif args.command == "analytics":
         print("\n--- Ralex Spending Analytics ---")
         print("Daily Spending:")
-        for date, amount in budget_optimizer.get_daily_spending().items():
+        for date, amount in budget_optimizer.get_daily_total().items():
             print(f"  {date}: ${amount:.2f}")
         print("\nSpending by Model:")
-        for model, amount in budget_optimizer.get_model_spending().items():
+        for model, amount in budget_optimizer.get_usage_summary().get("model_breakdown", {}).items():
             print(f"  {model}: ${amount:.2f}")
         print("------------------------------")
     else:

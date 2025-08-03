@@ -79,6 +79,9 @@ install_dependencies() {
     
     pip install --upgrade pip
     pip install -r requirements.txt
+
+    log_info "Verifying dependencies..."
+    python scripts/verify_dependencies.py
     
     log_info "Dependencies installed successfully"
 }

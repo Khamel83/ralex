@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, patch
 from ralex_core.v4_orchestrator import RalexV4Orchestrator
 import os
 
-class TestRalexV4Orchestrator(unittest.IsolatedAsyncioTestCase):
+class TestRalexOrchestrator(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
         # Mock dependencies
         self.mock_context_manager = MagicMock()
@@ -18,7 +18,7 @@ class TestRalexV4Orchestrator(unittest.IsolatedAsyncioTestCase):
 
         # Patch the constructor to inject mocks
         with patch.multiple(
-            'ralex_core.v4_orchestrator',
+            'ralex_core.orchestrator',
             ContextManager=MagicMock(return_value=self.mock_context_manager),
             OpenCodeClient=MagicMock(return_value=self.mock_opencode_client),
             LiteLLMRouter=MagicMock(return_value=self.mock_litellm_router),
@@ -27,14 +27,14 @@ class TestRalexV4Orchestrator(unittest.IsolatedAsyncioTestCase):
             CommandParser=MagicMock(return_value=self.mock_command_parser),
             SecurityManager=MagicMock(return_value=self.mock_security_manager),
             ErrorHandler=MagicMock(return_value=self.mock_error_handler),
-            WorkflowEngine=MagicMock(return_value=self.mock_workflow_engine),
+            WorkflowEngine=MagicMock(return_value=self.mock_workflow_engine)
         ),
         patch('os.getcwd', return_value="/mock/project/path"),
-        patch('ralex_core.v4_orchestrator.load_config', side_effect=lambda x: {
+        patch('ralex_core.orchestrator.load_config', side_effect=lambda x: {
             os.path.join("/mock/project/path", "config", "model_tiers.json"): {"cheap": [{"name": "mock_cheap_model"}], "premium": [{"name": "mock_premium_model"}], "standard": [{"name": "gpt-3.5-turbo"}]},
             os.path.join("/mock/project/path", "config", "workflows.yaml"): {"example_workflow": {"description": "An example workflow", "steps": []}}
         }.get(x, {})):
-            self.orchestrator = RalexV4Orchestrator()
+            self.orchestrator = RalexOrchestrator()
 
     async def test_process_voice_command_read_file_success(self):
         self.mock_command_parser.parse.return_value = {"intent": "read_file", "params": {"file_path": "test.txt"}}

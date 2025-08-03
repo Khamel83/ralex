@@ -41,16 +41,113 @@
     "next_task_info": "Implement Agent-OS workflow",
     "priority": "high"
   },
-  "MANUAL_TEST_001": {
-    "id": "MANUAL_TEST_001",
-    "name": "Verify TodoWrite Tool Manually",
-    "description": "This task is created to manually verify the functionality of the TodoWrite tool and its Git integration.",
-    "status": "pending",
-    "created_at": "2025-08-02T23:18:52.971324",
-    "updated_at": "2025-08-02T23:18:52.971324",
-    "files_modified": [],
-    "verification_steps": [],
-    "next_task_info": "",
+  "B1": {
+    "id": "B1",
+    "name": "Deprecate V5 MCP Documents",
+    "description": "Archive the V5 MCP analysis and roadmap documents, as their ideas have been absorbed into the new task-based roadmap. This keeps the project root clean.",
+    "status": "completed",
+    "created_at": "2025-08-03T14:00:00.000000",
+    "updated_at": "2025-08-03T14:00:00.000000",
+    "files_to_archive": [
+      "V5_MCP_ANALYSIS.md",
+      "V5_ROADMAP_MCP.md"
+    ],
+    "verification_steps": [
+      "Confirm that the core ideas from the V5 documents are captured in new tasks (B2-B6).",
+      "Move the specified files to the 'archive/' directory."
+    ],
+    "priority": "low"
+  },
+  "B2": {
+    "id": "B2",
+    "name": "Hybrid Claude Code Router Integration",
+    "description": "Implement a hybrid approach where the Python-based Ralex orchestrator can invoke the Node.js-based claude-code-router as a specialized tool. This provides the 'best of both worlds': the curated Claude Code experience on-demand, without sacrificing the speed and flexibility of the default LiteLLM router.",
+    "status": "completed",
+    "created_at": "2025-08-03T14:00:00.000000",
+    "updated_at": "2025-08-03T14:00:00.000000",
+    "verification_steps": [
+      "Investigate methods for programmatically installing and managing the 'ccr' npm package from Python.",
+      "Implement a new Ralex command (e.g., 'ralex claude ...') to proxy requests to the ccr service.",
+      "Ensure the ccr service is started/stopped automatically by Ralex.",
+      "Confirm that both the default 'yolo mode' and the new 'claude mode' are functional."
+    ],
+    "files_modified": [
+        "ralex_core/ccr_manager.py",
+        "ralex_core/v4_orchestrator.py",
+        "ralex_cli.py"
+    ],
+    "priority": "high"
+  },
+  "B3": {
+    "id": "B3",
+    "name": "Agent-OS Ethos and Standards Implementation",
+    "description": "Implement core Agent-OS standards to improve developer experience and robustness. This includes dynamic port allocation to avoid conflicts, ensuring the GitHub CLI ('gh') is a core dependency, and creating a flexible permissions model (e.g., '--assume-yes' flag).",
+    "status": "completed",
+    "created_at": "2025-08-03T14:00:00.000000",
+    "updated_at": "2025-08-03T14:00:00.000000",
+    "verification_steps": [
+      "Create a utility function to find and reserve an unused network port.",
+      "Update project requirements/setup scripts to check for the 'gh' CLI.",
+      "Integrate 'gh' commands into relevant agent workflows (e.g., creating PRs).",
+      "Implement a confirmation bypass flag for shell commands."
+    ],
+    "files_modified": [
+        "ralex_core/utils.py",
+        "ralex_core/ccr_manager.py",
+        "scripts/verify_dependencies.py",
+        "tools/todo_writer.py",
+        "ralex_cli.py"
+    ],
+    "priority": "high"
+  },
+  "B4": {
+    "id": "B4",
+    "name": "Advanced Feature Prototyping",
+    "description": "A research and prototyping task to explore forward-looking concepts. This includes a 'Think Harder' mode that routes tasks to more powerful models, intelligent context compacting to optimize token usage, and the 'Atlas' concept for distributed state synchronization between machines (e.g., RPi and Mac Mini).",
+    "status": "completed",
+    "created_at": "2025-08-03T14:00:00.000000",
+    "updated_at": "2025-08-03T14:00:00.000000",
+    "sub_tasks": [
+        "Define a 'think_harder' route in the model router.",
+        "Research context-aware summarization/compacting techniques.",
+        "Evaluate tools like 'livestore.dev' or 'convex.dev' for the Atlas sync concept."
+    ],
+    "files_modified": [
+        ".khamel83/litellm_router.py",
+        "ralex_cli.py",
+        "ralex_core/v4_orchestrator.py",
+        "docs/research/context-compacting-analysis.md",
+        "docs/research/atlas-sync-tool-evaluation.md"
+    ],
     "priority": "medium"
+  },
+  "B5": {
+    "id": "B5",
+    "name": "Codebase Refactoring Initiative",
+    "description": "A dedicated task to refactor the Ralex codebase, primarily to remove hardcoded versioning (e.g., 'v4', 'v5') from file and function names. This will improve maintainability and make the architecture more modular and easier to evolve.",
+    "status": "pending",
+    "created_at": "2025-08-03T14:00:00.000000",
+    "updated_at": "2025-08-03T14:00:00.000000",
+    "verification_steps": [
+      "Identify all files, classes, and functions with version numbers in their names.",
+      "Rename them to be version-agnostic.",
+      "Update all references to the renamed components.",
+      "Ensure all tests pass after refactoring."
+    ],
+    "priority": "medium"
+  },
+  "B6": {
+    "id": "B6",
+    "name": "Absorb External Best Practices",
+    "description": "A research task to distill actionable insights from external engineering blogs and documentation (e.g., Anthropic's best practices, livestore.dev, zero.rocicorp.dev) into the '.agent-os/standards/' directory. This ensures Ralex's architecture and workflows are continuously improving based on industry-leading ideas.",
+    "status": "pending",
+    "created_at": "2025-08-03T14:00:00.000000",
+    "updated_at": "2025-08-03T14:00:00.000000",
+    "verification_steps": [
+      "Review provided URLs for key architectural and agentic coding patterns.",
+      "Create new documents in '.agent-os/standards/' summarizing the findings.",
+      "Link these standards to relevant implementation tasks (e.g., B2, B4)."
+    ],
+    "priority": "low"
   }
 }

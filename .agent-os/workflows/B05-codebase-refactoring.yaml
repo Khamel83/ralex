@@ -1,0 +1,35 @@
+
+id: B05
+name: Codebase Refactoring Initiative
+description: A step-by-step plan to refactor the codebase to remove hardcoded versioning (e.g., 'v4'), improving maintainability and modularity.
+status: defined
+priority: medium
+steps:
+  - name: "Step 1: Identify All Versioned Components"
+    description: "Use search tools to find all files, classes, and functions that have 'v4' or 'V4' in their names."
+    sub_steps:
+      - "Use the `glob` tool with patterns like `**/*v4*.py`, `**/*V4*.md`, etc., to list all versioned file paths."
+      - "Use the `search_file_content` tool with regex patterns like `class .*V4` and `def .*v4` to find versioned classes and functions within files."
+      - "Compile the complete list of items to be renamed into a temporary file named `refactoring_plan.md`."
+
+  - name: "Step 2: Rename Files"
+    description: "Rename the identified files to be version-agnostic based on the plan."
+    sub_steps:
+      - "For each file in `refactoring_plan.md`, execute a `mv` command to rename it. For example, `mv ralex_core/v4_orchestrator.py ralex_core/orchestrator.py`."
+
+  - name: "Step 3: Update Internal Code References"
+    description: "Update all import statements and other references in the code to reflect the new file and class names."
+    sub_steps:
+      - "For each renamed component, use `search_file_content` to find all instances of the old name."
+      - "Use the `replace` tool to update each reference. This may require multiple, careful replacements to avoid errors."
+
+  - name: "Step 4: Run Full Project Verification"
+    description: "Execute all available tests and linters to ensure that the refactoring did not introduce any regressions."
+    sub_steps:
+      - "Run the project's test suite using the `run_tests.py` script or `pytest`."
+      - "Run the linter (e.g., `flake8`) across the entire codebase."
+      - "Address any issues that arise until all checks pass."
+
+  - name: "Step 5: Update Task B05 in .ralex_tasks.json"
+    description: "Mark the refactoring task as 'completed'."
+    tool_call: "default_api.replace(file_path='.ralex_tasks.json', old_string='"status": "pending"...', new_string='"status": "completed"...')"

@@ -47,13 +47,13 @@ def run_manual_test():
     if complete_result.get("success"):
         print(f"✅ Task '{task_id}' completed successfully.")
         git_commit_info = complete_result.get("git_commit")
-        if git_commit_info:
+        if git_commit_info and git_commit_info.get("success"):
             print(f"   Git Commit Status: {git_commit_info.get('status', 'N/A')}")
             print(f"   Commit Hash: {git_commit_info.get('commit_hash', 'N/A')}")
             print(f"   Commit Message: {git_commit_info.get('commit_message', 'N/A')}")
             print(f"   Push Result: {git_commit_info.get('push_result', {}).get('message', 'N/A')}")
         else:
-            print("   ⚠️ No Git commit information returned.")
+            print(f"   ⚠️ Git commit failed or no info: {git_commit_info.get('error', 'N/A') if isinstance(git_commit_info, dict) else 'No info'}")
     else:
         print(f"❌ Failed to complete task '{task_id}': {complete_result.get('error')}")
 
