@@ -1,38 +1,48 @@
-import json, yaml, time
-from litellm import completion
+import json, yaml, time, os, asyncio, aiohttp
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 with open("config.yaml", "r") as f:
     config = yaml.safe_load(f)
 
-api_key = config["openrouter_api_key"]
+api_key = os.getenv("OPENROUTER_API_KEY")
 api_base = "https://openrouter.ai/api/v1"
 
-def run_prompt(model, prompt):
+async def run_prompt(model, prompt):
+    """Run prompt using direct OpenRouter API call"""
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json"
+    }
+    
+    payload = {
+        "model": model,
+        "messages": [{"role": "user", "content": prompt}]
+    }
+    
     try:
-        response = completion(
-            model=model,
-            messages=[{"role": "user", "content": prompt}],
-            api_base="https://openrouter.ai/api/v1"
-        )
-        return response["choices"][0]["message"]["content"]
-    except RateLimitError as e:
-        print(f"Rate limit hit for {model}: {e}. Skipping this prompt for this model.")
-        return None
+        async with aiohttp.ClientSession() as session:
+            async with session.post(f"{api_base}/chat/completions", headers=headers, json=payload) as response:
+                if response.status == 200:
+                    result = await response.json()
+                    return result["choices"][0]["message"]["content"]
+                else:
+                    error_text = await response.text()
+                    print(f"Error with {model}: HTTP {response.status} - {error_text}")
+                    return None
     except Exception as e:
         print(f"Error with {model}: {e}")
         return None
 
-def evaluate(prompt, response, evaluator):
+async def evaluate(prompt, response, evaluator):
+    """Evaluate response using direct OpenRouter API call"""
+    eval_prompt = f"Score the following answer from 1 to 10:\nQuestion: {prompt}\nAnswer: {response}"
     try:
-        eval_prompt = f"Score the following answer from 1 to 10:\nQuestion: {prompt}\nAnswer: {response}"
-        eval_response = completion(
-            model=evaluator,
-            messages=[{"role": "user", "content": eval_prompt}],
-            api_base="https://openrouter.ai/api/v1"
-        )
-        return extract_score(eval_response["choices"][0]["message"]["content"])
-    except RateLimitError as e:
-        print(f"Rate limit hit for evaluator {evaluator}: {e}. Skipping evaluation.")
+        eval_response = await run_prompt(evaluator, eval_prompt)
+        if eval_response:
+            return extract_score(eval_response)
         return 0
     except Exception as e:
         print(f"Eval failed: {e}")
@@ -49,16 +59,16 @@ def extract_score(text):
             continue
     return 0
 
-def main():
+async def main():
     results = {m: [] for m in config["models"]}
     for prompt in config["prompts"]:
         for model in config["models"]:
             print(f"Running: {model} → {prompt[:30]}...")
-            response = run_prompt(model, prompt)
+            response = await run_prompt(model, prompt)
             if response:
-                score = evaluate(prompt, response, config["evaluator_model"])
+                score = await evaluate(prompt, response, config["evaluator_model"])
                 results[model].append(score)
-            time.sleep(2)
+            await asyncio.sleep(2)  # Rate limiting
 
     avg_scores = {
         model: round(sum(scores) / len(scores), 2) if scores else 0
@@ -77,4 +87,4 @@ def main():
         print(f"{i}. {model} → {score:.2f}")
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())

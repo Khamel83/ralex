@@ -1,10 +1,11 @@
 from .context_manager import ContextManager
 from .opencode_client import OpenCodeClient
-from .litellm_router import LiteLLMRouter
+from .litellm_router import OpenRouterAutoRouter
 from .agentos_enhancer import AgentOSEnhancer
 from .git_sync_manager import GitSyncManager
 from .command_parser import CommandParser
 from .security_manager import SecurityManager
+from .approval_manager import ApprovalManager, ApprovalMode
 from .error_handler import ErrorHandler
 from .workflow_engine import WorkflowEngine
 from .ccr_manager import CCRManager
@@ -23,8 +24,10 @@ class RalexOrchestrator:
         self.git_sync_manager = GitSyncManager(project_path)
         self.command_parser = CommandParser()
         self.security_manager = SecurityManager()
+        self.approval_manager = ApprovalManager()
         self.error_handler = ErrorHandler()
         self.ccr_manager = CCRManager()
+        self.openrouter_auto_router = OpenRouterAutoRouter()
         # Assuming a default workflows.yaml for now, will be configurable later
         self.workflow_engine = WorkflowEngine(
             os.path.join(project_path, "config", "workflows.yaml")
@@ -82,17 +85,17 @@ class RalexOrchestrator:
             if not self.security_manager.validate_command(parsed_command):
                 return {"status": "error", "message": "Command not allowed."}
 
-            # Check for dangerous commands and ask for confirmation
-            if not assume_yes and self.security_manager.is_dangerous_command(
-                parsed_command
-            ):
-                # In a real interactive CLI, you'd prompt the user here.
-                # For now, we'll return an error indicating manual confirmation is needed.
-                return {
-                    "status": "error",
-                    "message": "Dangerous command detected. Manual confirmation required.",
-                    "user_message": "This command is potentially dangerous. Please confirm manually if you wish to proceed.",
-                }
+            # Check approval requirements using enhanced approval manager
+            if not assume_yes:
+                needs_approval, reason = self.approval_manager.needs_approval(parsed_command)
+                if needs_approval:
+                    return {
+                        "status": "pending_approval",
+                        "message": f"Approval required: {reason}",
+                        "user_message": f"Operation requires confirmation: {reason}",
+                        "command": parsed_command,
+                        "approval_summary": self.approval_manager.get_approval_summary()
+                    }
 
             # 3. Classify complexity
             complexity = self.command_parser.classify_complexity(parsed_command)
@@ -100,10 +103,10 @@ class RalexOrchestrator:
             # 4. Enhance the command (placeholder for AgentOS)
             enhanced_command = await self.agentos_enhancer.enhance(command, session_id)
 
-            # 5. Route to the appropriate model (placeholder for LiteLLM)
-            # For now, we'll just use the enhanced command as the query
-            model_response = await self.litellm_router.route(
-                enhanced_command, complexity, think_harder=think_harder
+            # 5. Route to OpenRouter Auto Router for optimal quality-per-dollar selection
+            messages = [{"role": "user", "content": enhanced_command}]
+            model_response = await self.openrouter_auto_router.send_request(
+                messages=messages, model="openrouter/auto"
             )
 
             # 6. Execute the command based on intent
@@ -233,6 +236,48 @@ class RalexOrchestrator:
             user_message = self.error_handler.get_user_friendly_message(e)
             self.error_handler.handle_error(e, context=f"workflow: {workflow_name}")
             return {"status": "error", "message": str(e), "user_message": user_message}
+
+    def set_approval_mode(self, mode: str, session_timeout: int = 3600) -> dict:
+        """
+        Set batch approval mode to reduce user interruption.
+        
+        Args:
+            mode: One of 'interactive', 'batch_session', 'batch_safe', 'batch_all', 'pattern_based'
+            session_timeout: How long approvals last (seconds)
+            
+        Returns:
+            Status and approval summary
+        """
+        try:
+            approval_mode = ApprovalMode(mode)
+            self.approval_manager.set_approval_mode(approval_mode, session_timeout)
+            
+            return {
+                "status": "success",
+                "message": f"Approval mode set to {mode}",
+                "approval_summary": self.approval_manager.get_approval_summary()
+            }
+        except ValueError:
+            return {
+                "status": "error", 
+                "message": f"Invalid approval mode: {mode}. Valid modes: interactive, batch_session, batch_safe, batch_all, pattern_based"
+            }
+    
+    def approve_operation(self, intent: str) -> dict:
+        """Manually approve a specific operation for the current session."""
+        self.approval_manager.approve_operation(intent)
+        return {
+            "status": "success",
+            "message": f"Operation '{intent}' approved for current session",
+            "approval_summary": self.approval_manager.get_approval_summary()
+        }
+    
+    def get_approval_status(self) -> dict:
+        """Get current approval settings and status."""
+        return {
+            "status": "success",
+            "approval_summary": self.approval_manager.get_approval_summary()
+        }
 
     def shutdown(self):
         self.ccr_manager.stop_server()

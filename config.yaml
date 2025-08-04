@@ -1,10 +1,8 @@
-openrouter_api_key: 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
+# openrouter_api_key: # Moved to .env file for security
 models:
-  - openrouter/qwen/qwen3-coder:free
-  - openrouter/google/gemini-pro
-  - openrouter/mistralai/mistral-7b-instruct
-  - openrouter/agentica-org/deepcoder-14b-preview
-evaluator_model: openrouter/nousresearch/prometheus-2-7b-v2.0
+  - openrouter/auto
+  - openrouter/auto  # Test Auto Router twice to see different model selections
+evaluator_model: openrouter/auto
 prompts:
   - "Write a function to reverse a string in-place."
   - "Explain the difference between BFS and DFS."
