@@ -1,2 +1,0 @@
-[console_scripts]
-ralex = ralex_core.launcher:main

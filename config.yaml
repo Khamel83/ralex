@@ -1,9 +1,0 @@
-# openrouter_api_key: # Moved to .env file for security
-models:
-  - openrouter/auto
-  - openrouter/auto  # Test Auto Router twice to see different model selections
-evaluator_model: openrouter/auto
-prompts:
-  - "Write a function to reverse a string in-place."
-  - "Explain the difference between BFS and DFS."
-  - "What's the time complexity of quicksort?"
