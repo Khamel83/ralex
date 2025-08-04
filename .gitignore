@@ -1,5 +1,10 @@
-# Environment variables
+# Environment files - Contains sensitive API keys
 .env
+.env.local
+.env.*.local
+
+# Context files - May contain sensitive conversation data  
+.claude-context.md
 
 # System files
 .DS_Store
@@ -22,3 +27,5 @@ npm-debug.log*
 
 # Logs
 *.log
+*.tmp
+*.temp
