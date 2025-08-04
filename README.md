@@ -16,15 +16,19 @@ Ralex automatically sets up an intelligent routing system that seamlessly transi
 
 1. **Clone this repository:**
    ```bash
-   git clone https://github.com/[your-username]/ralex.git
+   git clone https://github.com/Khamel83/ralex.git
    cd ralex
    ```
 
-2. **Make the setup script executable and run it:**
+2. **Run the setup script:**
    ```bash
-   chmod +x setup-ultimate-claude.sh
    ./setup-ultimate-claude.sh
    ```
+   The script will automatically:
+   - Load your OpenRouter API key from `.env` file (if present)
+   - Prompt for manual input if no `.env` file exists
+   - Install all required components
+   - Configure intelligent routing
 
 3. **Start using Claude:**
    ```bash
@@ -53,7 +57,14 @@ For the best free model experience, get an OpenRouter API key:
 
 1. Visit [OpenRouter.ai](https://openrouter.ai/)
 2. Create an account and get your API key
-3. During setup, enter your API key when prompted, or set it manually:
+3. **Option A - Use .env file (Recommended):**
+   ```bash
+   # Create or edit .env file in the ralex directory
+   echo "OPENROUTER_API_KEY=your-api-key-here" > .env
+   ```
+4. **Option B - Manual entry:**
+   The setup script will prompt you to enter the key during installation
+5. **Option C - Environment variable:**
    ```bash
    export OPENROUTER_API_KEY="your-api-key-here"
    ```
@@ -77,7 +88,8 @@ The system uses these environment variables:
 ```
 ralex/
 ├── setup-ultimate-claude.sh    # Main setup script
-└── README.md                   # This file
+├── README.md                   # This file
+└── .env                        # Your OpenRouter API key (created by you)
 ```
 
 After setup, the following directories are created:
@@ -88,7 +100,11 @@ After setup, the following directories are created:
 
 ### "Free models may not work as expected"
 - This means no OpenRouter API key was provided during setup
-- Get an API key from [OpenRouter.ai](https://openrouter.ai/) and set the `OPENROUTER_API_KEY` environment variable
+- **Solution**: Create a `.env` file with your OpenRouter API key:
+  ```bash
+  echo "OPENROUTER_API_KEY=your-api-key-here" > .env
+  ```
+- Then run the setup script again
 
 ### Setup fails during git operations
 - Ensure you have git installed and configured
@@ -98,6 +114,16 @@ After setup, the following directories are created:
 ### Claude command not found
 - Run `npm install -g @anthropic/claude-code` manually
 - Ensure your npm global bin directory is in your PATH
+- On macOS, you may need to restart your terminal
+
+### Script says "No OpenRouter API Key provided" even with .env file
+- Make sure the `.env` file is in the same directory as the setup script
+- Check that the `.env` file contains: `OPENROUTER_API_KEY=your-actual-key`
+- Ensure there are no extra spaces or quotes around the key
+
+### Permission denied when running setup script
+- Make the script executable: `chmod +x setup-ultimate-claude.sh`
+- Or run with bash: `bash setup-ultimate-claude.sh`
 
 ## Development
 
