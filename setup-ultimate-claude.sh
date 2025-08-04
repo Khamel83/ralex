@@ -96,7 +96,20 @@ echo '{
 
 
 echo "\n--- OpenRouter API Key Setup ---"
-read -p "Enter your OpenRouter API Key (leave blank if you don\'t have one): " OPENROUTER_API_KEY
+
+# Check for existing .env file first
+if [ -f ".env" ]; then
+  echo "Found .env file, loading OpenRouter API Key..."
+  source .env
+  if [ -n "$OPENROUTER_API_KEY" ]; then
+    echo "OpenRouter API Key loaded from .env file."
+  fi
+fi
+
+# If no key found in .env, prompt for it
+if [ -z "$OPENROUTER_API_KEY" ]; then
+  read -p "Enter your OpenRouter API Key (leave blank if you don\'t have one): " OPENROUTER_API_KEY
+fi
 
 if [ -n "$OPENROUTER_API_KEY" ]; then
   SHELL_RC_FILE=""
