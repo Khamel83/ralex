@@ -10,12 +10,14 @@ api_base = "https://openrouter.ai/api/v1"
 def run_prompt(model, prompt):
     try:
         response = completion(
-            model=f"openrouter/{model}",
+            model=model,
             messages=[{"role": "user", "content": prompt}],
-            api_base=api_base,
-            api_key=api_key
+            api_base="https://openrouter.ai/api/v1"
         )
         return response["choices"][0]["message"]["content"]
+    except RateLimitError as e:
+        print(f"Rate limit hit for {model}: {e}. Skipping this prompt for this model.")
+        return None
     except Exception as e:
         print(f"Error with {model}: {e}")
         return None
@@ -24,15 +26,18 @@ def evaluate(prompt, response, evaluator):
     try:
         eval_prompt = f"Score the following answer from 1 to 10:\nQuestion: {prompt}\nAnswer: {response}"
         eval_response = completion(
-            model=f"openrouter/{evaluator}",
+            model=evaluator,
             messages=[{"role": "user", "content": eval_prompt}],
-            api_base=api_base,
-            api_key=api_key
+            api_base="https://openrouter.ai/api/v1"
         )
         return extract_score(eval_response["choices"][0]["message"]["content"])
+    except RateLimitError as e:
+        print(f"Rate limit hit for evaluator {evaluator}: {e}. Skipping evaluation.")
+        return 0
     except Exception as e:
         print(f"Eval failed: {e}")
         return 0
+
 
 def extract_score(text):
     for token in text.split():

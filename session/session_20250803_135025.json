@@ -1,0 +1,18 @@
+{
+    "session_id": "20250803_135025",
+    "created_at": "2025-08-03T13:50:25.365868",
+    "status": "in_progress",
+    "context": {},
+    "history": [],
+    "tasks": [
+        "Reproduce the bug",
+        "Identify the root cause",
+        "Develop a fix",
+        "Write unit tests for the fix",
+        "Verify the fix"
+    ],
+    "current_task_index": -1,
+    "name": "Bug Fix Session",
+    "description": "Template for a bug fixing session.",
+    "context_files": []
+}

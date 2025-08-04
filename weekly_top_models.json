@@ -1,0 +1,14 @@
+{
+  "top_models": [
+    "openrouter/qwen/qwen3-coder:free",
+    "openrouter/google/gemini-pro",
+    "openrouter/mistralai/mistral-7b-instruct",
+    "openrouter/agentica-org/deepcoder-14b-preview"
+  ],
+  "raw_scores": {
+    "openrouter/qwen/qwen3-coder:free": 0.0,
+    "openrouter/google/gemini-pro": 0,
+    "openrouter/mistralai/mistral-7b-instruct": 0.0,
+    "openrouter/agentica-org/deepcoder-14b-preview": 0.0
+  }
+}

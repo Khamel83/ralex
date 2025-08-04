@@ -1,20 +1,5 @@
 {
-    "installation_date": "2025-08-03T03:43:43Z",
-    "version": "khamel83-v1.0",
-    "upstream_source": "buildermethods/agent-os",
-    "detected_tools": ["[0;32m✅","Claude","Code","detected[0m","[0;32m✅","Gemini","CLI","detected[0m","claude-code","gemini-cli"],
-    "structure": {
-        "agent_os": ".agent-os/",
-        "khamel83_layer": ".khamel83/",
-        "claude_config": "CLAUDE.md",
-        "gemini_config": "GEMINI.md", 
-        "cursor_config": ".cursorrules"
-    },
-    "features": [
-        "cost-optimization",
-        "model-routing",
-        "task-decomposition",
-        "solution-caching",
-        "multi-tool-support"
-    ]
+    "last_assessment": "2025-08-03T20:48:48.462168+00:00",
+    "python_file_count": 122,
+    "last_git_commit": "2025-08-03T13:45:05-07:00"
 }

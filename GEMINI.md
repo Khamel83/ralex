@@ -48,7 +48,8 @@ The entire project roadmap has been broken down into detailed, atomic workflow p
 *   **B01: Deprecate V5 MCP Documents:** **Completed.** Old V5 documents have been archived.
 *   **B02: Hybrid Claude Code Router Integration:** **Completed.** `CCRManager` implemented, integrated into orchestrator, and CLI command added.
 *   **B03: Agent-OS Ethos and Standards Implementation:** **Completed.** Dynamic port allocation, GitHub CLI dependency check, and flexible permissions model implemented.
-*   **B05: Codebase Refactoring Initiative:** **In Progress / Paused.** File renames and most class name updates are complete. However, persistent issues with updating `ralex_core/launcher.py` due to complex string replacements have led to a decision to pause this specific refactoring for now. This will be revisited with a more robust strategy.
+*   **B05: Codebase Refactoring Initiative:** **Completed.** All V4 references removed and related issues resolved.
+*   **Git Syncing Rules:** **Planned.** Integrate automatic Git syncing rules into AgentOS session lifecycle for data integrity.
 
 **Next Steps:**
 The immediate next step is to commit all current changes and push them to GitHub. Further code modifications are paused until a new strategy for the `ralex_core/launcher.py` refactoring is determined.
