@@ -1,146 +1,181 @@
-# Ralex - Ultimate Claude Code Setup
+# Ralex - Context-Aware Claude Code Fallback
 
-**Always Free, Always Working Claude Code Environment**
+**Simple, reliable fallback system for when Claude Code runs out of credits**
 
-Ralex automatically sets up an intelligent routing system that seamlessly transitions from Claude Pro to free models when your tokens are exhausted, ensuring uninterrupted AI assistance.
+Ralex provides a context-aware fallback to OpenRouter's free models when Claude Code reaches its usage limits, preserving conversation history for seamless transitions.
 
-## Features
+## What This Actually Does
 
-- 🔄 **Auto Router**: Intelligent routing between Claude Pro and free models
-- 💰 **Cost Management**: Automatic fallback to free models when quota exceeded
-- 🚀 **Yolo Mode**: Auto-approves everything for streamlined workflow
-- 🔧 **Model Agnostic**: Works with GPT-4, Claude-3, Llama-3, Gemini, and other capable models
-- 📊 **Token Management**: Monitors usage and switches models intelligently
+- 🔄 **Manual Fallback**: When Claude Code fails, switch to `ralex` command
+- 💾 **Context Preservation**: Automatically saves Claude conversations for continuity  
+- 🆓 **Free Models**: Uses OpenRouter's free models (no cost)
+- 📝 **Conversation History**: Maintains context across tool switches
+- 🚀 **Simple Setup**: No complex routing or servers required
 
-## Quick Setup
+## Quick Start
 
-1. **Clone this repository:**
-   ```bash
-   git clone https://github.com/Khamel83/ralex.git
-   cd ralex
-   ```
+### 1. Clone and Setup
+```bash
+git clone https://github.com/Khamel83/ralex.git
+cd ralex
 
-2. **Run the setup script:**
-   ```bash
-   ./setup-ultimate-claude.sh
-   ```
-   The script will automatically:
-   - Load your OpenRouter API key from `.env` file (if present)
-   - Prompt for manual input if no `.env` file exists
-   - Install all required components
-   - Configure intelligent routing
+# Get your OpenRouter API key from https://openrouter.ai/
+echo "OPENROUTER_API_KEY=your-key-here" > .env
 
-3. **Start using Claude:**
-   ```bash
-   claude
-   ```
+# Run the setup script
+./setup-ralex.sh
+```
 
-## What the Setup Does
+### 2. Your Daily Workflow
+```bash
+# Morning - Use Claude Code normally
+claude
 
-The `setup-ultimate-claude.sh` script:
+# When Claude runs out of credits:
+# Exit Claude Code, then use:
+ralex --direct "your prompt here"
 
-1. **Installs Claude Code** globally via npm
-2. **Installs Claude Code Router** for intelligent request routing
-3. **Clones Agent-OS** with ultimate enhancements from the `agent-os-ultimate` branch
-4. **Links Khamel83 enhancements** including:
-   - Claude Pro tracker with automatic fallback
-   - Free model ranker for optimal free model selection
-   - Integration configurations
-5. **Configures workflows** for token management and model fallback
-6. **Sets up OpenRouter integration** (optional API key for free models)
-
-## Configuration
-
-### OpenRouter API Key (Optional but Recommended)
-
-For the best free model experience, get an OpenRouter API key:
-
-1. Visit [OpenRouter.ai](https://openrouter.ai/)
-2. Create an account and get your API key
-3. **Option A - Use .env file (Recommended):**
-   ```bash
-   # Create or edit .env file in the ralex directory
-   echo "OPENROUTER_API_KEY=your-api-key-here" > .env
-   ```
-4. **Option B - Manual entry:**
-   The setup script will prompt you to enter the key during installation
-5. **Option C - Environment variable:**
-   ```bash
-   export OPENROUTER_API_KEY="your-api-key-here"
-   ```
-
-### Environment Variables
-
-The system uses these environment variables:
-- `OPENROUTER_API_KEY`: Your OpenRouter API key for free model access
-- Additional configuration is stored in `~/.claude-code-router/config.json`
+# ralex automatically knows your conversation history!
+```
 
 ## How It Works
 
-1. **Primary Mode**: Uses your Claude Pro tokens normally
-2. **Monitoring**: Tracks token usage in real-time
-3. **Auto-Fallback**: When Claude Pro tokens are exhausted, automatically switches to free models via OpenRouter
-4. **Model Selection**: Intelligent ranking system selects the best available free model
-5. **Seamless Experience**: You continue using the `claude` command without interruption
+### Context Preservation System
+1. **Claude Code Hooks**: Auto-save every conversation to `.claude-context.md`
+2. **Smart ralex**: Reads conversation history before making requests
+3. **Seamless Continuity**: Your conversation continues where Claude left off
 
-## Project Structure
+### Example Workflow
+```bash
+# Start with Claude Code
+claude
+# > "Help me build a login form"
+# > [Claude helps with the form]
+# > "Add validation to it"  
+# > [Claude limit reached - exit]
+
+# Switch to ralex
+ralex --direct "Now add error handling"
+# > ralex reads the entire conversation about the login form
+# > continues helping with error handling in context
+```
+
+## Installation Details
+
+The setup script:
+1. **Checks requirements** (curl, jq, git, npm)
+2. **Installs Claude Code** via npm (if not already installed)
+3. **Creates ralex command** in `~/bin/ralex` and adds to PATH
+4. **Sets up Claude Code hooks** to auto-save conversations
+5. **Configures OpenRouter** with your API key
+6. **Removes conflicting aliases** for clean installation
+
+## Files Created
 
 ```
-ralex/
-├── setup-ultimate-claude.sh    # Main setup script
-├── README.md                   # This file
-└── .env                        # Your OpenRouter API key (created by you)
+~/.claude/settings.json          # Claude Code hooks for auto-saving
+~/bin/ralex                      # Context-aware fallback script
+/path/to/project/.claude-context.md  # Auto-saved conversations
 ```
 
-After setup, the following directories are created:
-- `~/.agent-os/`: Agent-OS with ultimate enhancements
-- `~/.claude-code-router/`: Router configuration and Khamel83 enhancements
+## Configuration
+
+### OpenRouter API Key
+1. Get free API key from [OpenRouter.ai](https://openrouter.ai/)
+2. Add to `.env` file:
+   ```bash
+   OPENROUTER_API_KEY=your-key-here
+   ```
+
+### Supported Free Models
+The system automatically uses the best available free model:
+- `z-ai/glm-4.5-air:free` (default)
+- Other free models as available
+
+## Commands
+
+### ralex Options
+```bash
+# Try Claude first, fallback to OpenRouter if needed
+ralex "your prompt"
+
+# Skip Claude, go directly to OpenRouter  
+ralex --direct "your prompt"
+
+# Interactive mode not supported - use one-shot prompts
+```
+
+## Cross-Platform Support
+
+**Tested on:**
+- ✅ macOS (primary development)
+- 🔄 Ubuntu/Raspberry Pi (should work with standard bash/curl/jq)
+
+**Requirements:**
+- bash
+- curl  
+- jq
+- git
+- npm (for Claude Code)
 
 ## Troubleshooting
 
-### "Free models may not work as expected"
-- This means no OpenRouter API key was provided during setup
-- **Solution**: Create a `.env` file with your OpenRouter API key:
-  ```bash
-  echo "OPENROUTER_API_KEY=your-api-key-here" > .env
-  ```
-- Then run the setup script again
+### "No OPENROUTER_API_KEY found"
+- Create `.env` file with your API key
+- Or set environment variable: `export OPENROUTER_API_KEY="your-key"`
 
-### Setup fails during git operations
-- Ensure you have git installed and configured
-- Check internet connectivity
-- The script will automatically handle existing directories and re-clone if needed
+### "command not found: ralex"  
+- Restart terminal (PATH may need refresh)
+- Or run: `source ~/.zshrc` (or `~/.bashrc`)
+- If still not working, use full path: `/Users/$(whoami)/bin/ralex`
 
-### Claude command not found
-- Run `npm install -g @anthropic/claude-code` manually
-- Ensure your npm global bin directory is in your PATH
-- On macOS, you may need to restart your terminal
+### Context not preserved
+- Check if `.claude-context.md` exists in your project directory
+- Verify Claude Code hooks are working: check `~/.claude/settings.json`
 
-### Script says "No OpenRouter API Key provided" even with .env file
-- Make sure the `.env` file is in the same directory as the setup script
-- Check that the `.env` file contains: `OPENROUTER_API_KEY=your-actual-key`
-- Ensure there are no extra spaces or quotes around the key
+### ralex returns null/errors
+- Test OpenRouter API key: `curl -H "Authorization: Bearer $OPENROUTER_API_KEY" https://openrouter.ai/api/v1/models`
+- Check if free models are available
 
-### Permission denied when running setup script
-- Make the script executable: `chmod +x setup-ultimate-claude.sh`
-- Or run with bash: `bash setup-ultimate-claude.sh`
+## What's Different From Other Solutions
+
+**Not a router or proxy** - Simple script that switches tools manually  
+**Not automatic** - You choose when to switch from Claude to ralex  
+**Context-aware** - Conversation history preserved across switches  
+**Free models only** - Uses OpenRouter's free tier, no additional costs  
 
 ## Development
 
-To develop on a different machine:
+### Project Structure
+```
+ralex/
+├── README.md              # This file
+├── setup-ralex.sh         # Simple, reliable setup script
+├── setup-ultimate-claude.sh  # Legacy setup (ignore)
+├── ralex-simple.sh        # The actual ralex script
+├── .gitignore            # Protects .env and context files
+└── .env                  # Your API key (not in git)
+```
 
-1. Clone this repository
-2. Run the setup script
-3. Check your `.env` file for any local configurations
-4. The system will automatically sync with the latest enhancements from the `agent-os-ultimate` branch
+### Testing
+```bash
+# Test OpenRouter connection
+ralex --direct "what is 2+2"
+
+# Test context preservation  
+# 1. Use Claude Code for a conversation
+# 2. Exit and run: ralex --direct "continue our conversation"
+# 3. Verify it knows the previous context
+```
 
 ## Contributing
 
-This project integrates several components:
-- [Claude Code](https://github.com/anthropics/claude-code) - Official Claude CLI
-- [Agent-OS](https://github.com/Khamel83/agent-os) - Enhanced workflow system
-- [Claude Code Router](https://www.npmjs.com/package/@musistudio/claude-code-router) - Intelligent routing
+This is a simple, focused solution. PRs welcome for:
+- Cross-platform compatibility fixes
+- Better error handling  
+- Documentation improvements
+- Additional free model support
 
 ## License
 
-This setup script and configuration is provided as-is. Individual components maintain their respective licenses.
+MIT License. Individual components (Claude Code, OpenRouter) maintain their own licenses.
