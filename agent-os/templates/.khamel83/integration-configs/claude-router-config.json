@@ -1,0 +1,17 @@
+{
+  "routing": {
+    "default": {
+      "custom_router": "~/.agent-os/templates/.khamel83/claude-pro-tracker/router.js"
+    }
+  },
+  "workflows": {
+    "setup": "~/.agent-os/workflows/setup-ultimate-claude.yaml",
+    "token_management": "~/.agent-os/workflows/token-management.yaml",
+    "fallback": "~/.agent-os/workflows/model-fallback.yaml",
+    "yolo_mode": "~/.agent-os/workflows/yolo-mode.yaml"
+  },
+  "execution": {
+    "model_agnostic": true,
+    "can_run_on": ["gpt-4", "claude-3", "llama-3", "gemini", "any-capable-model"]
+  }
+}

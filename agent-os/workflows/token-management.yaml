@@ -1,0 +1,25 @@
+name: "Claude Pro Token Management"
+description: "Track Claude Pro tokens and manage 5-hour refresh cycles"
+model_requirements: "Any model with time/math calculation ability"
+
+tasks:
+  - id: "detect-claude-login"
+    type: "system-check"
+    action: "Check Claude Pro authentication status"
+    inputs: ["claude auth status"]
+    outputs: ["auth_status", "token_count", "refresh_time"]
+    success_criteria: "Claude Pro authenticated"
+
+  - id: "calculate-refresh-cycle"
+    type: "calculation"
+    inputs: ["current_time", "last_refresh", "tokens_used"]
+    formula: "next_refresh = last_refresh + (5 * 3600)"  # 5 hours
+    outputs: ["time_until_refresh", "tokens_remaining"]
+    success_criteria: "Accurate time calculation"
+
+  - id: "monitor-token-exhaustion"
+    type: "monitoring"
+    watch: ["claude_api_responses"]
+    trigger: ["rate_limit_error", "token_exhausted_error"]
+    action: "activate_fallback_mode"
+    success_criteria: "Fallback triggered on exhaustion"

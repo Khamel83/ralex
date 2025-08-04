@@ -1,0 +1,36 @@
+name: "Intelligent Model Fallback System"
+description: "Route requests through Claude Pro → Auto Router → Free Models"
+model_requirements: "Any model with API integration capability"
+
+tasks:
+  - id: "attempt-claude-pro"
+    type: "api-request"
+    provider: "claude-pro"
+    timeout: 30
+    on_success: "return_response"
+    on_failure: "proceed_to_openrouter"
+    success_criteria: "Valid response received"
+
+  - id: "attempt-openrouter-auto"
+    type: "api-request"
+    provider: "openrouter"
+    model: "openrouter/auto"
+    depends_on: ["attempt-claude-pro:failure"]
+    on_success: "return_response"
+    on_failure: "proceed_to_free_models"
+    success_criteria: "Valid response received"
+
+  - id: "rank-free-models"
+    type: "model-selection"
+    criteria: ["quality_score", "context_length", "availability"]
+    sort_by: "quality_score DESC"
+    filter: "cost = 0"
+    outputs: ["ranked_free_models"]
+    success_criteria: "At least 3 free models ranked"
+
+  - id: "attempt-free-models"
+    type: "api-request-sequence"
+    models: ["ranked_free_models"]
+    retry_strategy: "next_model_on_failure"
+    max_attempts: 5
+    success_criteria: "Response from any free model"

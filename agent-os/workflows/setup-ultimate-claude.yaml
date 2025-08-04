@@ -1,0 +1,36 @@
+name: "Setup Ultimate Claude Code System"
+description: "Install and configure Claude Code + Router + Agent-OS integration"
+model_requirements: "Any model with bash/shell capability"
+
+tasks:
+  - id: "check-dependencies"
+    type: "system-check"
+    inputs: ["node --version", "npm --version", "git --version"]
+    outputs: ["dependency_status"]
+    success_criteria: "All dependencies available"
+
+  - id: "install-claude-code"
+    type: "npm-install"
+    command: "npm install -g @anthropic-ai/claude-code"
+    depends_on: ["check-dependencies"]
+    success_criteria: "claude command available"
+
+  - id: "install-claude-router"
+    type: "npm-install"
+    command: "npm install -g @musistudio/claude-code-router"
+    depends_on: ["install-claude-code"]
+    success_criteria: "ccr command available"
+
+  - id: "clone-agent-os-fork"
+    type: "git-clone"
+    repo: "https://github.com/Khamel83/agent-os"
+    path: "~/.agent-os"
+    branch: "agent-os-ultimate"
+    success_criteria: ".agent-os directory exists"
+
+  - id: "link-khamel83-configs"
+    type: "file-system"
+    action: "symlink"
+    source: "~/.agent-os/templates/.khamel83"
+    target: "~/.claude-code-router/khamel83"
+    success_criteria: "Symlink created successfully"

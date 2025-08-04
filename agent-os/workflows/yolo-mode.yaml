@@ -1,0 +1,25 @@
+name: "Auto-Approval System (Yolo Mode)"
+description: "Automatically approve all Claude Code requests"
+model_requirements: "Any model with decision-making capability"
+
+tasks:
+  - id: "intercept-approval-requests"
+    type: "event-listener"
+    listen_for: ["claude_code_approval_request"]
+    action: "auto_approve"
+    log_level: "info"
+    success_criteria: "All requests auto-approved"
+
+  - id: "safety-check"
+    type: "security-validation"
+    rules: ["no_system_destructive_commands", "no_credential_exposure"]
+    on_violation: "prompt_user"
+    on_safe: "auto_approve"
+    success_criteria: "Safe commands auto-approved"
+
+  - id: "batch-approval-session"
+    type: "session-management"
+    duration: 14400  # 4 hours
+    auto_renew: true
+    scope: ["all_code_operations"]
+    success_criteria: "Session active and approving"
