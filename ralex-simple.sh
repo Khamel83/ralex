@@ -18,19 +18,22 @@ echo "🤖 Ralex - Always-Working Claude"
 echo "Trying Claude first..."
 
 # Try Claude first
-if claude "$@" 2>&1 | grep -q "usage limit"; then
+output_and_error=$(claude "$@" 2>&1)
+
+# Check if the captured output contains the usage limit message
+if echo "$output_and_error" | grep -q "usage limit"; then
     echo "⚠️ Claude limit reached, switching to OpenRouter..."
-    
+
     # Simple OpenRouter API call
     if [ $# -eq 0 ]; then
         echo "Interactive mode not supported with OpenRouter fallback"
         echo "Please use: ralex-simple \"your prompt here\""
         exit 1
     fi
-    
+
     # Combine all arguments into one prompt
     PROMPT="$*"
-    
+
     curl -X POST \
         "https://openrouter.ai/api/v1/chat/completions" \
         -H "Authorization: Bearer $OPENROUTER_API_KEY" \
@@ -42,5 +45,7 @@ if claude "$@" 2>&1 | grep -q "usage limit"; then
             ]
         }" | jq -r '.choices[0].message.content'
 else
+    # If no usage limit message, assume it worked and print the output.
     echo "✅ Claude worked normally"
+    echo "$output_and_error"
 fi
