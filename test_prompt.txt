@@ -1,0 +1,44 @@
+COMPLEX TEST PROMPT:
+
+Refactor this JavaScript code to use modern ES6+ features, add proper error handling, make it more performant, and add JSDoc comments. The code should handle edge cases and be production-ready:
+
+```javascript
+function processUsers(users, filters) {
+    var result = [];
+    for (var i = 0; i < users.length; i++) {
+        var user = users[i];
+        var valid = true;
+        
+        if (filters.minAge && user.age < filters.minAge) {
+            valid = false;
+        }
+        if (filters.department && user.department != filters.department) {
+            valid = false;
+        }
+        if (filters.active && !user.isActive) {
+            valid = false;
+        }
+        
+        if (valid) {
+            var processedUser = {
+                id: user.id,
+                name: user.firstName + ' ' + user.lastName,
+                email: user.email,
+                department: user.department,
+                yearsEmployed: new Date().getFullYear() - user.startYear
+            };
+            result.push(processedUser);
+        }
+    }
+    return result;
+}
+```
+
+Requirements:
+1. Use modern ES6+ syntax (const/let, arrow functions, destructuring, etc.)
+2. Add comprehensive error handling and input validation
+3. Optimize for performance with large datasets
+4. Add detailed JSDoc documentation
+5. Handle edge cases (null/undefined values, invalid dates, etc.)
+6. Make the function pure and immutable
+7. Add TypeScript-style type hints in JSDoc

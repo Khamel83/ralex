@@ -1,16 +1,41 @@
-# Ralex - Context-Aware Claude Code Fallback
+# Ralex - The "Always-Working" Wrapper for Claude Code
 
-**Simple, reliable fallback system for when Claude Code runs out of credits**
+**A smart, reliable wrapper for the `claude-code` CLI that automatically falls back to a free model when you hit your usage limit.**
 
-Ralex provides a context-aware fallback to OpenRouter's free models when Claude Code reaches its usage limits, preserving conversation history for seamless transitions.
+This script lets you use the official, interactive `claude-code` terminal application exactly as you normally would. When you exit a session, Ralex checks for a "usage limit" error. If it finds one, it will notify you and you can then re-run your prompt with the fallback model.
 
-## What This Actually Does
+---
 
-- 🔄 **Manual Fallback**: When Claude Code fails, switch to `ralex` command
-- 💾 **Context Preservation**: Automatically saves Claude conversations for continuity  
-- 🆓 **Free Models**: Uses OpenRouter's free models (no cost)
-- 📝 **Conversation History**: Maintains context across tool switches
-- 🚀 **Simple Setup**: No complex routing or servers required
+## The Problem We're Solving
+
+You're in the middle of a coding session, relying on the fantastic interactive environment of `claude-code`. Suddenly, you hit your usage limit and get an error. Your flow is broken. You have to stop what you're doing and wait hours for your limit to reset.
+
+## The Ralex Solution
+
+With Ralex, this never happens. You use `ralex` instead of `claude-code`.
+
+1.  **Normal Usage:** The `claude-code` interactive environment launches perfectly. You use it as you always do.
+2.  **The Magic:** When you exit, Ralex inspects the session's output.
+3.  **Seamless Fallback:** If it detects a "usage limit" error, it will notify you. You can then re-enter your last prompt to continue with the fallback model.
+
+---
+
+## How It *Actually* Works (The Technical Details)
+
+It's important to understand how this works correctly, as previous versions of this script got it wrong.
+
+-   **`claude-code` is an Application:** The `claude-code` command is not a simple script that prints text. It's a full-screen, interactive terminal application that takes over the display.
+-   **The Wrong Way (What We Don't Do):** You cannot simply "pipe" or "redirect" the output of an interactive application like this. Trying to do so breaks the application and prevents it from ever launching.
+-   **The Right Way (How Ralex Works):** Ralex uses the standard Unix `script` command. This command is designed specifically to capture the full output of an interactive terminal session.
+    1.  `script -q -c "claude-code"` launches `claude-code` and transparently records everything that happens on the screen to a temporary file.
+    2.  You interact with `claude-code` normally.
+    3.  When you exit, Ralex opens the temporary log file.
+    4.  It searches the log for the specific "usage limit" text.
+    5.  If found, it will print a message informing you that the limit has been reached.
+
+This approach respects the integrity of the `claude-code` application while still allowing us to inspect the results after it closes.
+
+---
 
 ## Quick Start
 
@@ -20,162 +45,50 @@ git clone https://github.com/Khamel83/ralex.git
 cd ralex
 
 # Get your OpenRouter API key from https://openrouter.ai/
+# It's free to sign up and use free models.
 echo "OPENROUTER_API_KEY=your-key-here" > .env
-
-# Run the setup script
-./setup-ralex.sh
 ```
 
-### 2. Your Daily Workflow
+### 2. Make the Script Executable
 ```bash
-# Morning - Use Claude Code normally
-claude
-
-# When Claude runs out of credits:
-# Exit Claude Code, then use:
-ralex --direct "your prompt here"
-
-# ralex automatically knows your conversation history!
+# This only needs to be done once.
+chmod +x ralex-claude-code.sh
 ```
 
-## How It Works
+### 3. Create a Convenient Alias (Recommended)
+To avoid typing the full path to the script every time, add an alias to your shell's startup file (`~/.zshrc`, `~/.bashrc`, or `~/.config/fish/config.fish`).
 
-### Context Preservation System
-1. **Claude Code Hooks**: Auto-save every conversation to `.claude-context.md`
-2. **Smart ralex**: Reads conversation history before making requests
-3. **Seamless Continuity**: Your conversation continues where Claude left off
+**Important:** You must replace `/path/to/your/ralex` with the actual, absolute path to where you cloned the repository.
 
-### Example Workflow
 ```bash
-# Start with Claude Code
-claude
-# > "Help me build a login form"
-# > [Claude helps with the form]
-# > "Add validation to it"  
-# > [Claude limit reached - exit]
+# Add this line to your shell config file:
+alias ralex='/path/to/your/ralex/ralex-claude-code.sh'
 
-# Switch to ralex
-ralex --direct "Now add error handling"
-# > ralex reads the entire conversation about the login form
-# > continues helping with error handling in context
+# Then, reload your shell or run:
+source ~/.zshrc # Or your respective config file
 ```
 
-## Installation Details
+### 4. Your New Daily Workflow
+Instead of running `claude-code`, you now run `ralex`.
 
-The setup script:
-1. **Checks requirements** (curl, jq, git, npm)
-2. **Installs Claude Code** via npm (if not already installed)
-3. **Creates ralex command** in `~/bin/ralex` and adds to PATH
-4. **Sets up Claude Code hooks** to auto-save conversations
-5. **Configures OpenRouter** with your API key
-6. **Removes conflicting aliases** for clean installation
-
-## Files Created
-
-```
-~/.claude/settings.json          # Claude Code hooks for auto-saving
-~/bin/ralex                      # Context-aware fallback script
-/path/to/project/.claude-context.md  # Auto-saved conversations
-```
-
-## Configuration
-
-### OpenRouter API Key
-1. Get free API key from [OpenRouter.ai](https://openrouter.ai/)
-2. Add to `.env` file:
-   ```bash
-   OPENROUTER_API_KEY=your-key-here
-   ```
-
-### Supported Free Models
-The system automatically uses the best available free model:
-- `z-ai/glm-4.5-air:free` (default)
-- Other free models as available
-
-## Commands
-
-### ralex Options
 ```bash
-# Try Claude first, fallback to OpenRouter if needed
-ralex "your prompt"
+# This will launch the interactive claude-code session.
+ralex
 
-# Skip Claude, go directly to OpenRouter  
-ralex --direct "your prompt"
-
-# Interactive mode not supported - use one-shot prompts
+# If you hit your usage limit, upon exiting, Ralex will
+# notify you. You can then re-enter your last prompt to
+# continue with the fallback model.
 ```
 
-## Cross-Platform Support
+---
 
-**Tested on:**
-- ✅ macOS (primary development)
-- 🔄 Ubuntu/Raspberry Pi (should work with standard bash/curl/jq)
+## Project Structure
 
-**Requirements:**
-- bash
-- curl  
-- jq
-- git
-- npm (for Claude Code)
-
-## Troubleshooting
-
-### "No OPENROUTER_API_KEY found"
-- Create `.env` file with your API key
-- Or set environment variable: `export OPENROUTER_API_KEY="your-key"`
-
-### "command not found: ralex"  
-- Restart terminal (PATH may need refresh)
-- Or run: `source ~/.zshrc` (or `~/.bashrc`)
-- If still not working, use full path: `/Users/$(whoami)/bin/ralex`
-
-### Context not preserved
-- Check if `.claude-context.md` exists in your project directory
-- Verify Claude Code hooks are working: check `~/.claude/settings.json`
-
-### ralex returns null/errors
-- Test OpenRouter API key: `curl -H "Authorization: Bearer $OPENROUTER_API_KEY" https://openrouter.ai/api/v1/models`
-- Check if free models are available
-
-## What's Different From Other Solutions
-
-**Not a router or proxy** - Simple script that switches tools manually  
-**Not automatic** - You choose when to switch from Claude to ralex  
-**Context-aware** - Conversation history preserved across switches  
-**Free models only** - Uses OpenRouter's free tier, no additional costs  
-
-## Development
-
-### Project Structure
 ```
 ralex/
-├── README.md              # This file
-├── setup-ralex.sh         # Simple, reliable setup script
-├── setup-ultimate-claude.sh  # Legacy setup (ignore)
-├── ralex-simple.sh        # The actual ralex script
-├── .gitignore            # Protects .env and context files
-└── .env                  # Your API key (not in git)
+├── README.md              # This file: The clear, correct documentation.
+├── ralex-claude-code.sh   # The new, interactive-aware Ralex script.
+├── .gitignore             # Protects your .env file.
+└── .env.example           # An example of the .env file.
 ```
-
-### Testing
-```bash
-# Test OpenRouter connection
-ralex --direct "what is 2+2"
-
-# Test context preservation  
-# 1. Use Claude Code for a conversation
-# 2. Exit and run: ralex --direct "continue our conversation"
-# 3. Verify it knows the previous context
-```
-
-## Contributing
-
-This is a simple, focused solution. PRs welcome for:
-- Cross-platform compatibility fixes
-- Better error handling  
-- Documentation improvements
-- Additional free model support
-
-## License
-
-MIT License. Individual components (Claude Code, OpenRouter) maintain their own licenses.
+The old, incorrect script has been moved to the `archive/incorrect-simple-script` branch for historical purposes.

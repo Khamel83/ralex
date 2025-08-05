@@ -1,0 +1,196 @@
+# Agent OS Integration Configuration for Ralex
+# This file configures how Ralex integrates with Agent OS projects
+
+# Agent OS Detection Settings
+detection:
+  auto_detect: true  # Automatically detect Agent OS projects
+  required_indicators:
+    - ".agent-os"     # Look for .agent-os directory
+    - ".project"      # Or .project directory
+  optional_indicators:
+    - "docs/handover"
+    - ".khamel83"
+
+# Context Analysis Settings
+context_analysis:
+  enabled: true
+  cache_duration: 300  # Cache context for 5 minutes
+  
+  # What to analyze
+  analyze_git: true
+  analyze_project_structure: true
+  analyze_patterns: true
+  analyze_handover_docs: true
+  analyze_current_specs: true
+  
+  # Performance settings
+  max_files_to_scan: 1000
+  ignore_patterns:
+    - "node_modules"
+    - ".git"
+    - "dist"
+    - "build"
+    - "__pycache__"
+    - ".venv"
+
+# Methodology Application Settings
+methodology:
+  default_approach: "three-phase"  # three-phase, simple, pattern-reuse
+  
+  # Complexity thresholds
+  complexity_detection:
+    simple_keywords: ["fix", "update", "change", "add", "remove", "small"]
+    complex_keywords: ["complete", "entire", "system", "multiple", "integrate", "comprehensive"]
+    
+  # Phase configuration
+  phases:
+    planning:
+      min_time_minutes: 10
+      max_time_minutes: 60
+      focus_areas: ["architecture", "strategy", "requirements", "design"]
+      
+    implementation:
+      micro_task_approach: true
+      max_micro_tasks: 10
+      focus_areas: ["coding", "testing", "integration"]
+      
+    review:
+      min_time_minutes: 5
+      max_time_minutes: 30
+      focus_areas: ["validation", "quality", "integration", "documentation"]
+
+# Pattern Management Settings
+patterns:
+  enabled: true
+  auto_save_successful: true
+  
+  # Pattern matching
+  confidence_threshold: 0.6  # Minimum confidence for pattern suggestions
+  max_suggestions: 5
+  
+  # Pattern storage locations (in order of preference)
+  storage_locations:
+    - ".project/patterns"
+    - ".khamel83/pattern-cache"
+    - "~/.agent-os/global-patterns"
+  
+  # Pattern quality settings
+  quality_thresholds:
+    min_usage_for_global: 5
+    min_success_rate: 0.8
+    deprecation_threshold: 0.5
+
+# Model Routing Settings
+model_routing:
+  enabled: true
+  
+  # Model selection strategy
+  strategy: "context-aware"  # context-aware, cost-optimized, quality-focused
+  
+  # Phase-based routing
+  phase_routing:
+    planning:
+      preferred_models: ["smart-model", "high-quality"]
+      fallback_models: ["balanced-model"]
+      
+    implementation:
+      preferred_models: ["efficient-model", "fast-model"]
+      fallback_models: ["balanced-model"]
+      
+    review:
+      preferred_models: ["balanced-model", "quality-focused"]
+      fallback_models: ["efficient-model"]
+      
+    pattern-application:
+      preferred_models: ["efficient-model"]
+      fallback_models: ["balanced-model"]
+
+# Project Lifecycle Settings
+lifecycle:
+  enabled: true
+  
+  # Workflow templates
+  templates:
+    start_project: "templates/.khamel83/project-lifecycle/start-project.md"
+    resume_project: "templates/.khamel83/project-lifecycle/resume-project.md"
+    end_project: "templates/.khamel83/project-lifecycle/end-project.md"
+  
+  # Auto-execution settings
+  auto_context_analysis: true
+  auto_handover_detection: true
+  auto_documentation_generation: true
+
+# Integration Settings
+integration:
+  # Command interface
+  command_prefix: "ralex"  # Command prefix for lifecycle commands
+  
+  # Seamless integration
+  invisible_optimization: true  # Apply optimizations without user awareness
+  background_pattern_learning: true
+  
+  # Development workflow integration
+  git_integration: true
+  documentation_auto_update: true
+  
+  # Notification settings
+  notify_pattern_matches: true
+  notify_optimization_applied: false  # Keep optimizations invisible
+  notify_lifecycle_transitions: true
+
+# Performance Settings
+performance:
+  # Context loading
+  lazy_load_patterns: true
+  cache_analysis_results: true
+  
+  # Pattern processing
+  max_pattern_analysis_time_ms: 1000
+  async_pattern_saving: true
+  
+  # Resource limits
+  max_memory_usage_mb: 100
+  max_concurrent_analyses: 3
+
+# Debugging and Logging
+debug:
+  enabled: false  # Set to true for development
+  log_level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  
+  # What to log
+  log_context_analysis: false
+  log_pattern_matching: false
+  log_methodology_application: false
+  log_model_routing: false
+  
+  # Log locations
+  log_file: ".ralex/agent-os-integration.log"
+  separate_logs_by_date: true
+
+# Experimental Features
+experimental:
+  # Advanced pattern learning
+  ml_pattern_matching: false
+  cross_project_learning: false
+  
+  # Advanced context analysis
+  semantic_code_analysis: false
+  dependency_graph_analysis: false
+  
+  # Advanced automation
+  predictive_task_breakdown: false
+  auto_micro_task_generation: false
+
+# Compatibility Settings
+compatibility:
+  # Agent OS versions
+  min_agent_os_version: "1.0.0"
+  max_agent_os_version: "2.0.0"
+  
+  # File format support
+  supported_spec_formats: ["markdown", "yaml", "json"]
+  supported_pattern_formats: ["json", "yaml"]
+  
+  # Encoding settings
+  default_encoding: "utf-8"
+  fallback_encodings: ["latin-1", "cp1252"]
