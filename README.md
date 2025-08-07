@@ -1,389 +1,181 @@
-# K83 Framework - Universal AgentOS + Agentic Coding
+# Ralex - Context-Aware Claude Code Fallback
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
-[![Documentation Status](https://img.shields.io/badge/docs-complete-brightgreen.svg)](./docs/)
-[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)]()
-[![AgentOS Compatible](https://img.shields.io/badge/AgentOS-compatible-purple.svg)](https://buildermethods.com/agent-os)
+**Simple, reliable fallback system for when Claude Code runs out of credits**
 
-**K83** is a revolutionary framework that brings AgentOS methodology + agentic workflows + context preservation directly into Claude Code via slash commands. No external tools required - everything works seamlessly within Claude Code itself.
+Ralex provides a context-aware fallback to OpenRouter's free models when Claude Code reaches its usage limits, preserving conversation history for seamless transitions.
 
-**One command installs everything. Slash commands do everything else.**
+## What This Actually Does
 
-## Table of Contents
-
-- [Features](#features)
-- [Quick Start](#quick-start)
-- [Architecture Overview](#architecture-overview)
-- [Installation](#installation)
-- [Usage](#usage)
-- [API Reference](#api-reference)
-- [Examples](#examples)
-- [Contributing](#contributing)
-- [Security](#security)
-- [Support](#support)
-
-## Features
-
-### 🎯 Agentic Workflows
-- **Autonomous Coding**: `/yolo` mode for autonomous coding until completion
-- **Intelligent Orchestration**: `/orchestrate` applies full AgentOS methodology
-- **Context-Aware Execution**: Maintains state across complex multi-step operations
-
-### 📋 AgentOS Integration
-- **Full Methodology Support**: Complete buildermethods/agent-os implementation
-- **Spec-Driven Development**: Automatic specification creation and management
-- **Three-Phase Execution**: Planning → Implementation → Review cycles
-
-### 🧠 Persistent Memory & Context
-- **Cross-Session Persistence**: Context preserved across sessions and model switches
-- **Multi-Tool Compatibility**: Seamless transitions between Claude Code, Cursor, and CCR
-- **Smart State Management**: Automatic detection and export of conversation history
-
-### 🔧 25 Essential MCP Servers
-- **GitHub Integration**: Direct repository operations and PR management
-- **FileSystem Operations**: Advanced file and directory manipulation
-- **Memory Bank**: Persistent knowledge storage and retrieval
-- **Sequential Thinking**: Step-by-step reasoning and planning
-- **Database Operations**: SQL operations and schema management
-- **Web Testing**: Automated web application testing
-- **And 19 more specialized servers**
-
-### ⚡ Zero Configuration
-- **One-Command Install**: Single curl command installs everything
-- **Auto-Configuration**: Detects project type and applies appropriate settings
-- **Auto-Updates**: Stays synced with latest AgentOS changes
+- 🔄 **Manual Fallback**: When Claude Code fails, switch to `ralex` command
+- 💾 **Context Preservation**: Automatically saves Claude conversations for continuity  
+- 🆓 **Free Models**: Uses OpenRouter's free models (no cost)
+- 📝 **Conversation History**: Maintains context across tool switches
+- 🚀 **Simple Setup**: No complex routing or servers required
 
 ## Quick Start
 
-### Install K83 (30 seconds)
-
-**Install in any Git project:**
+### 1. Clone and Setup
 ```bash
-curl -sSL https://raw.githubusercontent.com/your-repo/k83/main/install-k83.sh | bash
-```
+git clone https://github.com/Khamel83/ralex.git
+cd ralex
 
-### Start Using Immediately
-
-**In Claude Code:**
-```bash
-# Autonomous feature development
-/yolo "build user authentication system with JWT and middleware"
-
-# Complex project orchestration
-/orchestrate "create REST API with PostgreSQL and admin dashboard"
-
-# Step-by-step development
-/spec "user profile management with avatar uploads"
-/implement
-/test-and-fix
-
-# Context and memory management
-/save-session "milestone completed"
-/memory-save "authentication system uses bcrypt with 12 rounds"
-```
-
-**That's it. Everything else is automatic.**
-
-## Architecture Overview
-
-K83 integrates multiple systems into a cohesive development environment:
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    K83 Framework                            │
-├─────────────────────────────────────────────────────────────┤
-│  Claude Code Interface (Slash Commands)                    │
-├─────────────────────────────────────────────────────────────┤
-│                 AgentOS Foundation                          │
-│  • Methodology Engine    • Spec Management                 │
-│  • Pattern Recognition  • Task Breakdown                   │
-├─────────────────────────────────────────────────────────────┤
-│               25 MCP Servers (Specialized Agents)          │
-│  GitHub | FileSystem | Memory | Database | Web | ...       │
-├─────────────────────────────────────────────────────────────┤
-│              Context & State Management                     │
-│  • Cross-session persistence  • Multi-tool compatibility   │
-│  • Intelligent state sync     • Model switching            │
-└─────────────────────────────────────────────────────────────┘
-```
-
-### Core Components
-
-- **AgentOS Foundation**: buildermethods/agent-os methodology and templates
-- **Claude Code MCP Server**: Slash command interface and orchestration
-- **Sub-Agent System**: Specialized agents for spec, code, test, review tasks
-- **25 Essential MCP Servers**: GitHub, FileSystem, Memory, Sequential Thinking, Database, Web, and more
-- **Context Manager**: Persistent memory and session state across model switches
-- **Auto-Sync System**: Stays updated with latest AgentOS changes
-
-## Installation
-
-### Prerequisites
-
-Before installing K83, ensure you have:
-
-1. **Python 3.8+**: Core K83 scripts are written in Python
-2. **Git**: For automated version control and repository operations
-3. **Node.js 18+**: Required for some MCP servers
-4. **Claude Code**: The primary interface for K83 workflows
-
-### Automatic Installation
-
-The installer automatically handles all setup:
-
-```bash
-# Install in any Git project
-curl -sSL https://raw.githubusercontent.com/your-repo/k83/main/install-k83.sh | bash
-```
-
-### What Gets Installed
-
-The installer automatically:
-- ✅ Creates `.k83/` directory with all components
-- ✅ Downloads and configures 25 MCP servers
-- ✅ Syncs latest AgentOS instructions and templates
-- ✅ Configures Claude Code integration (`.claude/mcp_config.json`)
-- ✅ Sets up persistent memory and context management
-- ✅ Detects project type and applies appropriate configurations
-- ✅ Creates comprehensive documentation and examples
-
-### Manual Installation
-
-For advanced users or custom installations:
-
-```bash
-# Clone the repository
-git clone https://github.com/your-repo/k83.git
-cd k83
+# Get your OpenRouter API key from https://openrouter.ai/
+echo "OPENROUTER_API_KEY=your-key-here" > .env
 
 # Run the setup script
-./scripts/setup.sh
-
-# Configure your project
-./scripts/configure-project.sh /path/to/your/project
+./setup-ralex.sh
 ```
 
-### Verification
-
-Verify your installation:
-
+### 2. Your Daily Workflow
 ```bash
-# Check K83 status
-python3 ralex-integration-package/agent_os_bridge.py --version
+# Morning - Use Claude Code normally
+claude
 
-# Test slash commands in Claude Code
-/yolo "create a simple hello world function"
+# When Claude runs out of credits:
+# Exit Claude Code, then use:
+ralex --direct "your prompt here"
+
+# ralex automatically knows your conversation history!
 ```
 
-## Usage
+## How It Works
 
-### Available Slash Commands
+### Context Preservation System
+1. **Claude Code Hooks**: Auto-save every conversation to `.claude-context.md`
+2. **Smart ralex**: Reads conversation history before making requests
+3. **Seamless Continuity**: Your conversation continues where Claude left off
 
-#### 🎯 Agentic Workflows
-
-**`/yolo "build feature X"`**
-- Autonomous coding until completion
-- Applies full AgentOS methodology automatically
-- Handles spec creation, implementation, testing, and fixes
-- Example: `/yolo "implement JWT authentication with login/logout endpoints and middleware"`
-
-**`/orchestrate "complex task"`**
-- Full AgentOS methodology workflow with human oversight
-- Three-phase execution: Planning → Implementation → Review
-- Example: `/orchestrate "build REST API with PostgreSQL, authentication, and admin dashboard"`
-
-#### 📋 Development Commands
-
-**`/spec "requirements"`**
-- Create detailed AgentOS specification
-- Generates comprehensive technical requirements
-- Example: `/spec "user profile management with avatar uploads and permissions"`
-
-**`/implement`**
-- Generate code from current specification
-- Uses context-aware implementation patterns
-- Automatically applies best practices and project conventions
-
-**`/test-and-fix`**
-- Run comprehensive test suite
-- Auto-fix issues found during testing
-- Iterates until all tests pass
-
-#### 🧠 Context & Memory
-
-**`/save-session "note"`**
-- Save current context and create git commit
-- Preserves conversation state for later retrieval
-- Example: `/save-session "completed user authentication module"`
-
-**`/switch-model gpt-4`**
-- Change AI models while preserving context
-- Seamlessly continue work with different model capabilities
-- Example: `/switch-model "gpt-4-turbo"`
-
-**`/memory-save "information"`**
-- Store important information in persistent memory
-- Retrievable across sessions and projects
-- Example: `/memory-save "project uses React 18 with TypeScript and Tailwind"`
-
-**`/memory-recall "query"`**
-- Retrieve information from persistent memory
-- Smart search across all stored knowledge
-- Example: `/memory-recall "authentication implementation details"`
-
-#### 🔧 Utilities
-
-**`/agent-os-update`**
-- Sync with latest AgentOS methodology updates
-- Downloads new templates and best practices
-- Maintains compatibility with AgentOS ecosystem
-
-**`/git-smart commit`**
-- Intelligent git operations with context awareness
-- Generates meaningful commit messages
-- Example: `/git-smart commit "add user authentication system"`
-
-**`/web-test url`**
-- Automated web application testing
-- Comprehensive functionality and accessibility testing
-- Example: `/web-test "http://localhost:3000"`
-
-### Example Workflows
-
-#### Autonomous Feature Development
-
+### Example Workflow
 ```bash
-# Single command builds complete feature
-/yolo "implement JWT authentication with login/logout endpoints and middleware"
+# Start with Claude Code
+claude
+# > "Help me build a login form"
+# > [Claude helps with the form]
+# > "Add validation to it"  
+# > [Claude limit reached - exit]
 
-# K83 automatically:
-# 1. Creates AgentOS specification
-# 2. Implements code with proper structure
-# 3. Writes comprehensive tests
-# 4. Fixes any issues found
-# 5. Commits working solution to git
+# Switch to ralex
+ralex --direct "Now add error handling"
+# > ralex reads the entire conversation about the login form
+# > continues helping with error handling in context
 ```
 
-#### Complex Project Orchestration
+## Installation Details
 
+The setup script:
+1. **Checks requirements** (curl, jq, git, npm)
+2. **Installs Claude Code** via npm (if not already installed)
+3. **Creates ralex command** in `~/bin/ralex` and adds to PATH
+4. **Sets up Claude Code hooks** to auto-save conversations
+5. **Configures OpenRouter** with your API key
+6. **Removes conflicting aliases** for clean installation
+
+## Files Created
+
+```
+~/.claude/settings.json          # Claude Code hooks for auto-saving
+~/bin/ralex                      # Context-aware fallback script
+/path/to/project/.claude-context.md  # Auto-saved conversations
+```
+
+## Configuration
+
+### OpenRouter API Key
+1. Get free API key from [OpenRouter.ai](https://openrouter.ai/)
+2. Add to `.env` file:
+   ```bash
+   OPENROUTER_API_KEY=your-key-here
+   ```
+
+### Supported Free Models
+The system automatically uses the best available free model:
+- `z-ai/glm-4.5-air:free` (default)
+- Other free models as available
+
+## Commands
+
+### ralex Options
 ```bash
-# Full AgentOS methodology applied
-/orchestrate "build REST API with PostgreSQL, authentication, and admin dashboard"
+# Try Claude first, fallback to OpenRouter if needed
+ralex "your prompt"
 
-# Uses AgentOS phases:
-# - Planning & Architecture (15-30 minutes)
-# - Implementation & Testing (varies by complexity)
-# - Review & Integration (10-20 minutes)
+# Skip Claude, go directly to OpenRouter  
+ralex --direct "your prompt"
+
+# Interactive mode not supported - use one-shot prompts
 ```
 
-#### Iterative Development with Context Preservation
+## Cross-Platform Support
 
+**Tested on:**
+- ✅ macOS (primary development)
+- 🔄 Ubuntu/Raspberry Pi (should work with standard bash/curl/jq)
+
+**Requirements:**
+- bash
+- curl  
+- jq
+- git
+- npm (for Claude Code)
+
+## Troubleshooting
+
+### "No OPENROUTER_API_KEY found"
+- Create `.env` file with your API key
+- Or set environment variable: `export OPENROUTER_API_KEY="your-key"`
+
+### "command not found: ralex"  
+- Restart terminal (PATH may need refresh)
+- Or run: `source ~/.zshrc` (or `~/.bashrc`)
+- If still not working, use full path: `/Users/$(whoami)/bin/ralex`
+
+### Context not preserved
+- Check if `.claude-context.md` exists in your project directory
+- Verify Claude Code hooks are working: check `~/.claude/settings.json`
+
+### ralex returns null/errors
+- Test OpenRouter API key: `curl -H "Authorization: Bearer $OPENROUTER_API_KEY" https://openrouter.ai/api/v1/models`
+- Check if free models are available
+
+## What's Different From Other Solutions
+
+**Not a router or proxy** - Simple script that switches tools manually  
+**Not automatic** - You choose when to switch from Claude to ralex  
+**Context-aware** - Conversation history preserved across switches  
+**Free models only** - Uses OpenRouter's free tier, no additional costs  
+
+## Development
+
+### Project Structure
+```
+ralex/
+├── README.md              # This file
+├── setup-ralex.sh         # Simple, reliable setup script
+├── setup-ultimate-claude.sh  # Legacy setup (ignore)
+├── ralex-simple.sh        # The actual ralex script
+├── .gitignore            # Protects .env and context files
+└── .env                  # Your API key (not in git)
+```
+
+### Testing
 ```bash
-# Step by step with full state management
-/spec "user profile management with avatar uploads"
-/implement
-/test-and-fix
-/memory-save "user profiles completed with file uploads using multer"
-/save-session "milestone: user management system completed"
+# Test OpenRouter connection
+ralex --direct "what is 2+2"
 
-# Switch to different model while preserving context
-/switch-model "gpt-4-turbo"
-/yolo "add OAuth integration to existing auth system"
+# Test context preservation  
+# 1. Use Claude Code for a conversation
+# 2. Exit and run: ralex --direct "continue our conversation"
+# 3. Verify it knows the previous context
 ```
-
-#### Cross-Tool Development
-
-```bash
-# Work in Claude Code
-/yolo "build user authentication"
-/save-session "auth system completed"
-
-# Switch to terminal
-k83-save    # Exports context and commits to git
-k83-resume  # Launches CCR with next model and full context
-
-# Continue in CCR with different model
-/flash      # Save progress and sync back to git
-exit
-
-# Return to Claude Code with updated context
-/agent-os-update  # Sync latest changes
-```
-
-## API Reference
-
-For detailed API documentation, see:
-- [Slash Commands API](./docs/api/slash-commands.md)
-- [Python API Reference](./docs/api/python-api.md)
-- [MCP Servers API](./docs/api/mcp-servers.md)
-
-## Examples
-
-Explore real-world usage scenarios:
-- [Getting Started Examples](./examples/getting-started/)
-- [Web Development](./examples/web-development/)
-- [API Development](./examples/api-development/)
-- [Database Operations](./examples/database/)
-- [Testing Workflows](./examples/testing/)
 
 ## Contributing
 
-We welcome contributions! Please see our [Contributing Guide](./CONTRIBUTING.md) for details.
-
-### Development Setup
-
-```bash
-# Clone and setup for development
-git clone https://github.com/your-repo/k83.git
-cd k83
-./scripts/dev-setup.sh
-
-# Run tests
-./scripts/test.sh
-
-# Submit changes
-./scripts/pre-commit.sh
-```
-
-## Security
-
-Security is a top priority for K83. Please see our [Security Policy](./SECURITY.md) for:
-- Reporting vulnerabilities
-- Security best practices
-- Authentication and authorization
-- Data protection guidelines
-
-## Support
-
-### Documentation
-- [Complete Documentation](./docs/)
-- [Troubleshooting Guide](./docs/troubleshooting.md)
-- [FAQ](./docs/faq.md)
-
-### Community
-- [GitHub Discussions](https://github.com/your-repo/k83/discussions)
-- [Issue Tracker](https://github.com/your-repo/k83/issues)
-- [AgentOS Community](https://buildermethods.com/agent-os)
-
-### Commercial Support
-For enterprise support and custom implementations, contact us at support@k83framework.com
+This is a simple, focused solution. PRs welcome for:
+- Cross-platform compatibility fixes
+- Better error handling  
+- Documentation improvements
+- Additional free model support
 
 ## License
 
-K83 is released under the [MIT License](./LICENSE). See LICENSE file for details.
-
-## Acknowledgments
-
-- Built on [buildermethods/agent-os](https://buildermethods.com/agent-os) methodology
-- Powered by Claude Code and MCP (Model Context Protocol)
-- Inspired by the agentic AI development community
-
----
-
-**Ready to revolutionize your development workflow?**
-
-```bash
-curl -sSL https://raw.githubusercontent.com/your-repo/k83/main/install-k83.sh | bash
-```
-
-*K83 Framework - Where AgentOS meets Agentic AI Development*
+MIT License. Individual components (Claude Code, OpenRouter) maintain their own licenses.
