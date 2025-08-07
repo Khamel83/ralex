@@ -29,3 +29,14 @@ npm-debug.log*
 *.log
 *.tmp
 *.temp
+# K83 Framework
+.k83/cache/
+.k83/logs/
+.k83/mcp-servers/node_modules/
+.ralex_state
+
+# K83 Framework
+.k83/cache/
+.k83/logs/
+.k83/mcp-servers/node_modules/
+.ralex_state

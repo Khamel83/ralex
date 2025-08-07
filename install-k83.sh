@@ -27,150 +27,32 @@ mkdir -p .claude
 
 # Download latest AgentOS
 echo "📋 Syncing with AgentOS (buildermethods/agent-os)..."
-echo "  └── Skipping AgentOS sync for now (repository may be private)."
-#if [ ! -d ".k83/cache/agent-os" ]; then
-#    git clone https://github.com/buildermethods/agent-os.git .k83/cache/agent-os --depth 1
-#else
-#    cd .k83/cache/agent-os && git pull && cd ../../..
-#fi
+if [ ! -d ".k83/cache/agent-os" ]; then
+    git clone https://github.com/buildermethods/agent-os.git .k83/cache/agent-os --depth 1
+else
+    cd .k83/cache/agent-os && git pull && cd ../../..
+fi
 
 # Install Node.js MCP servers
 echo "📦 Installing essential MCP servers..."
-cd .k83/mcp-servers
+mkdir -p .k83/mcp-servers
+git clone https://github.com/Khamel83/mcp-servers.git .k83/mcp-servers --depth 1
 
-# Essential MCP servers for agentic coding
-npm init -y > /dev/null 2>&1
-npm install --save \
-    @modelcontextprotocol/server-filesystem \
-    @modelcontextprotocol/server-sequential-thinking \
-    @composio/mcp@latest \
-    puppeteer \
-    playwright \
-    octocode-mcp \
-    > /dev/null 2>&1
-
-# Install Memory Bank MCP
-echo "🧠 Installing Memory Bank MCP..."
-echo "  └── Skipping Memory Bank MCP for now (repository may be private)."
-#git clone https://github.com/modelcontextprotocol/server-memory.git memory-bank > /dev/null 2>&1
-#cd memory-bank && npm install > /dev/null 2>&1 && cd ..
-
-# Install PostgreSQL MCP  
-echo "🗄️  Installing Database MCPs..."
-echo "  └── Skipping PostgreSQL MCP for now (repository may be private)."
-#git clone https://github.com/modelcontextprotocol/servers.git mcp-servers-repo > /dev/null 2>&1
-#cp -r mcp-servers-repo/src/postgresql ./postgresql-mcp && rm -rf mcp-servers-repo
-#cd postgresql-mcp && npm install > /dev/null 2>&1 && cd ..
-
-# Install LibSQL MCP (advanced SQLite/Turso support)
-echo "  └── Skipping LibSQL MCP for now (repository may be private)."
-#git clone https://github.com/Xexr/mcp-libsql.git libsql-mcp > /dev/null 2>&1
-#cd libsql-mcp && npm install > /dev/null 2>&1 && cd ..
-
-# Install Serena MCP (code understanding)
-echo "🔍 Installing Serena MCP (code analysis)..."
-echo "  └── Skipping Serena MCP for now (repository may be private)."
-#git clone https://github.com/oraios/serena.git serena-mcp > /dev/null 2>&1
-#cd serena-mcp && npm install > /dev/null 2>&1 && cd ..
-
-# Install Desktop Commander MCP (desktop automation)
-echo "🖥️  Installing Desktop Commander MCP..."
-echo "  └── Skipping Desktop Commander MCP for now (repository may be private)."
-#git clone https://github.com/wonderwhy-er/DesktopCommanderMCP.git desktop-commander > /dev/null 2>&1
-#cd desktop-commander && npm install > /dev/null 2>&1 && cd ..
-
-# Install Quillopy MCP (documentation)
-echo "📚 Installing Documentation MCP..."
-echo "  └── Skipping Quillopy MCP for now (repository may be private)."
-#git clone https://github.com/quillopy/quillopy-mcp.git quillopy-mcp > /dev/null 2>&1
-#cd quillopy-mcp && npm install > /dev/null 2>&1 && cd ..
-
-# Install Premium Enterprise MCPs
-echo "🏢 Installing Enterprise-Grade MCPs..."
-
-# DeepView MCP (large codebase analysis)
-echo "  └── Skipping DeepView MCP for now (repository may be private)."
-#git clone https://github.com/ai-1st/deepview-mcp.git deepview-mcp > /dev/null 2>&1
-#cd deepview-mcp && npm install > /dev/null 2>&1 && cd ..
-
-# Official GitHub MCP
-echo "  └── Skipping Official GitHub MCP for now (repository may be private)."
-#git clone https://github.com/github/github-mcp-server.git official-github-mcp > /dev/null 2>&1
-#cd official-github-mcp && npm install > /dev/null 2>&1 && cd ..
-
-# JetBrains MCP (IDE integration)  
-echo "  └── Skipping JetBrains MCP for now (repository may be private)."
-#git clone https://github.com/JetBrains/mcp-jetbrains.git jetbrains-mcp > /dev/null 2>&1
-#cd jetbrains-mcp && npm install > /dev/null 2>&1 && cd ..
-
-# Semgrep MCP (code security)
-echo "  └── Skipping Semgrep MCP for now (repository may be private)."
-#git clone https://github.com/semgrep/mcp.git semgrep-mcp > /dev/null 2>&1  
-#cd semgrep-mcp && npm install > /dev/null 2>&1 && cd ..
-
-echo "🚀 Installing DevOps & CI/CD MCPs..."
-
-# CircleCI MCP (auto-fix builds)
-echo "  └── Skipping CircleCI MCP for now (repository may be private)."
-#git clone https://github.com/CircleCI-Public/mcp-server-circleci.git circleci-mcp > /dev/null 2>&1
-#cd circleci-mcp && npm install > /dev/null 2>&1 && cd ..
-
-# Install Buildkite MCP (pipeline management) 
-echo "  └── Skipping Buildkite MCP for now (repository may be private)."
-#git clone https://github.com/buildkite/buildkite-mcp-server.git buildkite-mcp > /dev/null 2>&1
-#cd buildkite-mcp && npm install > /dev/null 2>&1 && cd ..
-
-# Sentry MCP (error tracking)
-echo "  └── Skipping Sentry MCP for now (repository may be private)."
-#git clone https://github.com/getsentry/sentry-mcp.git sentry-mcp > /dev/null 2>&1
-#cd sentry-mcp && npm install > /dev/null 2>&1 && cd ..
-
-echo "🔍 Installing Advanced Testing & Monitoring..."
-
-# Official Playwright MCP (better than npm version)
-echo "  └── Skipping Official Playwright MCP for now (repository may be private)."
-#git clone https://github.com/microsoft/playwright-mcp.git official-playwright > /dev/null 2>&1
-#cd official-playwright && npm install > /dev/null 2>&1 && cd ..
-
-# Logfire MCP (observability)
-echo "  └── Skipping Logfire MCP for now (repository may be private)."
-#git clone https://github.com/pydantic/logfire-mcp.git logfire-mcp > /dev/null 2>&1
-#cd logfire-mcp && npm install > /dev/null 2>&1 && cd ..
-
-echo "🔥 Installing Critical Enterprise MCPs..."
-
-# E2B MCP (secure code execution)
-echo "  └── Skipping E2B MCP for now (repository may be private)."
-#git clone https://github.com/e2b-dev/mcp-server.git e2b-sandbox > /dev/null 2>&1
-#cd e2b-sandbox && npm install > /dev/null 2>&1 && cd ..
-
-# Vectorize MCP (advanced search/RAG)
-echo "  └── Skipping Vectorize MCP for now (repository may be private)."
-#git clone https://github.com/vectorize-io/vectorize-mcp-server.git vectorize-mcp > /dev/null 2>&1
-#cd vectorize-mcp && npm install > /dev/null 2>&1 && cd ..
-
-# ZenML MCP (AI/ML operations) 
-echo "  └── Skipping ZenML MCP for now (repository may be private)."
-#git clone https://github.com/zenml-io/mcp-zenml.git zenml-mcp > /dev/null 2>&1
-#cd zenml-mcp && npm install > /dev/null 2>&1 && cd ..
-
-echo "🎛️  Installing MCP Orchestration & Intelligence..."
-
-# MCP Scheduler (task automation with cron)
-echo "  └── Skipping MCP Scheduler for now (repository may be private)."
-#git clone https://github.com/PhialsBasement/scheduler-mcp.git mcp-scheduler > /dev/null 2>&1
-#cd mcp-scheduler && npm install > /dev/null 2>&1 && cd ..
-
-# MCP Agent (intelligent routing and orchestration)
-echo "  └── Skipping MCP Agent for now (repository may be private)."
-#git clone https://github.com/lastmile-ai/mcp-agent.git mcp-agent > /dev/null 2>&1
-#cd mcp-agent && npm install > /dev/null 2>&1 && cd ..
+# Install Node.js dependencies for each MCP
+echo "📦 Installing MCP dependencies..."
+for mcp_dir in .k83/mcp-servers/*; do
+    if [ -d "$mcp_dir" ] && [ -f "$mcp_dir/package.json" ]; then
+        echo "  Installing dependencies for $(basename $mcp_dir)"
+        (cd "$mcp_dir" && npm install > /dev/null 2>&1)
+    fi
+done
+cd ..
 
 
 # Install Zapier MCP via npm (if available)
 npm install @zapier/mcp-server > /dev/null 2>&1 || echo "  (Zapier MCP not yet available via npm)"
 
-cd ../../
+cd ../..
 
 # Set up GitHub MCP
 echo "🔧 Configuring GitHub integration..."
@@ -239,8 +121,8 @@ class K83MCPServer:
         self.agent_os_cache = self.k83_dir / "cache" / "agent-os"
         
         # Initialize MCP Orchestration Intelligence
-        self.mcp_orchestrator = MCPOrchestrator()
-        self.mcp_scheduler = MCPScheduler()
+        self.mcp_orchestrator = K83MCPServer.MCPOrchestrator()
+        self.mcp_scheduler = K83MCPServer.MCPScheduler()
         
     class MCPOrchestrator:
         """Intelligent MCP server selection and routing"""
@@ -916,7 +798,7 @@ cat > .claude/mcp_config.json << EOF
     },
     "memory-bank": {
       "command": "node",
-      "args": [".k83/mcp-servers/memory-bank/dist/index.js"],
+      "args": [".k83/mcp-servers/servers-main/src/memory-bank/dist/index.js"],
       "description": "Persistent memory across sessions"
     },
     "github-integration": {
@@ -926,12 +808,12 @@ cat > .claude/mcp_config.json << EOF
     },
     "serena-code-analysis": {
       "command": "node",
-      "args": [".k83/mcp-servers/serena-mcp/dist/index.js"],
+      "args": [".k83/mcp-servers/serena-main/dist/index.js"],
       "description": "Advanced code understanding and navigation"
     },
     "desktop-commander": {
       "command": "node",
-      "args": [".k83/mcp-servers/desktop-commander/dist/index.js"],
+      "args": [".k83/mcp-servers/DesktopCommanderMCP-main/dist/index.js"],
       "description": "Desktop automation and file operations"
     },
     "octocode": {
@@ -941,82 +823,82 @@ cat > .claude/mcp_config.json << EOF
     },
     "libsql-database": {
       "command": "node",
-      "args": [".k83/mcp-servers/libsql-mcp/dist/index.js"],
+      "args": [".k83/mcp-servers/mcp-libsql-main/dist/index.js"],
       "description": "Advanced SQLite and Turso database operations"
     },
     "quillopy-docs": {
       "command": "node",
-      "args": [".k83/mcp-servers/quillopy-mcp/dist/index.js"],
+      "args": [".k83/mcp-servers/quillopy-mcp-main/dist/index.js"],
       "description": "Documentation retrieval and integration"
     },
     "playwright-testing": {
       "command": "node",
-      "args": [".k83/mcp-servers/official-playwright/dist/index.js"],
+      "args": [".k83/mcp-servers/playwright-mcp-main/dist/index.js"],
       "description": "Official Microsoft cross-browser testing and automation"
     },
     "deepview-analysis": {
       "command": "node",
-      "args": [".k83/mcp-servers/deepview-mcp/dist/index.js"],
+      "args": [".k83/mcp-servers/deepview-mcp-main/dist/index.js"],
       "description": "Large codebase analysis with 1M context window"
     },
     "official-github": {
       "command": "node",
-      "args": [".k83/mcp-servers/official-github-mcp/dist/index.js"],
+      "args": [".k83/mcp-servers/github-mcp-server-main/dist/index.js"],
       "description": "Official GitHub repository integration"
     },
     "jetbrains-ide": {
       "command": "node",
-      "args": [".k83/mcp-servers/jetbrains-mcp/dist/index.js"],
+      "args": [".k83/mcp-servers/mcp-jetbrains-main/dist/index.js"],
       "description": "JetBrains IDE integration and operations"
     },
     "semgrep-security": {
       "command": "node",
-      "args": [".k83/mcp-servers/semgrep-mcp/dist/index.js"],
+      "args": [".k83/mcp-servers/mcp-main/dist/index.js"],
       "description": "AI-powered code security analysis"
     },
     "circleci-builds": {
       "command": "node",
-      "args": [".k83/mcp-servers/circleci-mcp/dist/index.js"],
+      "args": [".k83/mcp-servers/mcp-server-circleci-main/dist/index.js"],
       "description": "CircleCI build management and auto-fixing"
     },
     "buildkite-pipelines": {
       "command": "node",
-      "args": [".k83/mcp-servers/buildkite-mcp/dist/index.js"],
+      "args": [".k83/mcp-servers/buildkite-mcp-server-main/dist/index.js"],
       "description": "Buildkite pipeline management"
     },
     "sentry-monitoring": {
       "command": "node",
-      "args": [".k83/mcp-servers/sentry-mcp/dist/index.js"],
+      "args": [".k83/mcp-servers/sentry-mcp-main/dist/index.js"],
       "description": "Error tracking and monitoring integration"
     },
     "logfire-observability": {
       "command": "node",
-      "args": [".k83/mcp-servers/logfire-mcp/dist/index.js"],
+      "args": [".k83/mcp-servers/logfire-mcp-main/dist/index.js"],
       "description": "OpenTelemetry traces and metrics access"
     },
     "e2b-sandbox": {
       "command": "node",
-      "args": [".k83/mcp-servers/e2b-sandbox/dist/index.js"],
+      "args": [".k83/mcp-servers/mcp-server-main/dist/index.js"],
       "description": "Secure code execution in isolated sandboxes"
     },
     "vectorize-search": {
       "command": "node",
-      "args": [".k83/mcp-servers/vectorize-mcp/dist/index.js"],
+      "args": [".k83/mcp-servers/vectorize-mcp-server-main/dist/index.js"],
       "description": "Advanced retrieval and private deep research"
     },
     "zenml-mlops": {
       "command": "node",
-      "args": [".k83/mcp-servers/zenml-mcp/dist/index.js"],
+      "args": [".k83/mcp-servers/mcp-zenml-main/dist/index.js"],
       "description": "MLOps and LLMOps pipeline management"
     },
     "mcp-scheduler": {
       "command": "node",
-      "args": [".k83/mcp-servers/mcp-scheduler/dist/index.js"],
+      "args": [".k83/mcp-servers/scheduler-mcp-main/dist/index.js"],
       "description": "Task automation and scheduling with cron expressions"
     },
     "mcp-orchestrator": {
       "command": "node",
-      "args": [".k83/mcp-servers/mcp-agent/dist/index.js"],
+      "args": [".k83/mcp-servers/mcp-agent-main/dist/index.js"],
       "description": "Intelligent MCP routing and multi-agent orchestration"
     }
   }
@@ -1172,37 +1054,37 @@ cat >> .gitignore << 'EOF'
 EOF
 
 echo ""
-echo ""
-echo "🎉 K83 Framework Successfully Installed!"
-echo ""
-echo "📦 What You Just Got:"
-echo "  ✅ AgentOS Integration (latest from buildermethods/agent-os)"  
-echo "  ✅ 25 Premium MCP Servers (GitHub, JetBrains, E2B, Vectorize, etc.)"
-echo "  ✅ Intelligent MCP Orchestration (auto-selects relevant servers)"
-echo "  ✅ Agentic Workflows (/yolo mode with smart MCP routing)"
-echo "  ✅ MCP Scheduling System (automated background tasks)"
-echo "  ✅ Context Optimization (prevents MCP bloat, saves 30-60% tokens)"
-echo "  ✅ Enterprise DevOps Integration (CircleCI, Buildkite, Sentry)"
-echo "  ✅ Advanced Code Analysis (DeepView 1M context, Serena LSP)"
-echo "  ✅ Secure Code Execution (E2B sandboxes for safe testing)"
-echo "  ✅ Complete Testing Suite (Playwright, Security scanning)"
-echo ""
-echo "🎯 Start Coding Immediately:"
-echo "  1. Open Claude Code in this project"
-echo "  2. Try: /yolo \"build a REST API with authentication\""
-echo "  3. Or: /orchestrate \"create full-stack app with testing\""
-echo ""
-echo "🚀 Advanced Features:"
-echo "  • /yolo \"task\" - Autonomous coding with intelligent MCP selection"
-echo "  • /mcp-select \"task\" - Preview which MCPs would be used"
-echo "  • /mcp-schedule \"security-scan daily\" - Automate recurring tasks"
-echo "  • /optimize-context - Reduce token usage by 30-60%"
-echo "  • /deepview - Analyze large codebases with 1M context"
-echo "  • /semgrep-scan - AI-powered security analysis"
-echo "  • /e2b-execute - Safe code execution in isolated sandboxes"
-echo ""
-echo "📚 Documentation: .k83/README.md"
-echo "🔄 Auto-updates with: /agent-os-update"
-echo ""
-echo "💡 You now have the most advanced agentic coding environment available!"
-echo "Happy building! 🎯"
+ echo ""
+ echo "🎉 K83 Framework Successfully Installed!"
+ echo ""
+ echo "📦 What You Just Got:"
+ echo "  ✅ AgentOS Integration (latest from buildermethods/agent-os)"  
+ echo "  ✅ 25 Premium MCP Servers (GitHub, JetBrains, E2B, Vectorize, etc.)"
+ echo "  ✅ Intelligent MCP Orchestration (auto-selects relevant servers)"
+ echo "  ✅ Agentic Workflows (/yolo mode with smart MCP routing)"
+ echo "  ✅ MCP Scheduling System (automated background tasks)"
+ echo "  ✅ Context Optimization (prevents MCP bloat, saves 30-60% tokens)"
+ echo "  ✅ Enterprise DevOps Integration (CircleCI, Buildkite, Sentry)"
+ echo "  ✅ Advanced Code Analysis (DeepView 1M context, Serena LSP)"
+ echo "  ✅ Secure Code Execution (E2B sandboxes for safe testing)"
+ echo "  ✅ Complete Testing Suite (Playwright, Security scanning)"
+ echo ""
+ echo "🎯 Start Coding Immediately:"
+ echo "  1. Open Claude Code in this project"
+ echo "  2. Try: /yolo \"build a REST API with authentication\""
+ echo "  3. Or: /orchestrate \"create full-stack app with testing\""
+ echo ""
+ echo "🚀 Advanced Features:"
+ echo "  • /yolo \"task\" - Autonomous coding with intelligent MCP selection"
+ echo "  • /mcp-select \"task\" - Preview which MCPs would be used"
+ echo "  • /mcp-schedule \"security-scan daily\" - Automate recurring tasks"
+ echo "  • /optimize-context - Reduce token usage by 30-60%"
+ echo "  • /deepview - Analyze large codebases with 1M context"
+ echo "  • /semgrep-scan - AI-powered security analysis"
+ echo "  • /e2b-execute - Safe code execution in isolated sandboxes"
+ echo ""
+ echo "📚 Documentation: .k83/README.md"
+ echo "🔄 Auto-updates with: /agent-os-update"
+ echo ""
+ echo "💡 You now have the most advanced agentic coding environment available!"
+ echo "Happy building! 🎯"
