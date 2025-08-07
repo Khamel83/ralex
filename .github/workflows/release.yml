@@ -1,0 +1,460 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g., v1.0.0)'
+        required: true
+        type: string
+      prerelease:
+        description: 'Mark as prerelease'
+        required: false
+        type: boolean
+        default: false
+
+env:
+  PYTHON_VERSION: '3.11'
+  NODE_VERSION: '18'
+
+jobs:
+  validate:
+    name: Validate Release
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      is_prerelease: ${{ steps.version.outputs.is_prerelease }}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Determine version
+      id: version
+      run: |
+        if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+          VERSION="${{ github.event.inputs.version }}"
+          IS_PRERELEASE="${{ github.event.inputs.prerelease }}"
+        else
+          VERSION="${GITHUB_REF#refs/tags/}"
+          # Check if version contains alpha, beta, rc, or dev
+          if [[ $VERSION =~ (alpha|beta|rc|dev) ]]; then
+            IS_PRERELEASE="true"
+          else
+            IS_PRERELEASE="false"
+          fi
+        fi
+        
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        echo "is_prerelease=$IS_PRERELEASE" >> $GITHUB_OUTPUT
+        
+        echo "Release version: $VERSION"
+        echo "Is prerelease: $IS_PRERELEASE"
+
+    - name: Validate version format
+      run: |
+        if [[ ! "${{ steps.version.outputs.version }}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+(\.[0-9]+)?)?$ ]]; then
+          echo "Invalid version format: ${{ steps.version.outputs.version }}"
+          echo "Expected format: vX.Y.Z or vX.Y.Z-prerelease"
+          exit 1
+        fi
+
+  test:
+    name: Full Test Suite
+    runs-on: ubuntu-latest
+    needs: validate
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+        pip install -r requirements-dev.txt
+
+    - name: Run comprehensive tests
+      run: |
+        python -m pytest tests/ -v --cov=ralex-integration-package --cov-report=xml
+
+    - name: Upload coverage
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage.xml
+        flags: release
+
+  build:
+    name: Build Release Assets
+    runs-on: ${{ matrix.os }}
+    needs: [validate, test]
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+
+    - name: Install dependencies
+      run: |
+        pip install build twine pyinstaller
+        npm ci
+
+    - name: Update version in files
+      shell: bash
+      run: |
+        VERSION=${{ needs.validate.outputs.version }}
+        # Remove 'v' prefix for Python version
+        PYTHON_VERSION=${VERSION#v}
+        
+        # Update version in setup.py or pyproject.toml
+        if [ -f "setup.py" ]; then
+          sed -i.bak "s/version=.*/version=\"$PYTHON_VERSION\",/" setup.py
+        fi
+        
+        if [ -f "pyproject.toml" ]; then
+          sed -i.bak "s/version = .*/version = \"$PYTHON_VERSION\"/" pyproject.toml
+        fi
+        
+        # Update version in __init__.py
+        echo "__version__ = \"$PYTHON_VERSION\"" > ralex-integration-package/__version__.py
+
+    - name: Build Python distribution
+      run: |
+        python -m build
+
+    - name: Build standalone executable (Linux/macOS)
+      if: runner.os != 'Windows'
+      run: |
+        pyinstaller --onefile \
+          --name k83-${{ runner.os }}-${{ needs.validate.outputs.version }} \
+          --add-data "ralex-integration-package:ralex-integration-package" \
+          ralex-integration-package/agent_os_bridge.py
+
+    - name: Build standalone executable (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        pyinstaller --onefile `
+          --name k83-Windows-${{ needs.validate.outputs.version }}.exe `
+          --add-data "ralex-integration-package;ralex-integration-package" `
+          ralex-integration-package/agent_os_bridge.py
+
+    - name: Create installation script
+      shell: bash
+      run: |
+        VERSION=${{ needs.validate.outputs.version }}
+        OS_LOWER=$(echo ${{ runner.os }} | tr '[:upper:]' '[:lower:]')
+        
+        # Create OS-specific installation script
+        mkdir -p release-assets
+        
+        if [ "${{ runner.os }}" == "Windows" ]; then
+          cat > release-assets/install-k83-windows.ps1 << 'EOF'
+        # K83 Framework Installation Script for Windows
+        Write-Host "Installing K83 Framework..." -ForegroundColor Green
+        
+        # Download and install script content here
+        $version = "VERSION_PLACEHOLDER"
+        $downloadUrl = "https://github.com/your-repo/k83/releases/download/$version/k83-Windows-$version.exe"
+        
+        Write-Host "Downloading K83 $version for Windows..."
+        Invoke-WebRequest -Uri $downloadUrl -OutFile "k83.exe"
+        
+        Write-Host "K83 Framework installed successfully!" -ForegroundColor Green
+        EOF
+          sed -i "s/VERSION_PLACEHOLDER/$VERSION/g" release-assets/install-k83-windows.ps1
+        else
+          cat > release-assets/install-k83-${OS_LOWER}.sh << 'EOF'
+        #!/bin/bash
+        # K83 Framework Installation Script
+        
+        set -e
+        
+        echo "Installing K83 Framework..."
+        VERSION="VERSION_PLACEHOLDER"
+        OS="OS_PLACEHOLDER"
+        
+        # Download and install
+        DOWNLOAD_URL="https://github.com/your-repo/k83/releases/download/$VERSION/k83-$OS-$VERSION"
+        
+        echo "Downloading K83 $VERSION for $OS..."
+        curl -sSL "$DOWNLOAD_URL" -o k83
+        chmod +x k83
+        
+        # Move to system path
+        if [ -w "/usr/local/bin" ]; then
+          sudo mv k83 /usr/local/bin/
+        else
+          mkdir -p "$HOME/.local/bin"
+          mv k83 "$HOME/.local/bin/"
+          echo "Added k83 to $HOME/.local/bin/"
+          echo "Make sure $HOME/.local/bin is in your PATH"
+        fi
+        
+        echo "K83 Framework installed successfully!"
+        EOF
+          sed -i.bak "s/VERSION_PLACEHOLDER/$VERSION/g" release-assets/install-k83-${OS_LOWER}.sh
+          sed -i.bak "s/OS_PLACEHOLDER/${{ runner.os }}/g" release-assets/install-k83-${OS_LOWER}.sh
+          chmod +x release-assets/install-k83-${OS_LOWER}.sh
+        fi
+
+    - name: Generate checksums
+      shell: bash
+      run: |
+        cd dist
+        for file in *; do
+          if [ -f "$file" ]; then
+            sha256sum "$file" > "$file.sha256"
+          fi
+        done
+        
+        cd ../release-assets
+        for file in *; do
+          if [ -f "$file" ]; then
+            sha256sum "$file" > "$file.sha256"
+          fi
+        done
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: release-assets-${{ runner.os }}
+        path: |
+          dist/
+          release-assets/
+          spec/
+
+  create-release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    needs: [validate, test, build]
+    permissions:
+      contents: write
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Download all artifacts
+      uses: actions/download-artifact@v3
+      with:
+        path: release-artifacts
+
+    - name: Prepare release assets
+      run: |
+        mkdir -p release-final
+        
+        # Collect all release assets
+        find release-artifacts -type f -name "*.tar.gz" -o -name "*.whl" -o -name "k83-*" -o -name "*.sh" -o -name "*.ps1" | \
+          xargs -I {} cp {} release-final/
+        
+        # Collect checksums
+        find release-artifacts -type f -name "*.sha256" | \
+          xargs -I {} cp {} release-final/
+
+    - name: Generate release notes
+      id: release-notes
+      run: |
+        VERSION=${{ needs.validate.outputs.version }}
+        
+        # Generate changelog for this version
+        echo "## 🚀 K83 Framework $VERSION" > release-notes.md
+        echo "" >> release-notes.md
+        
+        # Get commits since last tag
+        LAST_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+        if [ -n "$LAST_TAG" ]; then
+          echo "### Changes since $LAST_TAG:" >> release-notes.md
+          git log --pretty=format:"- %s (%h)" $LAST_TAG..HEAD >> release-notes.md
+        else
+          echo "### Initial release" >> release-notes.md
+          echo "- Complete K83 Framework implementation" >> release-notes.md
+          echo "- AgentOS integration with slash commands" >> release-notes.md
+          echo "- Context-aware state management" >> release-notes.md
+          echo "- 25 specialized MCP servers" >> release-notes.md
+        fi
+        
+        echo "" >> release-notes.md
+        echo "### Installation" >> release-notes.md
+        echo "" >> release-notes.md
+        echo "**Quick install (recommended):**" >> release-notes.md
+        echo "\`\`\`bash" >> release-notes.md
+        echo "curl -sSL https://raw.githubusercontent.com/your-repo/k83/main/install-k83.sh | bash" >> release-notes.md
+        echo "\`\`\`" >> release-notes.md
+        echo "" >> release-notes.md
+        echo "**Platform-specific installers:**" >> release-notes.md
+        echo "- Linux: [install-k83-linux.sh](https://github.com/your-repo/k83/releases/download/$VERSION/install-k83-linux.sh)" >> release-notes.md
+        echo "- macOS: [install-k83-macos.sh](https://github.com/your-repo/k83/releases/download/$VERSION/install-k83-macos.sh)" >> release-notes.md
+        echo "- Windows: [install-k83-windows.ps1](https://github.com/your-repo/k83/releases/download/$VERSION/install-k83-windows.ps1)" >> release-notes.md
+        echo "" >> release-notes.md
+        echo "### What's Included" >> release-notes.md
+        echo "- ✅ Complete K83 Framework with AgentOS integration" >> release-notes.md
+        echo "- ✅ 25+ MCP servers for specialized functionality" >> release-notes.md
+        echo "- ✅ Context-aware state management across tools" >> release-notes.md
+        echo "- ✅ Slash command interface for Claude Code" >> release-notes.md
+        echo "- ✅ Cross-platform compatibility" >> release-notes.md
+        
+        # Set output for use in release creation
+        echo "notes<<EOF" >> $GITHUB_OUTPUT
+        cat release-notes.md >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: ${{ needs.validate.outputs.version }}
+        name: K83 Framework ${{ needs.validate.outputs.version }}
+        body: ${{ steps.release-notes.outputs.notes }}
+        prerelease: ${{ needs.validate.outputs.is_prerelease == 'true' }}
+        files: release-final/*
+        generate_release_notes: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  publish-pypi:
+    name: Publish to PyPI
+    runs-on: ubuntu-latest
+    needs: [validate, test, build, create-release]
+    if: needs.validate.outputs.is_prerelease == 'false'
+    environment: pypi
+
+    steps:
+    - name: Download artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: release-assets-Linux
+        path: dist
+
+    - name: Publish to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        user: __token__
+        password: ${{ secrets.PYPI_API_TOKEN }}
+        packages_dir: dist/dist/
+
+  update-installation-script:
+    name: Update Installation Script
+    runs-on: ubuntu-latest
+    needs: [validate, create-release]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Update install script version
+      run: |
+        VERSION=${{ needs.validate.outputs.version }}
+        
+        # Update the main installation script with the new version
+        sed -i "s/K83_VERSION=.*/K83_VERSION=\"$VERSION\"/" install-k83.sh
+        
+        # Update README badges if needed
+        sed -i "s/version-[0-9]\+\.[0-9]\+\.[0-9]\+-blue/version-${VERSION#v}-blue/" README.md
+
+    - name: Commit version updates
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add install-k83.sh README.md
+        git commit -m "chore: update installation script to ${{ needs.validate.outputs.version }}" || exit 0
+        git push
+
+  notify:
+    name: Notify Release
+    runs-on: ubuntu-latest
+    needs: [validate, create-release, publish-pypi]
+    if: always() && needs.create-release.result == 'success'
+
+    steps:
+    - name: Notify Discord (if configured)
+      if: secrets.DISCORD_WEBHOOK_URL != ''
+      run: |
+        curl -X POST "${{ secrets.DISCORD_WEBHOOK_URL }}" \
+          -H "Content-Type: application/json" \
+          -d '{
+            "embeds": [{
+              "title": "🚀 K83 Framework Release",
+              "description": "Version ${{ needs.validate.outputs.version }} has been released!",
+              "color": 5814783,
+              "fields": [
+                {
+                  "name": "Version",
+                  "value": "${{ needs.validate.outputs.version }}",
+                  "inline": true
+                },
+                {
+                  "name": "Type",
+                  "value": "${{ needs.validate.outputs.is_prerelease == 'true' && 'Pre-release' || 'Stable Release' }}",
+                  "inline": true
+                }
+              ],
+              "footer": {
+                "text": "Install with: curl -sSL https://raw.githubusercontent.com/your-repo/k83/main/install-k83.sh | bash"
+              }
+            }]
+          }'
+
+    - name: Create announcement issue
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const version = "${{ needs.validate.outputs.version }}";
+          const isPrerelease = "${{ needs.validate.outputs.is_prerelease }}" === "true";
+          
+          const title = `📢 K83 Framework ${version} Released`;
+          const body = `# 🚀 K83 Framework ${version} ${isPrerelease ? 'Pre-release' : 'Released'}!
+          
+          We're excited to announce the ${isPrerelease ? 'pre-release' : 'release'} of K83 Framework ${version}!
+          
+          ## 🛠 Installation
+          
+          \`\`\`bash
+          curl -sSL https://raw.githubusercontent.com/your-repo/k83/main/install-k83.sh | bash
+          \`\`\`
+          
+          ## 📖 What's New
+          
+          Check out the [release notes](https://github.com/your-repo/k83/releases/tag/${version}) for detailed information about new features, improvements, and bug fixes.
+          
+          ## 🤝 Feedback
+          
+          We'd love to hear your feedback! Please:
+          - Try out the new features
+          - Report any issues you encounter
+          - Share your success stories
+          
+          Happy coding with K83! 🎉`;
+          
+          github.rest.issues.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title: title,
+            body: body,
+            labels: ['announcement', 'release']
+          });

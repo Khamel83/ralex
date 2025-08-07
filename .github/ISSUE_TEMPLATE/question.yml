@@ -1,0 +1,108 @@
+name: ❓ Question
+description: Ask a question about using K83 Framework
+title: "[Question]: "
+labels: ["question", "triage"]
+projects: ["k83-framework/1"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Have a question about K83? We're here to help! 
+        
+        Before asking, please check:
+        - [Documentation](https://github.com/your-repo/k83/tree/main/docs)
+        - [FAQ](https://github.com/your-repo/k83/blob/main/docs/faq.md)
+        - [Existing Discussions](https://github.com/your-repo/k83/discussions)
+
+  - type: textarea
+    id: question
+    attributes:
+      label: Your Question
+      description: What would you like to know?
+      placeholder: "How do I..."
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      description: What category does your question relate to?
+      options:
+        - Installation & Setup
+        - Slash Commands
+        - AgentOS Integration
+        - Context Management
+        - MCP Servers
+        - Git Integration
+        - Troubleshooting
+        - Best Practices
+        - Performance
+        - Security
+        - Contributing
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: |
+        Provide any relevant context:
+        - What are you trying to accomplish?
+        - What have you already tried?
+        - Any relevant code or configuration?
+      placeholder: "I'm trying to... I've already tried..."
+    validations:
+      required: false
+
+  - type: dropdown
+    id: experience-level
+    attributes:
+      label: Experience Level
+      description: How would you describe your experience with K83?
+      options:
+        - New to K83
+        - Some experience with K83
+        - Experienced with K83
+        - Expert level
+    validations:
+      required: false
+
+  - type: textarea
+    id: environment-details
+    attributes:
+      label: Environment Details
+      description: |
+        If relevant to your question, provide:
+        - K83 version
+        - Operating system
+        - Python version
+        - Other relevant tools/versions
+      placeholder: |
+        K83 version: 1.0.0
+        OS: macOS 12.6
+        Python: 3.11
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: searched
+    attributes:
+      label: Research Done
+      description: Have you checked these resources?
+      options:
+        - label: I've searched the existing documentation
+        - label: I've looked through existing issues
+        - label: I've checked the FAQ
+        - label: I've searched GitHub Discussions
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our [Code of Conduct](https://github.com/your-repo/k83/blob/main/CODE_OF_CONDUCT.md)
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true

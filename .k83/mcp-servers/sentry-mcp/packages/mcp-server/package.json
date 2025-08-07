@@ -1,0 +1,127 @@
+{
+  "name": "@sentry/mcp-server",
+  "version": "0.17.1",
+  "type": "module",
+  "packageManager": "pnpm@10.8.1",
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "license": "FSL-1.1-ALv2",
+  "author": "Sentry",
+  "description": "Sentry MCP Server",
+  "homepage": "https://github.com/getsentry/sentry-mcp",
+  "keywords": ["sentry"],
+  "bugs": {
+    "url": "https://github.com/getsentry/sentry-mcp/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:getsentry/sentry-mcp.git"
+  },
+  "bin": {
+    "sentry-mcp": "./dist/index.js"
+  },
+  "files": ["./dist/*"],
+  "exports": {
+    ".": {
+      "types": "./dist/index.ts",
+      "default": "./dist/index.js"
+    },
+    "./api-client": {
+      "types": "./dist/api-client/index.ts",
+      "default": "./dist/api-client/index.js"
+    },
+    "./constants": {
+      "types": "./dist/constants.ts",
+      "default": "./dist/constants.js"
+    },
+    "./logging": {
+      "types": "./dist/logging.ts",
+      "default": "./dist/logging.js"
+    },
+    "./transports/stdio": {
+      "types": "./dist/transports/stdio.ts",
+      "default": "./dist/transports/stdio.js"
+    },
+    "./server": {
+      "types": "./dist/server.ts",
+      "default": "./dist/server.js"
+    },
+    "./promptDefinitions": {
+      "types": "./dist/promptDefinitions.ts",
+      "default": "./dist/promptDefinitions.js"
+    },
+    "./prompts": {
+      "types": "./dist/prompts.ts",
+      "default": "./dist/prompts.js"
+    },
+    "./resources": {
+      "types": "./dist/resources.ts",
+      "default": "./dist/resources.js"
+    },
+    "./toolDefinitions": {
+      "types": "./dist/toolDefinitions.ts",
+      "default": "./dist/toolDefinitions.js"
+    },
+    "./types": {
+      "types": "./dist/types.ts",
+      "default": "./dist/types.js"
+    },
+    "./version": {
+      "types": "./dist/version.ts",
+      "default": "./dist/version.js"
+    },
+    "./tools/search-events": {
+      "types": "./dist/tools/search-events/index.ts",
+      "default": "./dist/tools/search-events/index.js"
+    },
+    "./tools/search-issues": {
+      "types": "./dist/tools/search-issues/index.ts",
+      "default": "./dist/tools/search-issues/index.js"
+    },
+    "./tools/search-events/agent": {
+      "types": "./dist/tools/search-events/agent.ts",
+      "default": "./dist/tools/search-events/agent.js"
+    },
+    "./tools/search-issues/agent": {
+      "types": "./dist/tools/search-issues/agent.ts",
+      "default": "./dist/tools/search-issues/agent.js"
+    },
+    "./internal/agents/callEmbeddedAgent": {
+      "types": "./dist/internal/agents/callEmbeddedAgent.ts",
+      "default": "./dist/internal/agents/callEmbeddedAgent.js"
+    }
+  },
+  "scripts": {
+    "prebuild": "pnpm run generate-tool-definitions",
+    "build": "tsdown",
+    "dev": "pnpm run generate-tool-definitions && tsdown -w",
+    "start": "tsx src/index.ts",
+    "prepare": "pnpm run build",
+    "pretest": "pnpm run generate-tool-definitions",
+    "test": "vitest run",
+    "test:ci": "pnpm run generate-tool-definitions && vitest run --coverage --reporter=junit --outputFile=tests.junit.xml",
+    "test:watch": "pnpm run generate-tool-definitions && vitest",
+    "tsc": "tsc --noEmit",
+    "generate-tool-definitions": "tsx scripts/generate-tool-definitions.ts",
+    "generate-otel-namespaces": "tsx scripts/generate-otel-namespaces.ts"
+  },
+  "devDependencies": {
+    "@sentry/mcp-server-mocks": "workspace:*",
+    "@sentry/mcp-server-tsconfig": "workspace:*",
+    "msw": "catalog:",
+    "yaml": "^2.6.1",
+    "zod-to-json-schema": "catalog:"
+  },
+  "dependencies": {
+    "@ai-sdk/openai": "catalog:",
+    "@modelcontextprotocol/sdk": "catalog:",
+    "@sentry/core": "catalog:",
+    "@sentry/node": "catalog:",
+    "ai": "catalog:",
+    "zod": "catalog:"
+  }
+}

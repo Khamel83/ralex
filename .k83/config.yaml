@@ -1,0 +1,58 @@
+# K83 Framework Configuration
+project:
+  type: "nodejs"
+  root: "/Users/hr-svp-mac12/Library/Mobile Documents/com~apple~CloudDocs/ralex"
+  
+agent_os:
+  enabled: true
+  cache_path: ".k83/cache/agent-os"
+  auto_sync: true
+  
+agentic_workflows:
+  yolo_mode:
+    max_iterations: 10
+    auto_fix: true
+    success_criteria: "tests_pass"
+  
+  orchestration:
+    use_agent_os_methodology: true
+    save_progress: true
+    
+mcp_servers:
+  core_framework:
+    - k83-framework          # AgentOS orchestration
+    - filesystem            # File operations
+    - sequential-thinking   # Step-by-step execution
+    - memory-bank          # Persistent memory
+  
+  enterprise_development:
+    - official-github      # Official GitHub integration
+    - jetbrains-ide        # IDE integration
+    - deepview-analysis    # Large codebase analysis (1M context)
+    - serena-code-analysis # Language server integration
+    - semgrep-security     # AI-powered security
+  
+  devops_automation:
+    - circleci-builds      # Auto-fix build failures
+    - buildkite-pipelines  # Pipeline management  
+    - sentry-monitoring    # Error tracking
+    - logfire-observability # OpenTelemetry
+  
+  development_tools:
+    - desktop-commander    # Desktop automation
+    - octocode            # Cross-repo insights
+    - quillopy-docs       # Documentation access
+    - libsql-database     # Advanced SQLite/Turso
+    - playwright-testing  # Cross-browser testing
+
+memory:
+  persistent: true
+  auto_save_sessions: true
+  context_preservation: true
+
+models:
+  rotation:
+    - "claude-3-5-sonnet"
+    - "qwen/qwen3-coder" 
+    - "deepseek/deepseek-chat-v3"
+    - "google/gemini-2.5-flash"

@@ -1,0 +1,38 @@
+# ccr Configuration for k83-Ralex Integration
+
+# This file defines custom commands available in the ccr environment.
+# It integrates the Agent OS framework and the k83 save/resume workflow.
+
+# The `template` command is a special CCR command that reads a file and 
+# prepends its content to the user's next prompt.
+
+commands:
+  # --- k83 Core Commands ---
+  - name: flash
+    description: "Saves the current session context, commits, and pushes to Git."
+    command: "python3 /Users/hr-svp-mac12/Library/Mobile\ Documents/com~apple~CloudDocs/ralex/ralex-integration-package/agent_os_bridge.py save"
+
+  - name: bang
+    description: "An alias for /review. Reviews the current context."
+    command: "/review"
+
+  # --- Agent OS Framework Commands ---
+  - name: plan-product
+    description: "(Agent OS) Plan a new product from an initial idea."
+    template: "~/.agent-os/instructions/plan-product.md"
+
+  - name: create-spec
+    description: "(Agent OS) Create a detailed technical spec for a new feature."
+    template: "~/.agent-os/instructions/create-spec.md"
+
+  - name: execute-tasks
+    description: "(Agent OS) Work through a list of tasks from a spec."
+    template: "~/.agent-os/instructions/execute-tasks.md"
+
+  - name: execute-task
+    description: "(Agent OS) Execute a single, specific task."
+    template: "~/.agent-os/instructions/execute-task.md"
+
+  - name: analyze-product
+    description: "(Agent OS) Analyze an existing codebase to create documentation."
+    template: "~/.agent-os/instructions/analyze-product.md"

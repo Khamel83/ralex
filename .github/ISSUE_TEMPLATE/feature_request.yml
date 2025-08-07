@@ -1,0 +1,167 @@
+name: ✨ Feature Request
+description: Suggest an idea for K83 Framework
+title: "[Feature]: "
+labels: ["enhancement", "triage"]
+projects: ["k83-framework/1"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a new feature! Your ideas help make K83 better for everyone.
+
+  - type: input
+    id: contact
+    attributes:
+      label: Contact Details
+      description: How can we get in touch with you if we need more info?
+      placeholder: ex. email@example.com
+    validations:
+      required: false
+
+  - type: textarea
+    id: problem-statement
+    attributes:
+      label: Problem Statement
+      description: What problem does this feature solve? What pain point are you experiencing?
+      placeholder: "I'm always frustrated when..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed-solution
+    attributes:
+      label: Proposed Solution
+      description: Describe the solution you'd like. Be as detailed as possible.
+      placeholder: "I would like to see..."
+    validations:
+      required: true
+
+  - type: dropdown
+    id: feature-category
+    attributes:
+      label: Feature Category
+      description: What category does this feature belong to?
+      options:
+        - Slash Commands
+        - AgentOS Integration
+        - Context Management
+        - MCP Servers
+        - State Management
+        - Documentation
+        - Testing
+        - Performance
+        - Security
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority Level
+      description: How important is this feature to you?
+      options:
+        - Critical (Blocking current work)
+        - High (Would significantly improve workflow)
+        - Medium (Nice to have)
+        - Low (Minor improvement)
+    validations:
+      required: true
+
+  - type: textarea
+    id: use-cases
+    attributes:
+      label: Use Cases
+      description: Describe specific scenarios where this feature would be useful.
+      placeholder: |
+        1. When working on...
+        2. During...
+        3. While trying to...
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternative-solutions
+    attributes:
+      label: Alternative Solutions
+      description: Have you considered any alternative solutions or workarounds?
+      placeholder: "Alternatives I've considered..."
+    validations:
+      required: false
+
+  - type: textarea
+    id: examples
+    attributes:
+      label: Examples
+      description: |
+        Provide examples of how this feature would work. Include:
+        - Command syntax (for slash commands)
+        - API calls (for programmatic features)  
+        - UI mockups (for interface features)
+        - Configuration examples
+      placeholder: |
+        Example usage:
+        ```bash
+        /new-command "example usage"
+        ```
+      render: markdown
+    validations:
+      required: false
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance Criteria
+      description: What would need to be true for this feature to be considered complete?
+      placeholder: |
+        - [ ] Feature works as described
+        - [ ] Documentation is updated
+        - [ ] Tests are added
+        - [ ] No breaking changes
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: integration-points
+    attributes:
+      label: Integration Points
+      description: Which K83 components would this feature need to integrate with?
+      options:
+        - label: AgentOS Bridge
+        - label: State Manager
+        - label: Context Analyzer
+        - label: Methodology Engine
+        - label: MCP Servers
+        - label: Slash Commands
+        - label: Claude Code Integration
+        - label: Git Operations
+        - label: File System Operations
+
+  - type: textarea
+    id: technical-considerations
+    attributes:
+      label: Technical Considerations
+      description: Any technical aspects we should consider? (Performance, security, compatibility, etc.)
+      placeholder: "Technical considerations..."
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: |
+        Add any other context, screenshots, or examples about the feature request here.
+        
+        Tip: You can attach images by clicking this area to highlight it and then dragging files in.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our [Code of Conduct](https://github.com/your-repo/k83/blob/main/CODE_OF_CONDUCT.md)
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true

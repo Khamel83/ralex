@@ -1,0 +1,20 @@
+{
+  "name": "mcp-servers",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@composio/mcp": "^1.0.7",
+    "@modelcontextprotocol/server-filesystem": "^2025.7.29",
+    "@modelcontextprotocol/server-sequential-thinking": "^2025.7.1",
+    "octocode-mcp": "^4.0.6",
+    "playwright": "^1.54.2",
+    "puppeteer": "^24.16.0"
+  },
+  "description": ""
+}

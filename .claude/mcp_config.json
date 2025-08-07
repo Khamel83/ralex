@@ -1,0 +1,124 @@
+{
+  "mcpServers": {
+    "k83-framework": {
+      "command": "python3",
+      "args": [".k83/k83-mcp-server.py"],
+      "description": "K83 Framework - AgentOS + Agentic Coding + MCP Integration"
+    },
+    "filesystem": {
+      "command": "node",
+      "args": [".k83/mcp-servers/node_modules/@modelcontextprotocol/server-filesystem/dist/index.js"],
+      "description": "File system operations"
+    },
+    "sequential-thinking": {
+      "command": "node", 
+      "args": [".k83/mcp-servers/node_modules/@modelcontextprotocol/server-sequential-thinking/dist/index.js"],
+      "description": "Step-by-step problem solving"
+    },
+    "memory-bank": {
+      "command": "node",
+      "args": [".k83/mcp-servers/memory-bank/dist/index.js"],
+      "description": "Persistent memory across sessions"
+    },
+    "github-integration": {
+      "command": "npx",
+      "args": ["@composio/mcp", "github"],
+      "description": "GitHub operations and workflows"
+    },
+    "serena-code-analysis": {
+      "command": "node",
+      "args": [".k83/mcp-servers/serena-mcp/dist/index.js"],
+      "description": "Advanced code understanding and navigation"
+    },
+    "desktop-commander": {
+      "command": "node",
+      "args": [".k83/mcp-servers/desktop-commander/dist/index.js"],
+      "description": "Desktop automation and file operations"
+    },
+    "octocode": {
+      "command": "npx",
+      "args": ["octocode-mcp"],
+      "description": "GitHub and NPM repository insights"
+    },
+    "libsql-database": {
+      "command": "node",
+      "args": [".k83/mcp-servers/libsql-mcp/dist/index.js"],
+      "description": "Advanced SQLite and Turso database operations"
+    },
+    "quillopy-docs": {
+      "command": "node",
+      "args": [".k83/mcp-servers/quillopy-mcp/dist/index.js"],
+      "description": "Documentation retrieval and integration"
+    },
+    "playwright-testing": {
+      "command": "node",
+      "args": [".k83/mcp-servers/official-playwright/dist/index.js"],
+      "description": "Official Microsoft cross-browser testing and automation"
+    },
+    "deepview-analysis": {
+      "command": "node",
+      "args": [".k83/mcp-servers/deepview-mcp/dist/index.js"],
+      "description": "Large codebase analysis with 1M context window"
+    },
+    "official-github": {
+      "command": "node",
+      "args": [".k83/mcp-servers/official-github-mcp/dist/index.js"],
+      "description": "Official GitHub repository integration"
+    },
+    "jetbrains-ide": {
+      "command": "node",
+      "args": [".k83/mcp-servers/jetbrains-mcp/dist/index.js"],
+      "description": "JetBrains IDE integration and operations"
+    },
+    "semgrep-security": {
+      "command": "node",
+      "args": [".k83/mcp-servers/semgrep-mcp/dist/index.js"],
+      "description": "AI-powered code security analysis"
+    },
+    "circleci-builds": {
+      "command": "node",
+      "args": [".k83/mcp-servers/circleci-mcp/dist/index.js"],
+      "description": "CircleCI build management and auto-fixing"
+    },
+    "buildkite-pipelines": {
+      "command": "node",
+      "args": [".k83/mcp-servers/buildkite-mcp/dist/index.js"],
+      "description": "Buildkite pipeline management"
+    },
+    "sentry-monitoring": {
+      "command": "node",
+      "args": [".k83/mcp-servers/sentry-mcp/dist/index.js"],
+      "description": "Error tracking and monitoring integration"
+    },
+    "logfire-observability": {
+      "command": "node",
+      "args": [".k83/mcp-servers/logfire-mcp/dist/index.js"],
+      "description": "OpenTelemetry traces and metrics access"
+    },
+    "e2b-sandbox": {
+      "command": "node",
+      "args": [".k83/mcp-servers/e2b-sandbox/dist/index.js"],
+      "description": "Secure code execution in isolated sandboxes"
+    },
+    "vectorize-search": {
+      "command": "node",
+      "args": [".k83/mcp-servers/vectorize-mcp/dist/index.js"],
+      "description": "Advanced retrieval and private deep research"
+    },
+    "zenml-mlops": {
+      "command": "node",
+      "args": [".k83/mcp-servers/zenml-mcp/dist/index.js"],
+      "description": "MLOps and LLMOps pipeline management"
+    },
+    "mcp-scheduler": {
+      "command": "node",
+      "args": [".k83/mcp-servers/mcp-scheduler/dist/index.js"],
+      "description": "Task automation and scheduling with cron expressions"
+    },
+    "mcp-orchestrator": {
+      "command": "node",
+      "args": [".k83/mcp-servers/mcp-agent/dist/index.js"],
+      "description": "Intelligent MCP routing and multi-agent orchestration"
+    }
+  }
+}

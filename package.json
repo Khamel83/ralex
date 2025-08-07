@@ -1,0 +1,23 @@
+{
+  "name": "ralex",
+  "version": "1.0.0",
+  "description": "[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE) [![Documentation Status](https://img.shields.io/badge/docs-complete-brightgreen.svg)](./docs/) [![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)]() [![AgentOS Compatible](https://img.shields.io/badge/AgentOS-compatible-purple.svg)](https://buildermethods.com/agent-os)",
+  "main": "claude_code_response.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@composio/mcp": "^1.0.7",
+    "@modelcontextprotocol/server-filesystem": "^2025.7.29",
+    "@modelcontextprotocol/server-sequential-thinking": "^2025.7.1",
+    "octocode-mcp": "^4.0.6",
+    "playwright": "^1.54.2",
+    "puppeteer": "^24.16.0"
+  }
+}

@@ -1,0 +1,75 @@
+#!/usr/bin/expect -f
+
+# Name: ralex-wrapper.exp
+# Purpose: A simplified, direct expect wrapper for claude-code.
+# This version directly spawns claude and handles interaction,
+# focusing on seamless pass-through and robust error detection.
+
+# --- Configuration ---
+set claude_command "claude"
+set fallback_command "ralex-force-openrouter.sh"
+
+# --- Initialization ---
+set timeout -1
+set last_prompt ""
+
+# --- Terminal Setup ---
+# Set terminal to raw mode for character-by-character input, no echo.
+stty raw -echo
+
+# --- Execution ---
+# Directly spawn the claude command.
+eval spawn $claude_command $argv
+
+# --- Interaction Loop ---
+# This block handles all interaction with the spawned process.
+interact {
+    # This catches all output from the spawned process and sends it to stdout.
+    # It also catches all input from stdin and sends it to the spawned process.
+    # This creates a transparent pass-through for the interactive session.
+    # We add a specific pattern for the usage limit.
+    -re "usage limit reached" {
+        # Restore terminal settings before we exit or print messages.
+        stty -raw echo
+        if {$last_prompt ne ""} {
+            send_user "\n\n>>> Claude rate limit reached. Falling back to OpenRouter...\n"
+            send_user ">>> Executing: $fallback_command \"$last_prompt\"\n\n"
+            # Execute the fallback and exit.
+            exec $fallback_command "$last_prompt"
+            exit 0
+        } else {
+            send_user "\n\n>>> Claude rate limit reached, but no previous prompt was captured.\n"
+            exit 1
+        }
+    }
+
+    # This is the default action: pass through all other characters.
+    # This ensures that typing is visible and responsive.
+    -o -re .
+    {
+        # Capture the character typed by the user.
+        set char $interact_out(0,string)
+        # Send it to the spawned process.
+        send -- $char
+        # Append it to the last_prompt buffer (for fallback).
+        append last_prompt $char
+    }
+
+    # When the user hits Enter, clear the last_prompt buffer.
+    -re "\r" {
+        send -- "\r"
+        set last_prompt ""
+    }
+
+    # When the spawned process ends (e.g., user types /exit).
+    eof {
+        # Restore terminal settings before exiting.
+        stty -raw echo
+        send_user "\n>>> claude-code session finished.\n"
+        exit 0
+    }
+}
+
+# --- Cleanup ---
+# Ensure terminal settings are restored even if script exits unexpectedly.
+stty -raw echo

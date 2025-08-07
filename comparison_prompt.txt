@@ -1,0 +1,57 @@
+You are a senior software engineer evaluating AI model responses to a complex JavaScript refactoring task. 
+
+**TASK:** Compare these 5 AI model responses and rate each on a scale of 0-100, with Claude Code (Sonnet 4) being the baseline at 100.
+
+**EVALUATION CRITERIA:**
+1. **Modern ES6+ Usage (20 points)** - Arrow functions, destructuring, const/let, template literals, etc.
+2. **Error Handling & Validation (20 points)** - Input validation, edge cases, meaningful error messages
+3. **Code Quality & Best Practices (20 points)** - Clean code, performance, maintainability, immutability
+4. **Documentation Quality (15 points)** - JSDoc completeness, clarity, examples, type annotations
+5. **Production Readiness (15 points)** - Edge case handling, defensive programming, robustness
+6. **Performance Considerations (10 points)** - Efficient algorithms, memory usage, scalability
+
+**ORIGINAL TASK:** Refactor legacy JavaScript code to use modern ES6+ features, add proper error handling, make it more performant, and add comprehensive JSDoc comments.
+
+**MODELS TO COMPARE:**
+
+**1. CLAUDE CODE (SONNET 4) - BASELINE = 100**
+[Insert contents of claude_code_response.js]
+
+**2. GOOGLE GEMINI 2.0 FLASH ($0.25/1M tokens)**
+[Insert contents of gemini_flash_response.txt]
+
+**3. DEEPSEEK CHAT V3 (FREE)**
+[Insert contents of deepseek_v3_response.txt]
+
+**4. QWEN3 CODER (FREE)**
+[Insert contents of qwen_coder_response.txt]
+
+**5. QWEN3 14B (FREE)**
+[Insert contents of qwen_14b_response.txt]
+
+**OUTPUT FORMAT:**
+For each model, provide:
+```
+MODEL NAME: [Score/100]
+- Modern ES6+ Usage: X/20 - [brief reasoning]
+- Error Handling: X/20 - [brief reasoning]  
+- Code Quality: X/20 - [brief reasoning]
+- Documentation: X/15 - [brief reasoning]
+- Production Ready: X/15 - [brief reasoning]
+- Performance: X/10 - [brief reasoning]
+TOTAL: X/100
+KEY STRENGTHS: [2-3 bullet points]
+KEY WEAKNESSES: [2-3 bullet points]
+```
+
+**FINAL RANKING:**
+1. Model Name (Score/100)
+2. Model Name (Score/100)
+3. Model Name (Score/100)
+4. Model Name (Score/100)
+5. Model Name (Score/100)
+
+**ANALYSIS:**
+- Which free models perform surprisingly well?
+- How does the paid Gemini model compare to free alternatives?
+- Which model would you recommend for different use cases?

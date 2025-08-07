@@ -1,0 +1,13 @@
+dist/
+.envrc*
+.zed
+.vscode
+vendor/
+*.zip
+.bk.yaml
+/buildkite-mcp-server
+coverage.out
+/specs
+
+# debugger binaries
+__debug_bin*

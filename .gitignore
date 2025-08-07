@@ -1,0 +1,36 @@
+# Environment files - Contains sensitive API keys
+.env
+.env.local
+.env.*.local
+
+# Context files - May contain sensitive conversation data  
+.claude-context.md
+
+# System files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Node modules
+node_modules/
+npm-debug.log*
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+*.tmp
+*.temp
+# K83 Framework
+.k83/cache/
+.k83/logs/
+.k83/mcp-servers/node_modules/
+.ralex_state
