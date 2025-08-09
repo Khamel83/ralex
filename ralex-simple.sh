@@ -14,11 +14,9 @@ if [ -z "$OPENROUTER_API_KEY" ]; then
     exit 1
 fi
 
-echo "🤖 Ralex - Always-Working Claude"
-echo "Trying Claude first..."
+CLAUDE_OUTPUT=$(claude "$@" 2>&1)
 
-# Try Claude first
-if claude "$@" 2>&1 | grep -q "usage limit"; then
+if echo "$CLAUDE_OUTPUT" | grep -q "usage limit"; then
     echo "⚠️ Claude limit reached, switching to OpenRouter..."
     
     # Simple OpenRouter API call
@@ -42,5 +40,5 @@ if claude "$@" 2>&1 | grep -q "usage limit"; then
             ]
         }" | jq -r '.choices[0].message.content'
 else
-    echo "✅ Claude worked normally"
+    echo "$CLAUDE_OUTPUT"
 fi
