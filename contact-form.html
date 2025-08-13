@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Form with Validation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .form-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        textarea {
+            height: 120px;
+            resize: vertical;
+        }
+        .error {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+        .valid {
+            border-color: #27ae60;
+        }
+        .invalid {
+            border-color: #e74c3c;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .success-message {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h1>Contact Us</h1>
+        <div class="success-message" id="successMessage">
+            Thank you! Your message has been sent successfully.
+        </div>
+        <form id="contactForm" novalidate>
+            <div class="form-group">
+                <label for="name">Full Name *</label>
+                <input type="text" id="name" name="name" required>
+                <div class="error" id="nameError">Please enter your full name</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email Address *</label>
+                <input type="email" id="email" name="email" required>
+                <div class="error" id="emailError">Please enter a valid email address</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="phone">Phone Number</label>
+                <input type="tel" id="phone" name="phone">
+                <div class="error" id="phoneError">Please enter a valid phone number</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="subject">Subject *</label>
+                <select id="subject" name="subject" required>
+                    <option value="">Please select a subject</option>
+                    <option value="general">General Inquiry</option>
+                    <option value="support">Support</option>
+                    <option value="billing">Billing</option>
+                    <option value="feedback">Feedback</option>
+                </select>
+                <div class="error" id="subjectError">Please select a subject</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="message">Message *</label>
+                <textarea id="message" name="message" placeholder="Enter your message here..." required></textarea>
+                <div class="error" id="messageError">Please enter your message (minimum 10 characters)</div>
+            </div>
+            
+            <button type="submit">Send Message</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            let isValid = true;
+            
+            // Name validation
+            const name = document.getElementById('name');
+            const nameError = document.getElementById('nameError');
+            if (name.value.trim() === '') {
+                showError(name, nameError);
+                isValid = false;
+            } else {
+                showSuccess(name);
+                hideError(nameError);
+            }
+            
+            // Email validation
+            const email = document.getElementById('email');
+            const emailError = document.getElementById('emailError');
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email.value)) {
+                showError(email, emailError);
+                isValid = false;
+            } else {
+                showSuccess(email);
+                hideError(emailError);
+            }
+            
+            // Phone validation (optional)
+            const phone = document.getElementById('phone');
+            const phoneError = document.getElementById('phoneError');
+            const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
+            if (phone.value && !phoneRegex.test(phone.value.replace(/[\s\-\(\)]/g, ''))) {
+                showError(phone, phoneError);
+                isValid = false;
+            } else {
+                showSuccess(phone);
+                hideError(phoneError);
+            }
+            
+            // Subject validation
+            const subject = document.getElementById('subject');
+            const subjectError = document.getElementById('subjectError');
+            if (subject.value === '') {
+                showError(subject, subjectError);
+                isValid = false;
+            } else {
+                showSuccess(subject);
+                hideError(subjectError);
+            }
+            
+            // Message validation
+            const message = document.getElementById('message');
+            const messageError = document.getElementById('messageError');
+            if (message.value.trim().length < 10) {
+                showError(message, messageError);
+                isValid = false;
+            } else {
+                showSuccess(message);
+                hideError(messageError);
+            }
+            
+            // If all validations pass
+            if (isValid) {
+                document.getElementById('successMessage').style.display = 'block';
+                // Reset form
+                this.reset();
+                // Hide success message after 5 seconds
+                setTimeout(() => {
+                    document.getElementById('successMessage').style.display = 'none';
+                }, 5000);
+            }
+        });
+        
+        // Real-time validation
+        const inputs = document.querySelectorAll('input, textarea, select');
+        inputs.forEach(input => {
+            input.addEventListener('blur', function() {
+                validateField(this);
+            });
+            
+            input.addEventListener('input', function() {
+                if (this.classList.contains('invalid')) {
+                    validateField(this);
+                }
+            });
+        });
+        
+        function validateField(field) {
+            switch(field.id) {
+                case 'name':
+                    if (field.value.trim() === '') {
+                        showError(field, document.getElementById('nameError'));
+                    } else {
+                        showSuccess(field);
+                        hideError(document.getElementById('nameError'));
+                    }
+                    break;
+                case 'email':
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (!emailRegex.test(field.value)) {
+                        showError(field, document.getElementById('emailError'));
+                    } else {
+                        showSuccess(field);
+                        hideError(document.getElementById('emailError'));
+                    }
+                    break;
+                case 'phone':
+                    const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
+                    if (field.value && !phoneRegex.test(field.value.replace(/[\s\-\(\)]/g, ''))) {
+                        showError(field, document.getElementById('phoneError'));
+                    } else {
+                        showSuccess(field);
+                        hideError(document.getElementById('phoneError'));
+                    }
+                    break;
+                case 'subject':
+                    if (field.value === '') {
+                        showError(field, document.getElementById('subjectError'));
+                    } else {
+                        showSuccess(field);
+                        hideError(document.getElementById('subjectError'));
+                    }
+                    break;
+                case 'message':
+                    if (field.value.trim().length < 10) {
+                        showError(field, document.getElementById('messageError'));
+                    } else {
+                        showSuccess(field);
+                        hideError(document.getElementById('messageError'));
+                    }
+                    break;
+            }
+        }
+        
+        function showError(field, errorElement) {
+            field.classList.remove('valid');
+            field.classList.add('invalid');
+            errorElement.style.display = 'block';
+        }
+        
+        function showSuccess(field) {
+            field.classList.remove('invalid');
+            field.classList.add('valid');
+        }
+        
+        function hideError(errorElement) {
+            errorElement.style.display = 'none';
+        }
+    </script>
+</body>
+</html>

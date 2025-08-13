@@ -1,0 +1,38 @@
+[0m[20:58:10] Starting comprehensive RalexOS testing...[0m
+[0m[20:58:10] Setting up test environment...[0m
+[0;34m█ BASIC FUNCTIONALITY TESTS[0m
+[0;36m→ Testing FREE DeepSeek R1[0m
+[0;32m✓ Completed in 3s (320 bytes)[0m
+[0;36m→ Testing FREE Qwen3 Coder[0m
+[0;32m✓ Completed in 17s (1292 bytes)[0m
+[0;36m→ Testing PAID Gemini 2.5 Flash[0m
+[0;32m✓ Completed in 10s (921 bytes)[0m
+[0;36m→ Testing DEFAULT Autopilot[0m
+[0;32m✓ Completed in 3s (320 bytes)[0m
+[0;36m→ Testing FREE DeepSeek R1[0m
+[0;32m✓ Completed in 3s (320 bytes)[0m
+[0;36m→ Testing FREE Qwen3 Coder[0m
+[0;32m✓ Completed in 26s (437 bytes)[0m
+[0;36m→ Testing PAID Gemini 2.5 Flash[0m
+[0;32m✓ Completed in 4s (275 bytes)[0m
+[0;36m→ Testing DEFAULT Autopilot[0m
+[0;32m✓ Completed in 2s (320 bytes)[0m
+[0;36m→ Testing FREE DeepSeek R1[0m
+[0;32m✓ Completed in 3s (320 bytes)[0m
+[0;36m→ Testing FREE Qwen3 Coder[0m
+[0;32m✓ Completed in 44s (2136 bytes)[0m
+[0;36m→ Testing PAID Gemini 2.5 Flash[0m
+[0;32m✓ Completed in 8s (927 bytes)[0m
+[0;36m→ Testing DEFAULT Autopilot[0m
+[0;32m✓ Completed in 2s (320 bytes)[0m
+[0;34m█ MCP INTEGRATION TESTS[0m
+[0;36m→ Testing Autopilot with MCP[0m
+[0;32m✓ Completed in 7s (320 bytes)[0m
+[0;36m→ Testing Autopilot with MCP[0m
+[0;32m✓ Completed in 9s (320 bytes)[0m
+[0;36m→ Testing Autopilot with MCP[0m
+[0;32m✓ Completed in 8s (320 bytes)[0m
+[0;36m→ Testing Autopilot with MCP[0m
+[0;32m✓ Completed in 3s (320 bytes)[0m
+[0;34m█ AUTONOMOUS BEHAVIOR TESTS[0m
+./run-comprehensive-tests.sh: line 154: comprehensive_test_20250812_205810/comprehensive_results.md: No such file or directory
