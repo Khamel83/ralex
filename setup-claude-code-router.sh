@@ -24,7 +24,7 @@ PROJECT_ROOT="$SCRIPT_DIR"
 
 CONFIG_TEMPLATE_PATH="$PROJECT_ROOT/config/ccr.config.template.json"
 CONFIG_TARGET_DIR="$HOME/.claude-code-router"
-CONFIG_TARGET_PATH="$CONFIG_TARGET_DIR/config.json"
+CONFIG_TARGET_PATH="$CONFIG_TARGET_DIR/config-router.json"
 ENV_FILE="$PROJECT_ROOT/.env"
 
 # --- Main Logic ---
