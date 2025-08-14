@@ -1,0 +1,124 @@
+{
+  "test_categories": {
+    "basic_functionality": {
+      "description": "Test basic model responses and capabilities",
+      "prompts": [
+        "Write a Python function to reverse a string",
+        "Explain quantum computing in simple terms",
+        "Create a SQL query to find duplicate records",
+        "Debug this code: def calc(x): return x + y",
+        "Write a README for a todo app project"
+      ]
+    },
+    "coding_tasks": {
+      "description": "Test programming and development capabilities", 
+      "prompts": [
+        "Create a REST API endpoint for user authentication",
+        "Write unit tests for a calculator class",
+        "Optimize this slow database query: SELECT * FROM users WHERE id IN (SELECT user_id FROM orders)",
+        "Design a microservice architecture for an e-commerce platform",
+        "Create a React component for a shopping cart"
+      ]
+    },
+    "reasoning_tasks": {
+      "description": "Test logical reasoning and problem-solving",
+      "prompts": [
+        "Analyze the pros and cons of remote work vs office work",
+        "Solve this logic puzzle: If all cats are animals, and some animals are pets, can we conclude that some cats are pets?",
+        "Design a strategy to reduce customer churn for a SaaS company",
+        "Explain why this code might be slow and how to optimize it",
+        "Compare different database types for a high-traffic application"
+      ]
+    },
+    "tool_integration": {
+      "description": "Test MCP tool usage and integration",
+      "prompts": [
+        "Use context7 to analyze project documentation and create a summary",
+        "Search github for recent commits and identify any security issues",
+        "Browse reddit for trending programming topics and create a report", 
+        "Use puppeteer to check if a website is responsive",
+        "Use memorybank to store project requirements for future reference",
+        "Use sequential thinking to plan a complex software migration",
+        "Use zen MCP to coordinate multiple development tasks"
+      ]
+    },
+    "autonomous_behavior": {
+      "description": "Test autopilot and YOLO mode behavior",
+      "prompts": [
+        "Analyze this codebase and improve it based on best practices",
+        "yolomode - set up CI/CD pipeline for this project",
+        "Read the project mission and suggest feature priorities",
+        "yolomode - refactor this code for better performance",
+        "Automatically generate documentation for this API",
+        "yolomode - add comprehensive error handling to this application",
+        "Create a complete deployment strategy based on project requirements"
+      ]
+    },
+    "web_research": {
+      "description": "Test web search and information gathering",
+      "prompts": [
+        "Research the latest React 19 features and create a migration guide",
+        "Find current pricing for major cloud providers and compare costs",
+        "Search for recent security vulnerabilities in popular npm packages",
+        "Research best practices for Kubernetes deployment in 2025",
+        "Find trending AI tools and evaluate their usefulness for development",
+        "Research competitor analysis for a project management tool",
+        "Find the latest performance benchmarks for different databases"
+      ]
+    },
+    "project_management": {
+      "description": "Test project analysis and management capabilities",
+      "prompts": [
+        "Analyze project structure and suggest improvements",
+        "Create a development roadmap based on project goals",
+        "Identify technical debt in this codebase",
+        "Suggest team structure for a growing startup",
+        "Create sprint planning for the next development cycle",
+        "Analyze project risks and mitigation strategies",
+        "Design code review guidelines for this project"
+      ]
+    },
+    "cost_optimization": {
+      "description": "Test cost-aware decision making",
+      "prompts": [
+        "This is a simple task - just format this JSON data",
+        "This requires deep analysis - design a distributed system architecture", 
+        "Medium complexity - create a user authentication system",
+        "Simple question - what is the difference between REST and GraphQL?",
+        "Complex reasoning needed - analyze performance bottlenecks in this system",
+        "Basic coding - write a function to validate email addresses",
+        "Advanced task - design a real-time chat application architecture"
+      ]
+    }
+  },
+  "model_testing_matrix": {
+    "free_models": [
+      "free-reasoning",
+      "free-coding", 
+      "free-general"
+    ],
+    "paid_models": [
+      "cheap-smart",
+      "cheap-fast",
+      "premium-coding"
+    ],
+    "premium_models": [
+      "premium-reasoning",
+      "premium-latest"
+    ],
+    "special_agents": [
+      "autopilot",
+      "yolo",
+      "smart"
+    ]
+  },
+  "evaluation_criteria": {
+    "response_quality": "Rate 1-5: Accuracy, completeness, usefulness",
+    "response_speed": "Measure time to completion",
+    "tool_usage": "Did it use appropriate MCP tools?",
+    "cost_efficiency": "Value for money based on token usage",
+    "autonomous_behavior": "Did it make good decisions without prompting?",
+    "code_quality": "For coding tasks - is the code functional and well-written?",
+    "reasoning_depth": "For complex tasks - quality of analysis and insights"
+  }
+}

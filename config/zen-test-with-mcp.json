@@ -1,0 +1,46 @@
+{
+  "log": true,
+  "redis": {
+    "url": "redis://127.0.0.1:6379"
+  },
+  "providers": {
+    "openrouter": {
+      "api_key": "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",
+      "base_url": "https://openrouter.ai/api/v1/chat/completions"
+    }
+  },
+  "models": {
+    "default": "google/gemini-2.0-flash-001",
+    "reasoning": "deepseek/deepseek-r1-0528:free", 
+    "coding": "qwen/qwen3-coder"
+  },
+  "mcp": {
+    "servers": {
+      "context7": {
+        "command": "context7-mcp",
+        "type": "local"
+      },
+      "github": {
+        "command": "github-mcp-server",
+        "args": ["stdio"],
+        "type": "local"
+      },
+      "puppeteer": {
+        "command": "server-puppeteer",
+        "type": "local"
+      },
+      "sequential": {
+        "command": "mcp-sequential-thinking",
+        "type": "local"
+      },
+      "zen": {
+        "command": "zen-mcp-server",
+        "type": "local"
+      },
+      "memorybank": {
+        "command": "memory-bank-mcp",
+        "type": "local"
+      }
+    }
+  }
+}

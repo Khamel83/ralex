@@ -1,0 +1,32 @@
+{
+  "name": "alex",
+  "version": "1.0.0",
+  "description": "Alex - Agent-OS CLI launcher for claude-code-router with OpenRouter integration",
+  "main": "bin/alex",
+  "bin": {
+    "alex": "./bin/alex"
+  },
+  "scripts": {
+    "start": "./bin/alex",
+    "install-global": "npm link"
+  },
+  "keywords": [
+    "cli",
+    "claude",
+    "openrouter",
+    "agent-os",
+    "mcp"
+  ],
+  "author": "Alex Project",
+  "license": "MIT",
+  "dependencies": {
+    "@musistudio/claude-code-router": "^1.0.33",
+    "dotenv": "^16.0.0",
+    "express": "^5.1.0",
+    "http-proxy-middleware": "^3.0.5",
+    "node-fetch": "^3.3.2"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

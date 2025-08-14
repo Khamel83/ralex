@@ -1,0 +1,10 @@
+[0m
+[0m
+Authentication verifies who a user is, while authorization determines what resources or actions they can access.
+
+Authentication = Identity verification (login)
+Authorization = Permission checking (access control)
+Authentication verifies who a user is, while authorization determines what resources or actions they can access.
+
+Authentication = Identity verification (login)
+Authorization = Permission checking (access control)

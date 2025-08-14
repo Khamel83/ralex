@@ -1,0 +1,28 @@
+# Cost Tracking - RalexOS Testing
+Test started: Tue Aug 12 20:58:10 PDT 2025
+
+## Estimated Costs by Model
+- Free models: $0.00
+- Gemini 2.5 Flash: ~$0.075/M tokens
+- GPT-4o Mini: ~$0.15/M tokens  
+- Qwen3 Coder: ~$0.20/M tokens
+- o1-mini: ~$3.00/M tokens
+- GPT-5: ~$10-30/M tokens
+
+## Actual Usage
+free-reasoning: 80 tokens, Cost: $0.00
+free-coding: 323 tokens, Cost: $0.00
+cheap-smart: 230 tokens, Cost: $0
+autopilot: 80 tokens, Cost: Unknown
+free-reasoning: 80 tokens, Cost: $0.00
+free-coding: 109 tokens, Cost: $0.00
+cheap-smart: 68 tokens, Cost: $0
+autopilot: 80 tokens, Cost: Unknown
+free-reasoning: 80 tokens, Cost: $0.00
+free-coding: 534 tokens, Cost: $0.00
+cheap-smart: 231 tokens, Cost: $0
+autopilot: 80 tokens, Cost: Unknown
+autopilot: 80 tokens, Cost: Unknown
+autopilot: 80 tokens, Cost: Unknown
+autopilot: 80 tokens, Cost: Unknown
+autopilot: 80 tokens, Cost: Unknown

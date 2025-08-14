@@ -1,0 +1,24 @@
+{
+  "Providers": [
+    {
+      "name": "openrouter",
+      "api_base_url": "https://openrouter.ai/api/v1/chat/completions",
+      "api_key": "${OPENROUTER_API_KEY}",
+      "models": [
+        "deepseek/deepseek-chat",
+        "anthropic/claude-3.5-sonnet",
+        "openai/gpt-4o",
+        "meta-llama/llama-3.1-405b-instruct"
+      ],
+      "transformer": {
+        "use": ["openrouter"]
+      }
+    }
+  ],
+  "default_model": "deepseek/deepseek-chat",
+  "port": 3456,
+  "ui": {
+    "enabled": true,
+    "title": "Alex - Agent-OS CLI"
+  }
+}

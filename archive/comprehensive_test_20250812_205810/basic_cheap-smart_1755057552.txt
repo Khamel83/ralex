@@ -1,0 +1,4 @@
+[0m
+Authentication is the process of verifying who a user is, while authorization is the process of verifying what a user has access to.
+[0m
+Authentication is the process of verifying who a user is, while authorization is the process of verifying what a user has access to.

@@ -1,181 +1,144 @@
-# Ralex - Context-Aware Claude Code Fallback
+# RalexOS
 
-**Simple, reliable fallback system for when Claude Code runs out of credits**
+A complete, single-file setup for OpenCode with MCP (Model Context Protocol) support.
 
-Ralex provides a context-aware fallback to OpenRouter's free models when Claude Code reaches its usage limits, preserving conversation history for seamless transitions.
+## What is this?
 
-## What This Actually Does
+RalexOS is a minimal, self-contained bash script that sets up a complete AI-powered development environment with OpenCode and MCP servers. With just one script, you can get everything you need running on any platform (Linux, macOS, Raspberry Pi, VPS, etc.).
 
-- 🔄 **Manual Fallback**: When Claude Code fails, switch to `ralex` command
-- 💾 **Context Preservation**: Automatically saves Claude conversations for continuity  
-- 🆓 **Free Models**: Uses OpenRouter's free models (no cost)
-- 📝 **Conversation History**: Maintains context across tool switches
-- 🚀 **Simple Setup**: No complex routing or servers required
+## Features
+
+- Installs OpenCode automatically
+- Sets up all popular MCP servers:
+  - Context7 MCP (context management)
+  - GitHub MCP Server (GitHub integration)
+  - Puppeteer MCP Server (web browsing)
+  - Sequential Thinking MCP (sequential reasoning)
+  - Zen MCP Server (general tools)
+  - Memory Bank MCP (memory management)
+- Configures all models (Claude Pro, Qwen3, Gemini, Kimi)
+- Sets up Git identity and SSH keys
+- Creates helpful aliases and environment variables
+- Works on macOS, Ubuntu, and other Linux distributions
 
 ## Quick Start
 
-### 1. Clone and Setup
-```bash
-git clone https://github.com/Khamel83/ralex.git
-cd ralex
-
-# Get your OpenRouter API key from https://openrouter.ai/
-echo "OPENROUTER_API_KEY=your-key-here" > .env
-
-# Run the setup script
-./setup-ralex.sh
-```
-
-### 2. Your Daily Workflow
-```bash
-# Morning - Use Claude Code normally
-claude
-
-# When Claude runs out of credits:
-# Exit Claude Code, then use:
-ralex --direct "your prompt here"
-
-# ralex automatically knows your conversation history!
-```
-
-## How It Works
-
-### Context Preservation System
-1. **Claude Code Hooks**: Auto-save every conversation to `.claude-context.md`
-2. **Smart ralex**: Reads conversation history before making requests
-3. **Seamless Continuity**: Your conversation continues where Claude left off
-
-### Example Workflow
-```bash
-# Start with Claude Code
-claude
-# > "Help me build a login form"
-# > [Claude helps with the form]
-# > "Add validation to it"  
-# > [Claude limit reached - exit]
-
-# Switch to ralex
-ralex --direct "Now add error handling"
-# > ralex reads the entire conversation about the login form
-# > continues helping with error handling in context
-```
-
-## Installation Details
-
-The setup script:
-1. **Checks requirements** (curl, jq, git, npm)
-2. **Installs Claude Code** via npm (if not already installed)
-3. **Creates ralex command** in `~/bin/ralex` and adds to PATH
-4. **Sets up Claude Code hooks** to auto-save conversations
-5. **Configures OpenRouter** with your API key
-6. **Removes conflicting aliases** for clean installation
-
-## Files Created
-
-```
-~/.claude/settings.json          # Claude Code hooks for auto-saving
-~/bin/ralex                      # Context-aware fallback script
-/path/to/project/.claude-context.md  # Auto-saved conversations
-```
-
-## Configuration
-
-### OpenRouter API Key
-1. Get free API key from [OpenRouter.ai](https://openrouter.ai/)
-2. Add to `.env` file:
+1. Download the script:
    ```bash
-   OPENROUTER_API_KEY=your-key-here
+   curl -O https://raw.githubusercontent.com/yourusername/ralexos/main/ralexos-complete.sh
    ```
 
-### Supported Free Models
-The system automatically uses the best available free model:
-- `z-ai/glm-4.5-air:free` (default)
-- Other free models as available
+2. Edit the configuration values at the top of the script:
+   ```bash
+   nano ralexos-complete.sh
+   ```
+   Update these variables:
+   - `OPENROUTER_API_KEY` - Your OpenRouter API key
+   - `GITHUB_TOKEN` - Your GitHub personal access token
+   - `GIT_USER_NAME` - Your Git username
+   - `GIT_USER_EMAIL` - Your Git email
 
-## Commands
+3. Make it executable and run it:
+   ```bash
+   chmod +x ralexos-complete.sh
+   ./ralexos-complete.sh
+   ```
 
-### ralex Options
-```bash
-# Try Claude first, fallback to OpenRouter if needed
-ralex "your prompt"
+4. Restart your shell or source your profile:
+   ```bash
+   source ~/.bashrc
+   # or
+   source ~/.zshrc
+   ```
 
-# Skip Claude, go directly to OpenRouter  
-ralex --direct "your prompt"
+5. Start using OpenCode:
+   ```bash
+   opencode
+   ```
 
-# Interactive mode not supported - use one-shot prompts
-```
+## Usage
 
-## Cross-Platform Support
+After installation, you have these commands:
 
-**Tested on:**
-- ✅ macOS (primary development)
-- 🔄 Ubuntu/Raspberry Pi (should work with standard bash/curl/jq)
+- `opencode` - Start OpenCode TUI
+- `ocp` - Force Claude Pro model
+- `ocq` - Use Qwen3 Coder (free)
+- `ocg` - Use Gemini Flash
+- `ock` - Use Kimi K2 (free)
+- `oy "command"` - Run one-shot command
 
-**Requirements:**
-- bash
-- curl  
-- jq
-- git
-- npm (for Claude Code)
+In the OpenCode TUI, you can use:
+
+- `@yolo <task>` - Run in YOLO mode (no confirmations)
+- `/mcp` - Manage MCP servers
+- `/models` - Switch between models
+
+## Supported Platforms
+
+- macOS (Intel and Apple Silicon)
+- Ubuntu/Debian
+- Other Linux distributions (manual dependency installation may be required)
+- Raspberry Pi
+- VPS servers
+
+## Customization
+
+You can easily modify the script to:
+
+1. Add or remove MCP servers
+2. Change the default models
+3. Add more aliases
+4. Modify the configuration
+
+Just edit the `ralexos-complete.sh` file and re-run it.
+
+## What's Included
+
+### Models
+- Claude Pro (via OAuth)
+- Qwen3 Coder (free via OpenRouter)
+- Gemini Flash (via OpenRouter)
+- Kimi K2 (free via OpenRouter)
+
+### MCP Servers
+1. **Context7** - Advanced context management
+2. **GitHub** - Direct GitHub repository access
+3. **Puppeteer** - Web browsing and scraping
+4. **Sequential** - Multi-step reasoning tasks
+5. **Zen** - General purpose tools and utilities
+6. **MemoryBank** - Persistent memory storage
 
 ## Troubleshooting
 
-### "No OPENROUTER_API_KEY found"
-- Create `.env` file with your API key
-- Or set environment variable: `export OPENROUTER_API_KEY="your-key"`
+If you encounter any issues:
 
-### "command not found: ralex"  
-- Restart terminal (PATH may need refresh)
-- Or run: `source ~/.zshrc` (or `~/.bashrc`)
-- If still not working, use full path: `/Users/$(whoami)/bin/ralex`
+1. Check that all dependencies are installed:
+   ```bash
+   node --version
+   npm --version
+   bun --version
+   ```
 
-### Context not preserved
-- Check if `.claude-context.md` exists in your project directory
-- Verify Claude Code hooks are working: check `~/.claude/settings.json`
+2. Verify MCP servers are installed:
+   ```bash
+   which context7-mcp
+   which github-mcp-server
+   # etc.
+   ```
 
-### ralex returns null/errors
-- Test OpenRouter API key: `curl -H "Authorization: Bearer $OPENROUTER_API_KEY" https://openrouter.ai/api/v1/models`
-- Check if free models are available
+3. Check the configuration file:
+   ```bash
+   cat ~/.config/opencode/opencode.json
+   ```
 
-## What's Different From Other Solutions
+## Updating
 
-**Not a router or proxy** - Simple script that switches tools manually  
-**Not automatic** - You choose when to switch from Claude to ralex  
-**Context-aware** - Conversation history preserved across switches  
-**Free models only** - Uses OpenRouter's free tier, no additional costs  
+To update, simply download the latest version of the script and run it again:
 
-## Development
-
-### Project Structure
-```
-ralex/
-├── README.md              # This file
-├── setup-ralex.sh         # Simple, reliable setup script
-├── setup-ultimate-claude.sh  # Legacy setup (ignore)
-├── ralex-simple.sh        # The actual ralex script
-├── .gitignore            # Protects .env and context files
-└── .env                  # Your API key (not in git)
-```
-
-### Testing
 ```bash
-# Test OpenRouter connection
-ralex --direct "what is 2+2"
-
-# Test context preservation  
-# 1. Use Claude Code for a conversation
-# 2. Exit and run: ralex --direct "continue our conversation"
-# 3. Verify it knows the previous context
+curl -O https://raw.githubusercontent.com/yourusername/ralexos/main/ralexos-complete.sh
+chmod +x ralexos-complete.sh
+./ralexos-complete.sh
 ```
 
-## Contributing
-
-This is a simple, focused solution. PRs welcome for:
-- Cross-platform compatibility fixes
-- Better error handling  
-- Documentation improvements
-- Additional free model support
-
-## License
-
-MIT License. Individual components (Claude Code, OpenRouter) maintain their own licenses.
+The script is designed to be idempotent - running it multiple times is safe and will update your installation.

@@ -1,0 +1,173 @@
+#!/usr/bin/env node
+
+const { spawn } = require('child_process');
+const path = require('path');
+const fs = require('fs');
+
+// Load environment variables
+require('dotenv').config();
+
+// Simple router implementation
+const express = require('express');
+
+async function startSimpleRouter() {
+  const app = express();
+  
+  // Health check endpoint
+  app.get('/health', (req, res) => {
+    res.json({ status: 'ok' });
+  });
+  
+  // Middleware to convert Anthropic format to OpenAI format
+  app.use('/v1/messages', express.json(), async (req, res) => {
+    try {
+      // Convert Anthropic request to OpenAI format
+      const openaiRequest = {
+        model: 'openchat/openchat-7b:free',
+        messages: [],
+        max_tokens: req.body.max_tokens || 4000,
+        temperature: req.body.temperature || 0.7,
+        stream: req.body.stream || false
+      };
+
+      // Convert messages
+      if (req.body.system) {
+        openaiRequest.messages.push({
+          role: 'system',
+          content: req.body.system
+        });
+      }
+
+      if (req.body.messages) {
+        req.body.messages.forEach(msg => {
+          openaiRequest.messages.push({
+            role: msg.role,
+            content: Array.isArray(msg.content) ? msg.content.map(c => c.text || c).join(' ') : msg.content
+          });
+        });
+      }
+
+      // Make request to OpenRouter
+      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          'HTTP-Referer': 'http://localhost:3456',
+          'X-Title': 'Ralex',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(openaiRequest)
+      });
+
+      let data;
+      const responseText = await response.text();
+      
+      try {
+        // Try parsing as regular JSON first
+        data = JSON.parse(responseText);
+      } catch (parseError) {
+        // Handle SSE streaming format
+        const lines = responseText.split('\n').filter(line => line.trim());
+        let accumulatedContent = '';
+        let lastValidData = null;
+        
+        for (const line of lines) {
+          // Skip comments (lines starting with :)
+          if (line.startsWith(':')) continue;
+          
+          if (line.startsWith('data: ')) {
+            const dataStr = line.substring(6).trim();
+            if (dataStr === '[DONE]') break;
+            
+            try {
+              const chunk = JSON.parse(dataStr);
+              if (chunk.choices && chunk.choices[0]) {
+                lastValidData = chunk;
+                if (chunk.choices[0].delta && chunk.choices[0].delta.content) {
+                  accumulatedContent += chunk.choices[0].delta.content;
+                }
+              }
+            } catch (chunkParseError) {
+              // Ignore invalid chunks
+              continue;
+            }
+          }
+        }
+        
+        if (lastValidData && accumulatedContent) {
+          // Convert streaming response to non-streaming format
+          data = {
+            ...lastValidData,
+            choices: [{
+              ...lastValidData.choices[0],
+              message: {
+                role: 'assistant',
+                content: accumulatedContent
+              },
+              finish_reason: 'stop'
+            }]
+          };
+        } else {
+          throw new Error('Could not parse SSE response: ' + responseText.substring(0, 200));
+        }
+      }
+
+      // Convert OpenAI response to Anthropic format
+      if (data.choices && data.choices[0]) {
+        const anthropicResponse = {
+          id: data.id || 'ralex-' + Date.now(),
+          type: 'message',
+          role: 'assistant',
+          model: data.model || 'deepseek-chat',
+          content: [{
+            type: 'text',
+            text: data.choices[0].message.content
+          }],
+          stop_reason: data.choices[0].finish_reason === 'stop' ? 'end_turn' : 'max_tokens',
+          stop_sequence: null,
+          usage: {
+            input_tokens: data.usage?.prompt_tokens || 0,
+            output_tokens: data.usage?.completion_tokens || 0
+          }
+        };
+        res.json(anthropicResponse);
+      } else {
+        res.status(500).json({ error: 'No response from model' });
+      }
+    } catch (error) {
+      console.error('Router error:', error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+  
+  return new Promise((resolve) => {
+    const server = app.listen(3456, '127.0.0.1', () => {
+      console.log('Router started on port 3456');
+      resolve(server);
+    });
+  });
+}
+
+async function main() {
+  // Start our simple router
+  await startSimpleRouter();
+  
+  // Small delay to ensure router is ready
+  await new Promise(resolve => setTimeout(resolve, 500));
+  
+  // Set environment variables for Claude Code
+  process.env.ANTHROPIC_BASE_URL = 'http://127.0.0.1:3456';
+  process.env.ANTHROPIC_API_KEY = 'any-string-is-ok';
+
+  // Run Claude Code
+  const claudeCmd = spawn('claude', process.argv.slice(2), {
+    stdio: 'inherit',
+    env: process.env
+  });
+
+  claudeCmd.on('exit', (code) => {
+    process.exit(code);
+  });
+}
+
+main().catch(console.error);
