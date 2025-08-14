@@ -18,10 +18,14 @@ warn() { echo -e "${YELLOW}[WARNING] $*${NC}"; }
 error() { echo -e "${RED}[ERROR] $*${NC}"; }
 
 # --- Configuration ---
-CONFIG_TEMPLATE_PATH="./config/ccr.config.template.json"
+# Determine the absolute path of the directory where the script is located, which is the project root.
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+PROJECT_ROOT="$SCRIPT_DIR"
+
+CONFIG_TEMPLATE_PATH="$PROJECT_ROOT/config/ccr.config.template.json"
 CONFIG_TARGET_DIR="$HOME/.claude-code-router"
 CONFIG_TARGET_PATH="$CONFIG_TARGET_DIR/config.json"
-ENV_FILE="./.env"
+ENV_FILE="$PROJECT_ROOT/.env"
 
 # --- Main Logic ---
 
