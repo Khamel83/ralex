@@ -26,10 +26,24 @@ source ~/.bashrc
 claude  # Uses your Pro subscription exactly as before
 ```
 
-### Free Models via Y-Router
+### 10 Models via Y-Router + OpenRouter
 ```bash
-claude-free "What is 2+2?"              # Free Gemini 2.5 Flash
-claude-qwen "Write a Python function"   # Free Qwen Coder
+# Start with any model:
+claude-cheap "question"     # GPT-5 Nano (fast, efficient)
+claude-flash "question"     # Gemini 2.5 Flash (great for coding)
+claude-kimi "question"      # Kimi K2 (1T params, agentic specialist)
+claude-gemini2 "question"   # Gemini 2.0 Flash 001 (newest)
+claude-qwen3 "question"     # Qwen3 Coder (coding specialist)
+claude-qwen30b "question"   # Qwen3 30B (powerful reasoning)
+claude-oss "question"       # GPT OSS 120B (huge context)
+claude-glm "question"       # GLM 4.5 (Chinese language model)
+claude-gpt4 "question"      # GPT-4o Mini (reliable, tested)
+claude-sonnet "question"    # Claude 3.5 Sonnet (premium)
+
+# Switch models mid-conversation:
+/model moonshotai/kimi-k2
+/model qwen/qwen3-coder
+/model google/gemini-2.5-flash
 ```
 
 ## What's Running
@@ -53,12 +67,25 @@ cd ~/dev/ralex/y-router && sudo docker-compose up -d
 sudo docker logs y-router-y-router-1
 ```
 
-## Available Free Models
+## Available Models (All Support Tool Calling)
 
-- `google/gemini-2.5-flash` - Fast, supports tool calling
-- `qwen/qwen-2.5-coder-32b-instruct` - Great for coding
-- `microsoft/phi-4` - Good general model
-- Many more on [OpenRouter](https://openrouter.ai/models)
+**Coding Specialists:**
+- `qwen/qwen3-coder` - Qwen3 Coder specialist
+- `google/gemini-2.5-flash` - Excellent for coding tasks
+
+**Reasoning & Agentic:**
+- `moonshotai/kimi-k2` - 1T params MoE, agentic specialist, 128K context
+- `qwen/qwen3-30b-a3b` - Powerful 30B reasoning model
+
+**General Purpose:**
+- `openai/gpt-5-nano` - Fast and efficient
+- `openai/gpt-4o-mini` - Reliable, well-tested
+- `google/gemini-2.0-flash-001` - Newest Gemini
+- `openai/gpt-oss-120b` - Huge 120B parameter model
+- `z-ai/glm-4.5` - Chinese language model
+- `anthropic/claude-3.5-sonnet` - Premium quality
+
+Explore more models on [OpenRouter](https://openrouter.ai/models)
 
 ## Benefits
 

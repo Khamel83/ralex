@@ -4,49 +4,63 @@
 
 **IMPORTANT**: We do NOT have an Anthropic API key, so all Claude Code integration must use FREE alternatives via OpenRouter.
 
-A complete, single-file setup for OpenCode with MCP (Model Context Protocol) support.
+**V1 COMPLETE**: Y-Router + OpenRouter integration with 10 models and 22 MCP servers.
 
 ## What is this?
 
 RalexOS is a minimal, self-contained bash script that sets up a complete AI-powered development environment with OpenCode and MCP servers. With just one script, you can get everything you need running on any platform (Linux, macOS, Raspberry Pi, VPS, etc.).
 
-## Features
+## V1 Features ✅
 
-- Installs OpenCode automatically
-- Sets up all popular MCP servers:
-  - Context7 MCP (context management)
-  - GitHub MCP Server (GitHub integration)
-  - Puppeteer MCP Server (web browsing)
-  - Sequential Thinking MCP (sequential reasoning)
-  - Zen MCP Server (general tools)
-  - Memory Bank MCP (memory management)
-- Configures all models (Claude Pro, Qwen3, Gemini, Kimi)
-- Sets up Git identity and SSH keys
-- Creates helpful aliases and environment variables
-- Works on macOS, Ubuntu, and other Linux distributions
+**10-Model OpenRouter Integration:**
+- GPT-5 Nano (fast/cheap), Kimi K2 (reasoning), Qwen3 Coder (specialist)
+- Gemini 2.5/2.0 Flash, GPT-4o Mini, Claude 3.5 Sonnet, and more
+- Seamless model switching: `/model kimi-k2`, `/model qwen3-coder`
 
-## Quick Start
+**22 MCP Servers Working:**
+- filesystem, memory-bank, sequential-thinking, github-integration
+- playwright-testing, sentry-monitoring, k83-framework, mcp-orchestrator
+- And 14 more specialized servers for complete development ecosystem
 
-1. Download the script:
+**Cost-Effective Workflow:**
+- Start with `claude-cheap` (GPT-5 Nano) for basic tasks
+- Scale up to specialized models as needed
+- Manual control = perfect cost optimization
+
+**Production Ready:**
+- Y-router Docker integration
+- Secure API key management (.env)
+- OpenRouter requests branded as "Ralex"
+
+## Quick Start (V1)
+
+1. **Setup Y-Router + OpenRouter:**
    ```bash
-   curl -O https://raw.githubusercontent.com/yourusername/ralexos/main/ralexos-complete.sh
+   # Add your OpenRouter API key to .env
+   echo "OPENROUTER_API_KEY=your-key-here" > .env
+   
+   # Run setup script
+   ./setup-y-router.sh
    ```
 
-2. Edit the configuration values at the top of the script:
+2. **Start using 10 models:**
    ```bash
-   nano ralexos-complete.sh
+   source ~/.bashrc
+   
+   # Entry points:
+   claude-cheap "question"     # GPT-5 Nano (fast/cheap)
+   claude-kimi "complex task"  # Kimi K2 (reasoning expert)
+   claude-qwen3 "code task"    # Qwen3 Coder (specialist)
+   
+   # Switch models mid-conversation:
+   /model moonshotai/kimi-k2
+   /model qwen/qwen3-coder
    ```
-   Update these variables:
-   - `OPENROUTER_API_KEY` - Your OpenRouter API key
-   - `GITHUB_TOKEN` - Your GitHub personal access token
-   - `GIT_USER_NAME` - Your Git username
-   - `GIT_USER_EMAIL` - Your Git email
 
-3. Make it executable and run it:
-   ```bash
-   chmod +x ralexos-complete.sh
-   ./ralexos-complete.sh
-   ```
+3. **Access 22 MCP servers:**
+   - All MCP tools work with any model
+   - Filesystem, GitHub, Playwright, Memory, and more
+   - Full development ecosystem ready
 
 4. Restart your shell or source your profile:
    ```bash
