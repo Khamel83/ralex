@@ -1,20 +1,11 @@
 name: Release
 
+# DISABLED - This workflow expects Python package with PyPI publishing
+# Current project is bash-based y-router integration
+# TODO: Create appropriate release workflow for V1/V2 milestones
+
 on:
-  push:
-    tags:
-      - 'v*'
-  workflow_dispatch:
-    inputs:
-      version:
-        description: 'Release version (e.g., v1.0.0)'
-        required: true
-        type: string
-      prerelease:
-        description: 'Mark as prerelease'
-        required: false
-        type: boolean
-        default: false
+  workflow_dispatch: # Manual trigger only
 
 env:
   PYTHON_VERSION: '3.11'

@@ -1,0 +1,117 @@
+name: V1 Integration Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  test-setup:
+    name: Test Y-Router Setup
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Test setup script syntax
+      run: |
+        bash -n setup-y-router.sh
+        echo "✅ Setup script syntax is valid"
+        
+    - name: Test function definitions syntax  
+      run: |
+        bash -n claude-functions.sh
+        echo "✅ Function definitions syntax is valid"
+        
+    - name: Validate y-router directory structure
+      run: |
+        if [ -d "y-router" ]; then
+          echo "✅ Y-router directory exists"
+          if [ -f "y-router/docker-compose.yml" ]; then
+            echo "✅ Docker compose file found"
+          else
+            echo "❌ Docker compose file missing"
+            exit 1
+          fi
+        else
+          echo "❌ Y-router directory missing"
+          exit 1
+        fi
+        
+    - name: Test documentation completeness
+      run: |
+        # Check for required documentation files
+        files=("README.md" "claude.md" "CLAUDE_CODE_SETUP.md" "V1_COMPLETE.md")
+        for file in "${files[@]}"; do
+          if [ -f "$file" ]; then
+            echo "✅ $file exists"
+          else
+            echo "❌ $file missing"
+            exit 1
+          fi
+        done
+        
+    - name: Validate .gitignore patterns
+      run: |
+        # Check that sensitive files are ignored
+        if grep -q "\.env" .gitignore; then
+          echo "✅ .env files are ignored"
+        else
+          echo "❌ .env should be in .gitignore"
+          exit 1
+        fi
+        
+        if grep -q "y-router/" .gitignore; then
+          echo "✅ y-router directory is ignored"
+        else
+          echo "❌ y-router directory should be in .gitignore" 
+          exit 1
+        fi
+
+  test-docker:
+    name: Test Docker Components
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Test y-router Docker setup (without API key)
+      run: |
+        cd y-router
+        # Test that docker-compose.yml is valid
+        docker-compose config
+        echo "✅ Docker compose configuration is valid"
+        
+    - name: Test Docker image availability  
+      run: |
+        # Test that the base images exist
+        docker pull node:18-alpine || docker pull node:latest
+        echo "✅ Base Docker images are available"
+
+  documentation-check:
+    name: Documentation Quality Check
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Check for broken internal links
+      run: |
+        # Simple check for internal markdown links
+        find . -name "*.md" -exec grep -l "\[.*\](.*\.md)" {} \; | while read file; do
+          echo "Checking links in $file"
+          grep -o "\[.*\]([^)]*\.md[^)]*)" "$file" | sed 's/.*(\([^)]*\))/\1/' | while read link; do
+            # Remove anchor if present
+            link_file=$(echo "$link" | cut -d'#' -f1)
+            if [ -n "$link_file" ] && [ ! -f "$link_file" ]; then
+              echo "❌ Broken link in $file: $link_file"
+              exit 1
+            fi
+          done
+        done
+        echo "✅ All internal markdown links are valid"

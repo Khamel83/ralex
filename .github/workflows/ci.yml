@@ -1,13 +1,11 @@
 name: Continuous Integration
 
+# DISABLED - This workflow expects Python package structure
+# Current project is bash-based y-router integration
+# TODO: Create appropriate CI for bash/docker setup
+
 on:
-  push:
-    branches: [ main, develop ]
-  pull_request:
-    branches: [ main, develop ]
-  schedule:
-    # Run CI daily at 2 AM UTC to catch dependency issues early
-    - cron: '0 2 * * *'
+  workflow_dispatch: # Manual trigger only
 
 env:
   PYTHON_VERSION: '3.11'
