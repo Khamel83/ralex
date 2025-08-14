@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# DEPRECATED: Claude Code Router is broken and doesn't work
+# Use y-router setup instead (see setup-y-router.sh)
+exit 1
+
 # Sets up the claude-code-router configuration by injecting the 
 # OpenRouter API key from an environment variable into a template file.
 
@@ -74,8 +78,11 @@ main() {
     load_env
     setup_router_config
     echo
-    log "To start the router server, run: ccr"
-    log "To use the agent in a new terminal, run: ccr code"
+    log "To start the router server, run:"
+    log "  ccr start --config ~/.claude-code-router/config-router.json"
+    log ""
+    log "To test the routing, run:"
+    log "  echo 'What is 2+2?' | claude"
 }
 
 main

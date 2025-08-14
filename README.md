@@ -1,5 +1,9 @@
 # RalexOS
 
+# ⚠️ CRITICAL: NO ANTHROPIC API KEY AVAILABLE ⚠️
+
+**IMPORTANT**: We do NOT have an Anthropic API key, so all Claude Code integration must use FREE alternatives via OpenRouter.
+
 A complete, single-file setup for OpenCode with MCP (Model Context Protocol) support.
 
 ## What is this?

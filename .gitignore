@@ -40,3 +40,4 @@ npm-debug.log*
 .k83/logs/
 .k83/mcp-servers/node_modules/
 .ralex_state
+y-router/
