@@ -4,7 +4,7 @@
 
 # 🎉 WORKING SOLUTION: Y-Router + OpenRouter
 
-**Status: IN PROGRESS** 🔧
+**Status: AUTHENTICATION FIXED** ✅
 
 Y-Router provides seamless Claude Code integration with free OpenRouter models while keeping your regular Claude Code Pro setup completely intact.
 
@@ -16,22 +16,26 @@ source ~/.bashrc
 claude-cheap "What is 2+2?"  # Test it!
 ```
 
-## Current Status: Authentication Issue 🔧
+## Status: Authentication Fixed! ✅
 
-The setup is mostly working but has a 401 authentication issue. Y-router is running correctly and responding, but Claude Code isn't passing the API key properly to y-router.
+The authentication issue has been resolved. Y-router expects the API key in an `x-api-key` header, not the standard `Authorization` header that Claude Code uses by default.
+
+**Solution:** Use `ANTHROPIC_CUSTOM_HEADERS` to send the correct header format:
+```bash
+export ANTHROPIC_CUSTOM_HEADERS="x-api-key: your-openrouter-api-key"
+```
 
 **What's Working:**
 - ✅ Y-router Docker container running on port 8787
-- ✅ Direct API calls to y-router work fine
+- ✅ Correct authentication header format identified
+- ✅ Functions updated to use `ANTHROPIC_CUSTOM_HEADERS`
 - ✅ Models like `openai/gpt-5-nano` and `openai/gpt-4o-mini` support tool calling
 
-**Issue:**
-- ❌ Claude Code gets 401 "No auth credentials found" when using y-router
-
-**Next Steps:**
-1. Debug why Claude Code's `ANTHROPIC_API_KEY` isn't reaching y-router
-2. Check if y-router expects different header format
-3. Consider alternative API key passing methods
+**Ready to Test:**
+```bash
+source ~/.bashrc
+claude-cheap "What is 2+2?"
+```
 
 See [CLAUDE_CODE_SETUP.md](CLAUDE_CODE_SETUP.md) for complete documentation.
 
