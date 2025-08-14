@@ -1,0 +1,16 @@
+{
+  "Providers": [
+    {
+      "name": "openrouter",
+      "api_key": "__OPENROUTER_API_KEY__",
+      "models": ["qwen/qwen-coder"]
+    }
+  ],
+  "Router": {
+    "default": "openrouter,qwen/qwen-coder",
+    "background": "openrouter,qwen/qwen-coder",
+    "think": "openrouter,qwen/qwen-coder",
+    "longContext": "openrouter,qwen/qwen-coder"
+  },
+  "LOG": true
+}
