@@ -143,7 +143,16 @@ claude-kimi "Analyze the recent commits and suggest improvements"
 This project is actively developed and we welcome contributions! 
 
 **Current Status:** V1 Complete (production ready)  
-**Next:** V2 with automated model routing and Agent-OS integration
+**Next:** V2-V4 roadmap with 390 atomic tasks ready for execution via Agent-OS integration
+
+## 🎯 V2-V4 Roadmap: Intelligent AI Development Environment
+
+**V2: Smart Model Routing** - Automatic task-to-model optimization with cost control
+**V3: Agent-OS Integration** - Project-aware autonomous development with pattern learning  
+**V4: Enterprise Features** - Multi-agent orchestration, team collaboration, and advanced security
+
+### Ready to Execute: 390 Atomic Tasks
+All implementation tasks have been broken down into atomic, executable components following Agent-OS methodology. See `.agent-os/instructions/execute-tasks.md` for the complete 390-task roadmap from V1 to V4 completion.
 
 ## 🛡️ Fixed Issues
 
