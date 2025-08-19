@@ -97,16 +97,26 @@ else
 fi
 
 success "Y-Router setup complete!"
+
+log "Testing the setup..."
+if source "$SCRIPT_DIR/claude-functions.sh" 2>/dev/null && timeout 30 bash -i -c "claude-cheap '2+2'" >/dev/null 2>&1; then
+    success "✅ Y-Router integration working!"
+else
+    warn "Setup complete but test failed. Functions may not load in non-interactive shells."
+fi
+
 echo
+log "IMPORTANT: Functions only work in interactive shells (when you type commands manually)"
 log "NEXT STEPS:"
-log "1. Run: source ~/.bashrc"
+log "1. Open a new terminal or run: source ~/dev/ralex/claude-functions.sh"
 log "2. Test with: claude-cheap 'What is 2+2?'"
 echo
 log "USAGE:"
 log "  claude                    # Your regular Claude Code Pro (unchanged)"
 log "  claude-cheap 'prompt'     # GPT-5 Nano via OpenRouter"
 log "  claude-gpt4 'prompt'      # GPT-4o Mini via OpenRouter"
-log "  claude-model 'model' 'prompt'  # Try any model manually"
+log "  claude-flash 'prompt'     # Gemini Flash via OpenRouter"
+log "  claude-kimi 'prompt'      # Kimi K2 via OpenRouter"
 echo
 log "Y-Router will auto-start with Docker. To stop:"
 log "  sudo docker-compose -f $(pwd)/docker-compose.yml down"

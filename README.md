@@ -4,7 +4,7 @@
 
 **What you get:** Use Claude Code with 10 different AI models through OpenRouter, plus access to 22 specialized MCP servers, all without needing an Anthropic API key.
 
-**V1 COMPLETE**: Fully working Y-Router + OpenRouter integration with seamless model switching and comprehensive MCP ecosystem.
+**V1 CONFIRMED WORKING**: Fully functional Y-Router + OpenRouter integration with seamless model switching and comprehensive MCP ecosystem. Tested and verified working in real terminal sessions.
 
 ## Why Y-Router?
 
@@ -64,10 +64,8 @@ claude-kimi "Explain quantum computing"       # Kimi K2 (reasoning expert)
 claude-qwen3 "Write a Python function"        # Qwen3 Coder (coding specialist)
 claude-flash "Help me debug this code"        # Gemini Flash (fast, good quality)
 
-# Switch models mid-conversation:
-/model moonshotai/kimi-k2                      # Switch to reasoning expert
-/model qwen/qwen3-coder                        # Switch to coding specialist
-/model google/gemini-2.5-flash                # Switch to fast general model
+# All functions work immediately in new terminal sessions
+# Authentication handled automatically through Y-router
 ```
 
 ### 4. Access 22 MCP Servers (Automatically Available)
@@ -178,11 +176,13 @@ git clone https://github.com/Khamel83/ralex.git
 cd ralex
 echo "OPENROUTER_API_KEY=your-key-here" > .env
 ./setup-y-router.sh
-source ~/.bashrc
+# Open a new terminal, then:
 claude-cheap "Hello world!"
 ```
 
 **That's it!** You now have Claude Code + 10 models + 22 MCP servers ready to go.
+
+**Verified Working**: This setup has been tested and confirmed working in real terminal sessions.
 
 ---
 
