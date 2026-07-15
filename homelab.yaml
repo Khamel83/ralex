@@ -1,0 +1,33 @@
+schema: homelab.project/v1
+project:
+  id: ralex
+  name: Ralex
+  repository: https://github.com/Khamel83/ralex
+  kind: service
+  lifecycle: development
+  owner: homelab
+monitoring:
+  state: standby
+runtime:
+  production:
+    host: mba
+    managed_by: unknown
+    unit: ralex
+    sync_mode: pull-on-demand
+health:
+  source: homelab-api
+  checks: []
+observability:
+  event_sink: homelab-api:/observations
+  evidence_policy: sanitized
+dependencies:
+  required: []
+  optional: []
+secrets:
+  broker_consumer: ralex
+  references: []
+operations:
+  repair_ids: []
+docs:
+  index: README.md
+  operations: docs/OPERATIONS.md
